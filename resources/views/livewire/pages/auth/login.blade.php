@@ -24,6 +24,10 @@ new #[Layout('layouts.guest')] class extends Component
     }
 }; ?>
 
+<head>
+    <title>Iniciar Sesión</title>
+    <link rel="stylesheet" href="{{ asset('css/login.css') }}">
+</head>
 <div>
     <!-- Session Status -->
     <x-auth-session-status class="mb-4" :status="session('status')" />
@@ -48,6 +52,8 @@ new #[Layout('layouts.guest')] class extends Component
             <x-input-error :messages="$errors->get('form.password')" class="mt-2" />
         </div>
 
+        
+
         <!-- Remember Me -->
         <div class="block mt-4">
             <label for="remember" class="inline-flex items-center">
@@ -56,7 +62,13 @@ new #[Layout('layouts.guest')] class extends Component
             </label>
         </div>
 
+        <div class="block mt-4">
+            <a class="underline text-sm text-gray-600 hover:text-gray-900 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500" href="{{ route('register') }}" wire:navigate>
+                    {{ __('Registrarse') }} </a>
+        </div>
+
         <div class="flex items-center justify-end mt-4">
+<!-- Suggested code may be subject to a license. Learn more: ~LicenseLog:4204050818. -->
             @if (Route::has('password.request'))
                 <a class="underline text-sm text-gray-600 hover:text-gray-900 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500" href="{{ route('password.request') }}" wire:navigate>
                     {{ __('Forgot your password?') }}

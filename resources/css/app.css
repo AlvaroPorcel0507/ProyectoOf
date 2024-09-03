@@ -1,3 +1,55 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+/* General Table Styles */
+.table {
+    border-collapse: collapse;
+    width: 100%;
+    margin: 20px 0;
+    font-size: 1rem;
+    text-align: left;
+    background-color: #f9f9f9;
+}
+
+.table thead th {
+    background-color: #28a745; /* Verde para el encabezado */
+    color: white;
+    padding: 12px 15px;
+    text-transform: uppercase;
+}
+
+.table tbody td {
+    padding: 12px 15px;
+    border-bottom: 1px solid #ddd;
+}
+
+.table tbody tr:nth-of-type(even) {
+    background-color: #f3f3f3;
+}
+
+.table tbody tr:hover {
+    background-color: #e9ecef;
+    transition: background-color 0.3s ease;
+}
+
+.table-hover tbody tr:hover {
+    background-color: #e9ecef; /* Efecto hover */
+}
+
+.table tbody td a.btn {
+    margin: 0 5px;
+    padding: 6px 10px;
+}
+
+.table td, .table th {
+    text-align: center; /* Alinear al centro */
+}
+
+.align-middle {
+    vertical-align: middle !important;
+}
+
+.table thead th i.fas {
+    margin-left: 5px; /* Espacio entre el icono y el texto */
+}

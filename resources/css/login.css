@@ -1,0 +1,109 @@
+/* resources/css/login.css */
+
+/* General styles */
+body {
+    font-family: 'Nunito', sans-serif;
+    background-image: url('../img/login_img.jpg'); /* Reemplaza con la URL de tu imagen de fondo */
+    background-size: cover;
+    background-position: center;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+}
+
+/* Container for the login form */
+.login-container {
+    background: rgba(255, 255, 255, 0.9); /* Fondo blanco con transparencia */
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 0 15px rgba(0, 0, 0, 0.2);
+    width: 400px;
+    text-align: center;
+}
+
+/* Header of the form */
+.login-container h1 {
+    font-size: 24px;
+    margin-bottom: 10px;
+    color: #4CAF50; /* Verde claro */
+}
+
+.login-container p {
+    color: #666;
+    margin-bottom: 20px;
+}
+
+/* Input fields */
+.login-container input[type="email"],
+.login-container input[type="password"] {
+    width: calc(100% - 20px);
+    padding: 10px;
+    margin-bottom: 15px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+}
+
+/* Checkbox */
+.login-container .inline-flex {
+    display: flex;
+    align-items: center;
+}
+
+.login-container input[type="checkbox"] {
+    margin-right: 10px;
+}
+
+/* Button */
+.login-container button {
+    background-color: #4CAF50;
+    color: white;
+    padding: 10px 15px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    width: 100%;
+    font-size: 16px;
+    transition: background-color 0.3s;
+}
+
+.login-container button:hover {
+    background-color: #45A049;
+}
+
+/* Links */
+.login-container a {
+    color: #4CAF50;
+    text-decoration: none;
+}
+
+.login-container a:hover {
+    text-decoration: underline;
+}
+
+/* Small text */
+.login-container .text-sm {
+    font-size: 12px;
+}
+
+/* Flexbox for alignment */
+.flex {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+/* Adjust margins */
+.mt-4 {
+    margin-top: 16px;
+}
+
+.mb-4 {
+    margin-bottom: 16px;
+}
+
+.ms-3 {
+    margin-left: 12px;
+}

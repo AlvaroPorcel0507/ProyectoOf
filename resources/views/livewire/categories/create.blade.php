@@ -27,13 +27,7 @@
 
                 <div class="form-group">
                     <label for="name">Nombre de la Categoria</label>
-                    <select name="name" id="name" class="form-control" required style="height: 45px;">
-                        <option value="">Selecciona una categoria</option>
-                        <option value="1" {{ old('role') == 1 ? 'selected' : '' }}>Lácteos</option>
-                        <option value="2" {{ old('role') == 2 ? 'selected' : '' }}>Hortalizas</option>
-                        <option value="3" {{ old('role') == 3 ? 'selected' : '' }}>Legumbres</option>
-                        <option value="4" {{ old('role') == 4 ? 'selected' : '' }}>Frutas</option>
-                    </select>
+                    <input type="text" name="name" id="lastName" class="form-control" value="{{ old('name') }}" required>
                 </div>
 
                 <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#confirmModal">

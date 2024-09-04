@@ -18,7 +18,7 @@ class CategoriesController extends Controller
             $sortField = 'id';
         }
 
-        $categories = Categories::where('status',1)->orderBy($sortField, $sortDirection)->paginate(8);
+        $categories = Categories::where('status', '!=', -1)->orderBy($sortField, $sortDirection)->paginate(8);
 
         return view('livewire/categories.index', compact('categories', 'sortField', 'sortDirection'));
     }
@@ -44,9 +44,18 @@ class CategoriesController extends Controller
     public function delete(Categories $category)
     {
         $category->update([
-            'status' => 0
+            'status' => -1
         ]);
 
         return redirect()->route('categories.index')->with('success', 'Categoria Eliminada con exito.');
+    }
+
+    public function toggleStatus($id)
+    {
+        $categories = Categories::findOrFail($id);
+        $categories->status = !$categories->status;
+        $categories->save();
+
+        return redirect()->route('categories.index')->with('success', 'Estado de la categoria actualizada.');
     }
 }

@@ -3,6 +3,10 @@
 
 
 @section('content')
+@php
+ use App\Models\Categories;
+@endphp
+
 <div class="container">
     <div class="d-flex justify-content-between align-items-center my-4">
         <h1 class="h3 text-green-800">Categorias</h1>
@@ -28,19 +32,15 @@
                         </tr>
                     </thead>
                     <tbody>
+                        @php
+                        $cont=1;
+                        @endphp
                         @foreach ($categories as $category)
+                        
                             <tr>
-                                <th scope="row">{{ $category->id }}</th>
+                                <th scope="row">{{ $cont }}</th>
                                 <td>
-                                    @if ($category->name == 1)
-                                        Lácteos
-                                    @elseif ($category->name == 2)
-                                        Hortalizas 
-                                    @elseif ($category->name == 3)
-                                        Legumbres
-                                    @elseif ($category->name == 4)
-                                        Frutas
-                                    @endif
+                                    {{ optional(Categories::find($category->id))->name }}
                                 </td>
                                 <td>{{ $category->userId }}</td>
                                 <td>
@@ -58,6 +58,7 @@
                                     </button>
                                 </td>
                             </tr>
+                            @php $cont++; @endphp
                         @endforeach
                     </tbody>
                 </table>
@@ -80,7 +81,7 @@
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
-                ¿Estás seguro de que deseas <strong id="toggleStatusAction"></strong> al usuario <strong id="userName"></strong>? Esta acción cambiará el estado del usuario.
+                ¿Estás seguro de que deseas <strong id="toggleStatusAction"></strong> la categoria <strong id="categoryName"></strong>? Esta acción cambiará el estado del categoria.
             </div>
             <div class="modal-footer">
                 <form id="toggleStatusForm" action="" method="POST">
@@ -100,18 +101,18 @@
         var toggleStatusModal = document.getElementById('toggleStatusModal');
         toggleStatusModal.addEventListener('show.bs.modal', function (event) {
             var button = event.relatedTarget; 
-            var userId = button.getAttribute('data-user-id'); 
-            var userName = button.getAttribute('data-user-name'); 
-            var userStatus = button.getAttribute('data-user-status'); 
+            var categoryId = button.getAttribute('data-category-id'); 
+            var categoryName = button.getAttribute('data-category-name'); 
+            var categoryStatus = button.getAttribute('data-category-status'); 
             var form = toggleStatusModal.querySelector('#toggleStatusForm');
-            form.action = '/users/' + userId + '/toggleStatus';
+            form.action = '/categories/' + categoryId + '/toggleStatus';
 
             var actionText = userStatus == 1 ? 'deshabilitar' : 'habilitar';
             var toggleStatusActionElement = document.getElementById('toggleStatusAction');
             toggleStatusActionElement.textContent = actionText;
 
-            var userNameElement = document.getElementById('userName');
-            userNameElement.textContent = userName;
+            var categoryElement = document.getElementById('categoryName');
+            categoryNameElement.textContent = categoryName;
         });
     });
 </script>

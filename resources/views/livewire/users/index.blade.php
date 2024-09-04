@@ -86,7 +86,7 @@
                 ¿Estás seguro de que deseas <strong id="toggleStatusAction"></strong> al usuario <strong id="userName"></strong>? Esta acción cambiará el estado del usuario.
             </div>
             <div class="modal-footer">
-                <form id="toggleStatusForm" action="" method="POST">
+                <form id="toggleStatusForm" action="{{ route('users.toggleStatus', $user->id) }}" method="POST">
                     @csrf
                     @method('PATCH')
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>

@@ -24,10 +24,6 @@ new #[Layout('layouts.guest')] class extends Component
     }
 }; ?>
 
-<head>
-    <title>Iniciar Sesión</title>
-    <link rel="stylesheet" href="{{ asset('css/login.css') }}">
-</head>
 <div>
     <!-- Session Status -->
     <x-auth-session-status class="mb-4" :status="session('status')" />

@@ -31,7 +31,7 @@ class CategoriesController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'name' => 'required|string|max:255',
+            'name' => 'required|max:50|regex:/^[a-zA-Z\s]+$/',
         ]);
 
         Categories::create([
@@ -50,12 +50,30 @@ class CategoriesController extends Controller
         return redirect()->route('categories.index')->with('success', 'Categoria Eliminada con exito.');
     }
 
-    public function toggleStatus($id)
+    /*public function toggleStatus($id)
     {
         $categories = Categories::findOrFail($id);
         $categories->status = !$categories->status;
         $categories->save();
 
         return redirect()->route('categories.index')->with('success', 'Estado de la categoria actualizada.');
+    }*/
+
+    public function edit(Categories $category)
+    {
+        return view('livewire/categories.edit', compact('category'));
+    }
+
+    public function update(Request $request, Categories $category)
+    {
+        $request->validate([
+            'name' => 'required|max:50|regex:/^[a-zA-Z\s]+$/',
+        ]);
+
+        $category->update([
+            'name' => $request->name,
+        ]);
+
+        return redirect()->route('categories.index')->with('success', 'Categoria actualizada correctamente.');
     }
 }

@@ -68,11 +68,11 @@ class UserController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'name' => 'required|string|max:255',
-            'lastName' => 'required|string|max:255',
-            'secondLastName' => 'nullable|string|max:255',
+            'name' => 'required|max:50|regex:/^[a-zA-Z\s]+$/',
+            'lastName' => 'required|max:40|regex:/^[a-zA-Z]+$/',
+            'secondLastName' => 'nullable|max:40|regex:/^[a-zA-Z]*$/',
             'email' => 'required|string|email|max:255|unique:users',
-            'location' => 'nullable|string|max:255',
+            'location' => 'nullable|max:80|regex:/^[a-zA-Z\s]*$/',
             'password' => 'required|string|min:8|confirmed',
             'role' => 'required|string|max:255',
         ]);

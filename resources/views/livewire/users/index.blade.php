@@ -81,10 +81,10 @@
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
-                ¿Estás seguro de que deseas <strong id="toggleStatusAction"></strong> al usuario <strong id="userName"></strong>? Esta acción elimiara al usuario.
+                ¿Estás seguro de que deseas eliminar al usuario <strong id="userName"></strong>? Esta acción elimiara al usuario.
             </div>
             <div class="modal-footer">
-                <form id="toggleStatusForm" action="{{ route('users.softDelete', $user->id) }}" method="POST">
+                <form id="toggleStatusFormUser" action="{{ route('users.softDelete', $user->id) }}" method="POST">
                     @csrf
                     @method('PUT')
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
@@ -104,7 +104,7 @@
             var userId = button.getAttribute('data-user-id'); 
             var userName = button.getAttribute('data-user-name'); 
             var userStatus = button.getAttribute('data-user-status'); 
-            var form = toggleStatusModal.querySelector('#toggleStatusForm');
+            var form = toggleStatusModal.querySelector('#toggleStatusFormUser');
             form.action = '/users/' + userId + '/softDelete';
 
             var actionText = userStatus == 1 ? 'deshabilitar' : 'habilitar';

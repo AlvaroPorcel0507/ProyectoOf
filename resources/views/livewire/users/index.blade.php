@@ -25,14 +25,15 @@
                             <th scope="col">Correo Electrónico</th>
                             <th scope="col">Rol</th>
                             <th scope="col">Ubicación</th>
-                            <th scope="col">Estado</th>
-                            <th scope="col">Acciones</th>
+                            <th scope="col">Editar</th>
+                            <th scope="col">Eliminar</th>
                         </tr>
                     </thead>
                     <tbody>
+                        @php $cont=1; @endphp
                         @foreach ($users as $user)
                             <tr>
-                                <th scope="row">{{ $user->id }}</th>
+                                <th scope="row">{{ $cont }}</th>
                                 <td>{{ $user->name }} {{ $user->lastName }} {{ $user->secondLastName }}</td>
                                 <td>{{ $user->email }}</td>
                                 <td>
@@ -47,20 +48,17 @@
                                 <td>{{ $user->location }}</td>
 
                                 <td>
-                                    <span class="badge {{ $user->status == 1 ? 'bg-success' : 'bg-danger' }}">
-                                        {{ $user->status == 1 ? 'Habilitado' : 'Deshabilitado' }}
-                                    </span>
-                                </td>
-                                <td>
-                                    <a href="{{ route('users.edit', $user->id) }}" class="btn btn-warning">
+                                    <a href="{{ route('users.edit', $user->id) }}" class="btn btn-info">
                                         <i class="fas fa-edit"></i>
                                     </a>
-                                    <button type="button" class="btn {{ $user->status ? 'btn-danger' : 'btn-success' }}" data-bs-toggle="modal" data-bs-target="#toggleStatusModal" data-user-id="{{ $user->id }}" data-user-name="{{ $user->name }}" data-user-status="{{ $user->status }}">
-                                        <i class="fas {{ $user->status == 1 ? 'fa-toggle-off' : 'fa-toggle-on' }}"></i>
-                                        {{ $user->status == 1 ? 'Deshabilitar' : 'Habilitar' }}
+                                </td>
+                                <td>
+                                    <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#toggleStatusModal" data-user-id="{{ $user->id }}" data-user-name="{{ $user->name }}" data-user-status="{{ $user->status }}">
+                                        <i class="fas fa-trash"></i>
                                     </button>
                                 </td>
                             </tr>
+                            @php $cont++; @endphp
                         @endforeach
                     </tbody>
                 </table>
@@ -79,16 +77,16 @@
     <div class="modal-dialog">
         <div class="modal-content border-success">
             <div class="modal-header bg-success text-white">
-                <h5 class="modal-title" id="toggleStatusModalLabel">Confirmar Cambio de Estado</h5>
+                <h5 class="modal-title" id="toggleStatusModalLabel">Confirmar</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
-                ¿Estás seguro de que deseas <strong id="toggleStatusAction"></strong> al usuario <strong id="userName"></strong>? Esta acción cambiará el estado del usuario.
+                ¿Estás seguro de que deseas <strong id="toggleStatusAction"></strong> al usuario <strong id="userName"></strong>? Esta acción elimiara al usuario.
             </div>
             <div class="modal-footer">
-                <form id="toggleStatusForm" action="{{ route('users.toggleStatus', $user->id) }}" method="POST">
+                <form id="toggleStatusForm" action="{{ route('users.softDelete', $user->id) }}" method="POST">
                     @csrf
-                    @method('PATCH')
+                    @method('PUT')
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
                     <button type="submit" class="btn btn-warning">Confirmar</button>
                 </form>
@@ -107,7 +105,7 @@
             var userName = button.getAttribute('data-user-name'); 
             var userStatus = button.getAttribute('data-user-status'); 
             var form = toggleStatusModal.querySelector('#toggleStatusForm');
-            form.action = '/users/' + userId + '/toggleStatus';
+            form.action = '/users/' + userId + '/softDelete';
 
             var actionText = userStatus == 1 ? 'deshabilitar' : 'habilitar';
             var toggleStatusActionElement = document.getElementById('toggleStatusAction');

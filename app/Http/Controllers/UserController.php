@@ -19,7 +19,7 @@ class UserController extends Controller
             $sortField = 'id';
         }
 
-        $users = User::orderBy($sortField, $sortDirection)->paginate(8);
+        $users = User::where('status', 1)->orderBy($sortField, $sortDirection)->paginate(8);
 
         return view('livewire/users.index', compact('users', 'sortField', 'sortDirection'));
     }
@@ -90,12 +90,12 @@ class UserController extends Controller
         return redirect()->route('users.index')->with('success', 'Usuario creado exitosamente.');
     }
 
-    public function toggleStatus($id)
+    public function delete(User $user)
     {
-        $user = User::findOrFail($id);
-        $user->status = !$user->status;
-        $user->save();
+        $user->update([
+            'status' => 0
+        ]);
 
-        return redirect()->route('users.index')->with('success', 'Estado del usuario actualizado.');
+        return redirect()->route('users.index')->with('success', 'Usuario Eliminado con exito.');
     }
 }

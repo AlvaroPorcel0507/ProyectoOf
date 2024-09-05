@@ -64,14 +64,6 @@
                     <input type="text" name="location" id="location" value="{{ old('location', $user->location) }}" class="form-control">
                 </div>
 
-                <div class="form-group">
-                    <label for="status">Estado</label>
-                    <select name="status" id="status" class="form-control" required style="height: 45px;">
-                        <option value="1" {{ old('status', $user->status) == 1 ? 'selected' : '' }}>Habilitado</option>
-                        <option value="0" {{ old('status', $user->status) == 0 ? 'selected' : '' }}>Deshabilitado</option>
-                    </select>
-                </div>
-
                 <button type="button" class="btn btn-success mt-4" data-toggle="modal" data-target="#confirmModal">
                     Actualizar
                 </button>
@@ -100,7 +92,6 @@
                     <li><strong>Teléfono:</strong> <span id="modalPhone"></span></li>
                     <li><strong>Rol:</strong> <span id="modalRole"></span></li>
                     <li><strong>Ubicación:</strong> <span id="modalLocation"></span></li>
-                    <li><strong>Estado:</strong> <span id="modalStatus"></span></li>
                 </ul>
                 <p>¿Estás seguro de que deseas continuar?</p>
             </div>
@@ -121,7 +112,6 @@
         const phoneInput = document.getElementById('phone');
         const roleInput = document.getElementById('role');
         const locationInput = document.getElementById('location');
-        const statusInput = document.getElementById('status');
 
         const modalName = document.getElementById('modalName');
         const modalLastName = document.getElementById('modalLastName');
@@ -130,7 +120,6 @@
         const modalPhone = document.getElementById('modalPhone');
         const modalRole = document.getElementById('modalRole');
         const modalLocation = document.getElementById('modalLocation');
-        const modalStatus = document.getElementById('modalStatus');
 
         document.querySelector('[data-target="#confirmModal"]').addEventListener('click', function() {
             modalName.textContent = nameInput.value;
@@ -140,7 +129,6 @@
             modalPhone.textContent = phoneInput.value;
             modalRole.textContent = roleInput.options[roleInput.selectedIndex].text;
             modalLocation.textContent = locationInput.value;
-            modalStatus.textContent = statusInput.options[statusInput.selectedIndex].text;
         });
 
         document.getElementById('confirmButton').addEventListener('click', function() {

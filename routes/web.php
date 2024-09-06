@@ -3,7 +3,9 @@
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\CategoriesController;
 use App\Http\Controllers\Auth\AuthenticatedSessionController;
+use App\Http\Controllers\ProductsController;
 use App\Models\Categories;
+use App\Models\Products;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -33,6 +35,15 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/categories/create', [CategoriesController::class, 'create'])->name('categories.create');
     Route::post('/categories', [CategoriesController::class, 'store'])->name('categories.store');
     Route::get('/categories/{category}/edit', [CategoriesController::class, 'edit'])->name('categories.edit');
+    Route::put('/categories/{category}', [CategoriesController::class, 'update'])->name('categories.update');
+    Route::put('/categories/{category}/softDelete', [CategoriesController::class, 'delete'])->name('categories.softDelete');
+});
+
+Route::middleware(['auth', 'verified'])->group(function () {
+    Route::get('/products', [ProductsController::class, 'index'])->name('products.index');
+    Route::get('/products/create', [ProductsController::class, 'create'])->name('products.create');
+    Route::post('/products', [ProductsController::class, 'store'])->name('products.store');
+    Route::get('/products/{product}/edit', [ProductsController::class, 'edit'])->name('products.edit');
     Route::put('/categories/{category}', [CategoriesController::class, 'update'])->name('categories.update');
     Route::put('/categories/{category}/softDelete', [CategoriesController::class, 'delete'])->name('categories.softDelete');
 });

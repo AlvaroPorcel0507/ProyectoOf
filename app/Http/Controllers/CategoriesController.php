@@ -50,15 +50,6 @@ class CategoriesController extends Controller
         return redirect()->route('categories.index')->with('success', 'Categoria Eliminada con exito.');
     }
 
-    /*public function toggleStatus($id)
-    {
-        $categories = Categories::findOrFail($id);
-        $categories->status = !$categories->status;
-        $categories->save();
-
-        return redirect()->route('categories.index')->with('success', 'Estado de la categoria actualizada.');
-    }*/
-
     public function edit(Categories $category)
     {
         return view('livewire/categories.edit', compact('category'));

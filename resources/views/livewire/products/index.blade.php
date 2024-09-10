@@ -5,6 +5,7 @@
 @section('content')
 @php
  use App\Models\Products;
+ use App\Models\Categories;
 @endphp
 
 <div class="container">
@@ -48,7 +49,7 @@
                                 <td>{{ $product->description }}</td>
                                 <td>{{ $product->stock }}</td>
                                 <td>{{ $product->unitPrice }}</td>
-                                <td>{{ $product->categoryId }}</td>
+                                <td>{{ optional(Categories::find($product->categoryId))->name }}</td>
                                 <td>
                                     <a href="{{ route('products.edit', $product->id) }}" class="btn btn-info">
                                         <i class="fas fa-edit"></i>

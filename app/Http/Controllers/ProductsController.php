@@ -47,4 +47,39 @@ class ProductsController extends Controller
 
         return redirect()->route('products.index')->with('success', 'Producto creado exitosamente.');
     }
+
+    public function edit(Products $product)
+    {
+        return view('livewire/products.edit', compact('product'));
+    }
+
+    public function update(Request $request, Products $product)
+    {
+        $request->validate([
+            'name' => 'required|max:50|regex:/^[a-zA-Z]+$/',
+            'description' => 'required|max:500|regex:/^[a-zA-Z\s]+$/',
+            'stock' => 'required|numeric|min:1|max:999',
+            'unitPrice' => 'required|max:50|regex:/^\d{1,5}(\.\d{0,2})?$/',
+            'categoryId' => 'required|numeric|min:1|max:20',
+        ]);
+
+        $product->update([
+            'name' => $request->name,
+            'description' => $request->description,
+            'stock' => $request->stock,
+            'unitPrice' => $request->unitPrice,
+            'categoryId' => $request->categoryId,
+        ]);
+
+        return redirect()->route('products.index')->with('success', 'Producto actualizado correctamente.');
+    }
+
+    public function delete(Products $product)
+    {
+        $product->update([
+            'status' => 0
+        ]);
+
+        return redirect()->route('products.index')->with('success', 'Producto Eliminado con exito.');
+    }
 }

@@ -44,8 +44,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/products/create', [ProductsController::class, 'create'])->name('products.create');
     Route::post('/products', [ProductsController::class, 'store'])->name('products.store');
     Route::get('/products/{product}/edit', [ProductsController::class, 'edit'])->name('products.edit');
-    Route::put('/categories/{category}', [CategoriesController::class, 'update'])->name('categories.update');
-    Route::put('/categories/{category}/softDelete', [CategoriesController::class, 'delete'])->name('categories.softDelete');
+    Route::put('/products/{product}', [ProductsController::class, 'update'])->name('products.update');
+    Route::put('/products/{product}/softDelete', [ProductsController::class, 'delete'])->name('products.softDelete');
 });
 
 Route::post('/logout', [AuthenticatedSessionController::class, 'destroy'])->name('logout');

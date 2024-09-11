@@ -46,9 +46,9 @@
                     <i class="fas fa-tachometer-alt mr-2"></i> 
                     <span>Productos</span>
                 </a>
-                <a href="#" class="flex items-center px-4 py-2 rounded-lg hover:bg-orange-600 focus:bg-orange-600 focus:ring focus:ring-orange-500">
+                <a href="{{ route('customers.index') }}" class="flex items-center px-4 py-2 rounded-lg hover:bg-orange-600 focus:bg-orange-600 focus:ring focus:ring-orange-500">
                     <i class="fas fa-table mr-2"></i> 
-                    <span>Tables</span>
+                    <span>Clientes</span>
                 </a>
             </nav>
         </aside>

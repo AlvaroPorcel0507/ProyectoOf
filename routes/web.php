@@ -4,8 +4,7 @@ use App\Http\Controllers\UserController;
 use App\Http\Controllers\CategoriesController;
 use App\Http\Controllers\Auth\AuthenticatedSessionController;
 use App\Http\Controllers\ProductsController;
-use App\Models\Categories;
-use App\Models\Products;
+use App\Http\Controllers\CustomersController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -46,6 +45,15 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/products/{product}/edit', [ProductsController::class, 'edit'])->name('products.edit');
     Route::put('/products/{product}', [ProductsController::class, 'update'])->name('products.update');
     Route::put('/products/{product}/softDelete', [ProductsController::class, 'delete'])->name('products.softDelete');
+});
+
+Route::middleware(['auth', 'verified'])->group(function () {
+    Route::get('/customers', [CustomersController::class, 'index'])->name('customers.index');
+    Route::get('/customers/create', [CustomersController::class, 'create'])->name('customers.create');
+    Route::post('/customers', [CustomersController::class, 'store'])->name('customers.store');
+    Route::get('/customers/{customer}/edit', [CustomersController::class, 'edit'])->name('customers.edit');
+    Route::put('/customers/{customer}', [CustomersController::class, 'update'])->name('customers.update');
+    Route::put('/customers/{customer}/softDelete', [CustomersController::class, 'delete'])->name('customers.softDelete');
 });
 
 Route::post('/logout', [AuthenticatedSessionController::class, 'destroy'])->name('logout');

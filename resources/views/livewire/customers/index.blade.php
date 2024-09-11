@@ -2,20 +2,20 @@
 
 @section('content')
 @php
- use App\Models\Categories;
+ use App\Models\Customers;
 @endphp
 
 <div class="container">
     <div class="d-flex justify-content-between align-items-center my-4">
-        <h1 class="h3 text-green-800">Categorias</h1>
-        <a href="{{ route('categories.create') }}" class="btn btn-success">
-            Registrar Nueva Categoria
+        <h1 class="h3 text-green-800">Clientes</h1>
+        <a href="{{ route('customers.create') }}" class="btn btn-success">
+            Registrar Nuevo Cliente
         </a>
     </div>
 
     <div class="card border-success">
         <div class="card-header bg-success text-white">
-            <i class="fas fa-users"></i> Categorias
+            <i class="fas fa-users"></i> Clientes
         </div>
         <div class="card-body bg-light">
             <div class="table-responsive">
@@ -23,8 +23,8 @@
                     <thead>
                         <tr>
                             <th scope="col">Nro.</th>
-                            <th scope="col">Nombre Categoria</th>
-                            <th scope="col">Modificado por</th>
+                            <th scope="col">CI/NIT</th>
+                            <th scope="col">Razón Social</th>
                             <th scope="col">Editar</th>
                             <th scope="col">Eliminar</th>
                         </tr>
@@ -33,21 +33,19 @@
                         @php
                         $cont=1;
                         @endphp
-                        @foreach ($categories as $category)
+                        @foreach ($customers as $customer)
                         
                             <tr>
                                 <th scope="row">{{ $cont }}</th>
+                                <td>{{ $customer->ciNit }}</td>
+                                <td>{{ $customer->companyName }}</td>
                                 <td>
-                                    {{ optional(Categories::find($category->id))->name }}
-                                </td>
-                                <td>{{ $category->userId }}</td>
-                                <td>
-                                    <a href="{{ route('categories.edit', $category->id) }}" class="btn btn-info">
+                                    <a href="{{ route('customers.edit', $customer->id) }}" class="btn btn-info">
                                         <i class="fas fa-edit"></i>
                                     </a>
                                 </td>
                                 <td>
-                                    <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#toggleStatusModal" data-category-id="{{ $category->id }}" data-category-name="{{ $category->name }}" data-category-status="{{ $category->status }}">
+                                    <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#toggleStatusModal" data-customer-id="{{ $customer->id }}" data-customer-ciNit="{{ $customer->ciNit }}" data-customer-companyName="{{ $customer->companyName }}" data-customer-status="{{ $customer->status }}">
                                         <i class="fas fa-trash"></i>
                                     </button>
                                 </td>
@@ -60,7 +58,7 @@
 
             <!-- Paginación -->
             <div class="d-flex justify-content-center mt-4">
-                {{ $categories->appends(['sort_field' => $sortField, 'sort_direction' => $sortDirection])->links() }}
+                {{ $customers->appends(['sort_field' => $sortField, 'sort_direction' => $sortDirection])->links() }}
             </div>
         </div>
     </div>
@@ -75,10 +73,10 @@
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
-                ¿Estás seguro de que deseas eliminar la categoria <strong id="categoriesName"></strong>? Esta acción elimiara la categoria.
+                ¿Estás seguro de que deseas eliminar al cliente <strong id="companyName"></strong>? Esta acción elimiara al cliente.
             </div>
             <div class="modal-footer">
-                <form id="toggleStatusFormCategories" action="" method="POST">
+                <form id="toggleStatusFormCustomers" action="" method="POST">
                     @csrf
                     @method('PUT')
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
@@ -95,17 +93,18 @@
         var toggleStatusModal = document.getElementById('toggleStatusModal');
         toggleStatusModal.addEventListener('show.bs.modal', function (event) {
             var button = event.relatedTarget; 
-            var categoryId = button.getAttribute('data-category-id'); 
-            var categoryName = button.getAttribute('data-category-name'); 
-            var categoryStatus = button.getAttribute('data-category-status'); 
-            var form = toggleStatusModal.querySelector('#toggleStatusFormCategories');
-            form.action = '/categories/' + categoryId + '/softDelete';
+            var customerId = button.getAttribute('data-customer-id'); 
+            var customerCiNit = button.getAttribute('data-customer-ciNit'); 
+            var customerCompanyName = button.getAttribute('data-customer-companyName');
+            var customerStatus = button.getAttribute('data-customer-status'); 
+            var form = toggleStatusModal.querySelector('#toggleStatusFormCustomers');
+            form.action = '/customers/' + customerId + '/softDelete';
 
             var actionText = categoryStatus == 1 ? 'deshabilitar' : 'habilitar';
             var toggleStatusActionElement = document.getElementById('toggleStatusAction');
             toggleStatusActionElement.textContent = actionText;
 
-            var userNameElement = document.getElementById('categoriesName');
+            var userNameElement = document.getElementById('companyName');
             userNameElement.textContent = userName;
         });
     });

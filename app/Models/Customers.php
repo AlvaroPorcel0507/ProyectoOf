@@ -17,4 +17,9 @@ class Customers extends Model
         'status',
         'userId'
     ];
+
+    public function sales()
+    {
+        return $this->hasMany(Sales::class, 'customerId', 'id');
+    }
 }

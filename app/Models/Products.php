@@ -25,4 +25,14 @@ class Products extends Model
     {
         return $this->belongsTo(Categories::class, 'categoryId', 'id');
     }
+
+    public function salesDetail()
+    {
+        return $this->belongsTo(SalesDetail::class, 'productId', 'id');
+    }
+
+    public function inventories()
+    {
+        return $this->hasMany(Inventories::class, 'idProduct', 'id');
+    }
 }

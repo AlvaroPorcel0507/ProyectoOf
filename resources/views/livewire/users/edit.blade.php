@@ -52,10 +52,10 @@
                 <div class="form-group">
                     <label for="role">Rol</label>
                     <select name="role" id="role" class="form-control" required style="height: 45px;">
-                        <option value="">Selecciona un rol</option>
-                        <option value="1" {{ old('role', $user->role) == 1 ? 'selected' : '' }}>Administrador</option>
-                        <option value="2" {{ old('role', $user->role) == 2 ? 'selected' : '' }}>Empleado</option>
-                        <option value="3" {{ old('role', $user->role) == 3 ? 'selected' : '' }}>Cliente</option>
+                        <option value="">{{ $user->role }}</option>
+                        <option value="Administrador">Administrador</option>
+                        <option value="Productor">Productor</option>
+                        <option value="Cliente">Cliente</option>
                     </select>
                 </div>
 

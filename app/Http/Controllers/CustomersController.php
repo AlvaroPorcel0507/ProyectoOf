@@ -40,7 +40,7 @@ class CustomersController extends Controller
             'companyName' => $request->companyName,
         ]);
 
-        return redirect()->route('customers.index')->with('success', 'Categoria creada exitosamente.');
+        return redirect()->route('customers.index')->with('success', 'Cliente creado exitosamente.');
     }
 
     public function edit(Customers $customer)
@@ -60,7 +60,7 @@ class CustomersController extends Controller
             'companyName' => $request->companyName,
         ]);
 
-        return redirect()->route('customers.index')->with('success', 'Categoria actualizada correctamente.');
+        return redirect()->route('customers.index')->with('success', 'Cliente actualizado correctamente.');
     }
 
     public function delete(Customers $customer)

@@ -18,7 +18,7 @@ return new class extends Migration
             $table->timestamp('scheduledDate');
             $table->timestamp('duration');
             $table->tinyInteger('priority');
-            $table->tinyInteger('status');
+            $table->tinyInteger('status')->default(1);
             $table->smallInteger('userId');
             $table->unsignedBigInteger('idUser');
             $table->foreign('idUser')->references('id')->on('users');

@@ -2,10 +2,12 @@
 
 namespace App\Providers;
 
+use App\Models\Activities;
 use App\Models\Categories;
 use App\Models\Customers;
 use App\Models\Products;
 use App\Models\User;
+use App\Observers\ActivitiesObserver;
 use App\Observers\CategoriesObserver;
 use App\Observers\CustomerObserver;
 use App\Observers\ProductObserver;
@@ -31,5 +33,6 @@ class AppServiceProvider extends ServiceProvider
         User::observe(UserObserver::class);
         Products::observe(ProductObserver::class);
         Customers::observe(CustomerObserver::class);
+        Activities::observe(ActivitiesObserver::class);
     }
 }

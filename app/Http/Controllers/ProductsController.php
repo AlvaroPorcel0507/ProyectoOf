@@ -30,7 +30,7 @@ class ProductsController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'name' => 'required|max:50|regex:/^[a-zA-Z]+$/',
+            'name' => 'required|max:100|regex:/^[a-zA-Z\s]+$/',
             'description' => 'required|max:500|regex:/^[a-zA-Z\s]+$/',
             'stock' => 'required|numeric|min:1|max:999',
             'unitPrice' => 'required|max:50|regex:/^\d{1,5}(\.\d{0,2})?$/',

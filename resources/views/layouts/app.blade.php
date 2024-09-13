@@ -50,6 +50,10 @@
                     <i class="fas fa-table mr-2"></i> 
                     <span>Clientes</span>
                 </a>
+                <a href="{{ route('activities.index') }}" class="flex items-center px-4 py-2 rounded-lg hover:bg-orange-600 focus:bg-orange-600 focus:ring focus:ring-orange-500">
+                    <i class="fas fa-table mr-2"></i> 
+                    <span>Programacion de Actividades</span>
+                </a>
             </nav>
         </aside>
 

@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\ActivitiesController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\CategoriesController;
 use App\Http\Controllers\Auth\AuthenticatedSessionController;
@@ -54,6 +55,15 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/customers/{customer}/edit', [CustomersController::class, 'edit'])->name('customers.edit');
     Route::put('/customers/{customer}', [CustomersController::class, 'update'])->name('customers.update');
     Route::put('/customers/{customer}/softDelete', [CustomersController::class, 'delete'])->name('customers.softDelete');
+});
+
+Route::middleware(['auth', 'verified'])->group(function () {
+    Route::get('/activities', [ActivitiesController::class, 'index'])->name('activities.index');
+    Route::get('/activities/create', [ActivitiesController::class, 'create'])->name('activities.create');
+    Route::post('/activities', [ActivitiesController::class, 'store'])->name('activities.store');
+    Route::get('/activities/{activity}/edit', [ActivitiesController::class, 'edit'])->name('activities.edit');
+    Route::put('/activities/{activity}', [ActivitiesController::class, 'update'])->name('activities.update');
+    Route::put('/activities/{activity}/softDelete', [ActivitiesController::class, 'delete'])->name('activities.softDelete');
 });
 
 Route::post('/logout', [AuthenticatedSessionController::class, 'destroy'])->name('logout');

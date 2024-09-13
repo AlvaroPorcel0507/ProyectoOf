@@ -36,15 +36,7 @@
                                 <th scope="row">{{ $cont }}</th>
                                 <td>{{ $user->name }} {{ $user->lastName }} {{ $user->secondLastName }}</td>
                                 <td>{{ $user->email }}</td>
-                                <td>
-                                    @if ($user->role == 1)
-                                        Administrador
-                                    @elseif ($user->role == 2)
-                                        Empleado 
-                                    @elseif ($user->role == 3)
-                                        Cliente
-                                    @endif
-                                </td>
+                                <td>{{ $user->role }}</td>
                                 <td>{{ $user->location }}</td>
 
                                 <td>

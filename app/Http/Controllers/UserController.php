@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\User;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class UserController extends Controller
 {
@@ -97,5 +98,11 @@ class UserController extends Controller
         ]);
 
         return redirect()->route('users.index')->with('success', 'Usuario Eliminado con exito.');
+    }
+
+    public function profile()
+    {
+        $user = Auth::user();
+        return view('livewire/users.profile', compact('user'));
     }
 }

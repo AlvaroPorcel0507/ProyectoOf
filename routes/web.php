@@ -21,6 +21,7 @@ Route::view('profile', 'profile')
     ->middleware(['auth'])
     ->name('profile');
 
+// Rutas de Usuarios
 Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/users', [UserController::class, 'index'])->name('users.index');
     Route::get('/users/create', [UserController::class, 'create'])->name('users.create');
@@ -28,8 +29,10 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/users/{user}/edit', [UserController::class, 'edit'])->name('users.edit');
     Route::put('/users/{user}', [UserController::class, 'update'])->name('users.update');
     Route::put('/users/{user}/softDelete', [UserController::class, 'delete'])->name('users.softDelete');
+    Route::get('/users/profile', [UserController::class, 'profile'])->name('users.profile');
 });
 
+// Rutas de Categorias
 Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/categories', [CategoriesController::class, 'index'])->name('categories.index');
     Route::get('/categories/create', [CategoriesController::class, 'create'])->name('categories.create');
@@ -39,6 +42,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::put('/categories/{category}/softDelete', [CategoriesController::class, 'delete'])->name('categories.softDelete');
 });
 
+// Rutas de Productos
 Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/products', [ProductsController::class, 'index'])->name('products.index');
     Route::get('/products/create', [ProductsController::class, 'create'])->name('products.create');
@@ -48,6 +52,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::put('/products/{product}/softDelete', [ProductsController::class, 'delete'])->name('products.softDelete');
 });
 
+// Rutas de Clientes
 Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/customers', [CustomersController::class, 'index'])->name('customers.index');
     Route::get('/customers/create', [CustomersController::class, 'create'])->name('customers.create');
@@ -57,6 +62,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::put('/customers/{customer}/softDelete', [CustomersController::class, 'delete'])->name('customers.softDelete');
 });
 
+// Rutas de Actividades
 Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/activities', [ActivitiesController::class, 'index'])->name('activities.index');
     Route::get('/activities/create', [ActivitiesController::class, 'create'])->name('activities.create');

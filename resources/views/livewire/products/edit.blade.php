@@ -53,7 +53,7 @@
                 </div>
 
                 <div class="form-group">
-                    <label for="name">Categoria</label>
+                    <label for="categoryId">Categoria</label>
                     <select name="categoryId" id="categoryId" class="form-control" require>
                     <option value="{{ old('categoryId', $product->categoryId) }}" selected>{{ optional(Categories::find($product->categoryId))->name }}</option>
                     @foreach (App\Models\Categories::all() as $category)
@@ -118,7 +118,7 @@
             modalDescription.textContent = descriptionInput.value;
             modalStock.textContent = stockInput.value;
             modalUnitPrice.textContent = unitPriceInput.value;
-            modal.modalCategoryId = categoryIdInput.options[categoryIdInput.selectedIndex].text;
+            modalCategoryId.textContent = categoryIdInput.options[categoryIdInput.selectedIndex].text;
         });
 
         document.getElementById('confirmButton').addEventListener('click', function() {

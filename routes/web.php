@@ -6,6 +6,7 @@ use App\Http\Controllers\CategoriesController;
 use App\Http\Controllers\Auth\AuthenticatedSessionController;
 use App\Http\Controllers\ProductsController;
 use App\Http\Controllers\CustomersController;
+use App\Http\Controllers\SalesController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -30,6 +31,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::put('/users/{user}', [UserController::class, 'update'])->name('users.update');
     Route::put('/users/{user}/softDelete', [UserController::class, 'delete'])->name('users.softDelete');
     Route::get('/users/profile', [UserController::class, 'profile'])->name('users.profile');
+    Route::put('/users/{user}/profileUpdate', [UserController::class, 'updateProfile'])->name('users.profileUpdate');
 });
 
 // Rutas de Categorias
@@ -65,6 +67,15 @@ Route::middleware(['auth', 'verified'])->group(function () {
 // Rutas de Actividades
 Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/activities', [ActivitiesController::class, 'index'])->name('activities.index');
+    Route::get('/activities/create', [ActivitiesController::class, 'create'])->name('activities.create');
+    Route::post('/activities', [ActivitiesController::class, 'store'])->name('activities.store');
+    Route::get('/activities/{activity}/edit', [ActivitiesController::class, 'edit'])->name('activities.edit');
+    Route::put('/activities/{activity}', [ActivitiesController::class, 'update'])->name('activities.update');
+    Route::put('/activities/{activity}/softDelete', [ActivitiesController::class, 'delete'])->name('activities.softDelete');
+});
+
+Route::middleware(['auth', 'verified'])->group(function () {
+    Route::get('/sales', [SalesController::class, 'index'])->name('sales.index');
     Route::get('/activities/create', [ActivitiesController::class, 'create'])->name('activities.create');
     Route::post('/activities', [ActivitiesController::class, 'store'])->name('activities.store');
     Route::get('/activities/{activity}/edit', [ActivitiesController::class, 'edit'])->name('activities.edit');

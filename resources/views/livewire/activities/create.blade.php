@@ -48,9 +48,9 @@
                     <label for="priority">Prioridad</label>
                     <select name="priority" id="priority" class="form-control" require>
                     <option value="" selected>SELECCIONE UN NIVEL DE PRIORIDAD</option>
-                        <option value="1">Urgente</option>
+                        <option value="1">Básica</option>
                         <option value="2">Intermedia</option>
-                        <option value="3 ">Básica</option>
+                        <option value="3 ">Urgente</option>
                     </select>
                 </div>
                 <div class="form-group">
@@ -59,7 +59,7 @@
                     <option value="" selected>SELECCIONE UNA PRODUCTOR</option>
                     @foreach (App\Models\User::all() as $user)
                     @if((optional(user::find($user->id))->role)=='Productor')
-                        <option value="{{ $user->id }}">{{ optional(user::find($user->id))->name . ' ' . optional(User::find($activity->idUser))->lastName }}</option>
+                        <option value="{{ $user->id }}">{{ optional(user::find($user->id))->name . ' ' . optional(User::find($user->idUser))->lastName }}</option>
                     @endif
                     @endforeach
                     </select>
@@ -88,7 +88,7 @@
                 <ul>
                     <li><strong>Nombre Actividad:</strong> <span id="modalName"></span></li>
                     <li><strong>Descripción:</strong> <span id="modalDescription"></span></li>
-                    <li><strong>Fecha de Programación:</strong> <span id="modalScheduleDate"></span></li>
+                    <li><strong>Fecha de Programación:</strong> <span id="modalScheduledDate"></span></li>
                     <li><strong>Duracion:</strong> <span id="modalDuration"></span></li>
                     <li><strong>Prioridad:</strong> <span id="modalPriority"></span></li>
                     <li><strong>Solicitado por:</strong> <span id="modalUserId"></span></li>
@@ -108,25 +108,25 @@
         // Cargar datos en el modal cuando se hace clic en "Registrar"
         const nameInput = document.getElementById('name');
         const descriptionInput = document.getElementById('description');
-        const scheduleDateInput = document.getElementById('scheduleDate');
+        const scheduledDateInput = document.getElementById('scheduledDate');
         const durationInput = document.getElementById('duration');
         const priorityInput = document.getElementById('priority');
         const idUserInput = document.getElementById('idUser');
 
         const modalName = document.getElementById('modalName');
         const modalDescription = document.getElementById('modalDescription');
-        const modalScheduleDate = document.getElementById('modalScheduleDate');
-        const modalDutation = document.getElementById('modalDutation');
+        const modalScheduledDate = document.getElementById('modalScheduledDate');
+        const modalDuration = document.getElementById('modalDuration');
         const modalPriority = document.getElementById('modalPriority');
-        const modalIdUser = document.getElementById('modalIdUser');
+        const modalUserId = document.getElementById('modalUserId');
 
         document.querySelector('[data-target="#confirmModal"]').addEventListener('click', function() {
             modalName.textContent = nameInput.value;
             modalDescription.textContent = descriptionInput.value;
-            modalScheduleDate.textContent = scheduleDateInput.value;
-            modalDutation.textContent = durationInput.value;
-            modalPriority.textContent = priorityInput.value;
-            modalIdUser.textContent = idUserInput.value;
+            modalScheduledDate.textContent = scheduledDateInput.value;
+            modalDuration.textContent = durationInput.value;
+            modalPriority.textContent = priorityInput.options[priorityInput.selectedIndex].text;
+            modalUserId.textContent = idUserInput.options[idUserInput.selectedIndex].text;
         });
 
         // Enviar el formulario al confirmar

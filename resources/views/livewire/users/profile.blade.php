@@ -20,8 +20,8 @@
                 <!-- Imagen de perfil -->
                 <img src="https://via.placeholder.com/80" class="rounded-circle" alt="Foto de perfil" width="80">
                 <div class="ms-3">
-                    <h2 class="h4">Alvaro</h2>
-                    <p class="text-muted mb-0">CEO / Co-Founder</p>
+                    <h2 class="h4">{{ $user->name." ".$user->lastName." ".$user->secondLastName }}</h2>
+                    <p class="text-muted mb-0">{{ $user->role }}</p>
                 </div>
             </div>
             
@@ -93,11 +93,13 @@
                                 <button onclick="enableFields()" type="button" class="btn btn-success w-100">Editar Perfil</button>
                             </div>
                         </div>
+                        <form action="{{ route('users.profileUpdate', $user->id) }}">
                         <div class="col-md-6">
                             <div class="form-group mb-3">
                                 <button id="updateProfile" type="submit" class="btn btn-dark w-100" disabled>Actualizar Perfil</button>
                             </div>
                         </div>
+                        </form>
                     </div>
                     
                 </div>
@@ -137,5 +139,7 @@
 }
 </script>
 @endpush
+
+
 @endsection
 

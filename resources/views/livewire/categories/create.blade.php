@@ -27,7 +27,7 @@
 
                 <div class="form-group">
                     <label for="name">Nombre de la Categoria</label>
-                    <input type="text" name="name" id="lastName" class="form-control" value="{{ old('name') }}" required>
+                    <input type="text" name="name" id="name" class="form-control" value="{{ old('name') }}" required>
                 </div>
 
                 <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#confirmModal">

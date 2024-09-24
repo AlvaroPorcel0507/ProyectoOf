@@ -1,22 +1,21 @@
-@extends('layouts.app')
+@extends('layouts.app');
 
 @section('content')
 @php
- use App\Models\Categories;
  use App\Models\User;
 @endphp
 
 <div class="container">
     <div class="d-flex justify-content-between align-items-center my-4">
-        <h1 class="h3 text-green-800">Categorias</h1>
+        <h1 class="h3 text-green-800">Lista de Ventas</h1>
         <a href="{{ route('categories.create') }}" class="btn btn-success">
-            Registrar Nueva Categoria
+            Registrar Nueva Venta
         </a>
     </div>
 
     <div class="card border-success">
         <div class="card-header bg-success text-white">
-            <i class="fas fa-users"></i> Categorias
+            <i class="fas fa-cart-plus"></i> Ventas
         </div>
         <div class="card-body bg-light">
             <div class="table-responsive">
@@ -24,8 +23,12 @@
                     <thead>
                         <tr>
                             <th scope="col">Nro.</th>
-                            <th scope="col">Nombre Categoria</th>
-                            <th scope="col">Modificado por</th>
+                            <th scope="col">Productor</th>
+                            <th scope="col">Cliente</th>
+                            <th scope="col">Total</th>
+                            <th scope="col">Estado</th>
+                            <th scope="col">Fecha</th>
+                            <th scope="col">Detalle</th>
                             <th scope="col">Editar</th>
                             <th scope="col">Eliminar</th>
                         </tr>
@@ -34,14 +37,32 @@
                         @php
                         $cont=1;
                         @endphp
-                        @foreach ($categories as $category)
+                        @foreach ($sales as $sale)
                         
                             <tr>
                                 <th scope="row">{{ $cont }}</th>
                                 <td>
-                                    {{ optional(Categories::find($category->id))->name }}
+                                    {{ optional(User::find($user->id))->role=='Produtor' }}
                                 </td>
-                                <td>{{ optional(User::find($category->userId))->name.' '.optional(User::find($category->userId))->lastName.' - '.optional(User::find($category->userId))->role }}</td>
+                                <td>
+                                    {{ optional(User::find($user->id))->role=='Cliente' }}
+                                </td>
+                                <td></td>
+                                <td>
+                                    @if($sale==1)
+                                        Pendiente
+                                    @elseif($sale==2)
+                                        Completado
+                                    @endif
+                                </td>
+                                <td>
+                                    {{ $sale->date }}
+                                </td>
+                                <td>
+                                    <a href="{{ route('categories.edit', $category->id) }}" class="btn btn-info">
+                                        <i class="fas fa-edit"></i>
+                                    </a>
+                                </td>
                                 <td>
                                     <a href="{{ route('categories.edit', $category->id) }}" class="btn btn-info">
                                         <i class="fas fa-edit"></i>
@@ -61,7 +82,7 @@
 
             <!-- Paginación -->
             <div class="d-flex justify-content-center mt-4">
-                {{ $categories->appends(['sort_field' => $sortField, 'sort_direction' => $sortDirection])->links() }}
+                {{ $sales->appends(['sort_field' => $sortField, 'sort_direction' => $sortDirection])->links() }}
             </div>
         </div>
     </div>

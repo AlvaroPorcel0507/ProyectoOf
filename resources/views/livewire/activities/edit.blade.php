@@ -49,16 +49,24 @@
                 <div class="form-group">
                     <label for="priority">Prioridad</label>
                     <select name="priority" id="priority" class="form-control" require>
-                    <option value="" selected>SELECCIONE UN NIVEL DE PRIORIDAD</option>
-                        <option value="1">Urgente</option>
+                    <option value="" selected>
+                        @if(($activity->priority)==1)
+                            Basica
+                        @elseif(($activity->priority)==2)
+                            Intermedia
+                        @else
+                            Urgente
+                        @endif
+                    </option>
+                        <option value="1">Básica</option>
                         <option value="2">Intermedia</option>
-                        <option value="3 ">Básica</option>
+                        <option value="3 ">Urgente</option>
                     </select>
                 </div>
                 <div class="form-group">
                     <label for="idUser">Solicitado</label>
                     <select name="idUser" id="idUser" class="form-control" require>
-                    <option value="" selected>{{ optional(User::find($activity->idUser))->name . ' ' . optional(User::find($activity->idUser))->lastName }}</option>
+                    <option value="{{ optional(User::find($activity->idUser))->id }}" selected>{{ optional(User::find($activity->idUser))->name . ' ' . optional(User::find($activity->idUser))->lastName }}</option>
                     @foreach (App\Models\User::all() as $user)
                     @if((optional(user::find($user->id))->role)=='Productor')
                         <option value="{{ $user->id }}">{{ optional(user::find($user->id))->name . ' ' . optional(User::find($activity->idUser))->lastName }}</option>
@@ -88,11 +96,12 @@
             <div class="modal-body">
                 <p>Estás a punto de actualizar la categoria con el siguiente detalle:</p>
                 <ul>
-                    <li><strong>Nombre Solicitud:</strong> <span id="modalName"></span></li>
-                    <li><strong>Detalle o Descripcion:</strong> <span id="modalDescription"></span></li>
-                    <li><strong>Fecha de Programacion:</strong> <span id="modalScheduledDate"></span></li>
+                    <li><strong>Nombre Actividad:</strong> <span id="modalName"></span></li>
+                    <li><strong>Descripción:</strong> <span id="modalDescription"></span></li>
+                    <li><strong>Fecha de Programación:</strong> <span id="modalScheduledDate"></span></li>
                     <li><strong>Duracion:</strong> <span id="modalDuration"></span></li>
-                    <li><strong>Solicitado por:</strong> <span id="modalIdUser"></span></li>
+                    <li><strong>Prioridad:</strong> <span id="modalPriority"></span></li>
+                    <!--<li><strong>Solicitado por:</strong> <span id="modalUserId"></span></li>-->
                 </ul>
                 <p>¿Estás seguro de que deseas continuar?</p>
             </div>
@@ -110,20 +119,23 @@
         const descriptionInput = document.getElementById('description');
         const scheduledDateInput = document.getElementById('scheduledDate');
         const durationInput = document.getElementById('duration');
+        const priorityInput = document.getElementById('priority');
         const idUserInput = document.getElementById('idUser');
 
         const modalName = document.getElementById('modalName');
         const modalDescription = document.getElementById('modalDescription');
         const modalScheduledDate = document.getElementById('modalScheduledDate');
         const modalDuration = document.getElementById('modalDuration');
-        const modalIdUser = document.getElementById('modalIdUser');
+        const modalPriority = document.getElementById('modalPriority');
+        const modalUserId = document.getElementById('modalUserId');
 
         document.querySelector('[data-target="#confirmModal"]').addEventListener('click', function() {
             modalName.textContent = nameInput.value;
             modalDescription.textContent = descriptionInput.value;
             modalScheduledDate.textContent = scheduledDateInput.value;
-            modalDuration.textContent = descriptionInput.value;
-            modalIdUser.textContent = idUserInput.value;
+            modalDuration.textContent = durationInput.value;
+            modalPriority.textContent = priorityInput.options[priorityInput.selectedIndex].text;
+            modalUserId.textContent = idUserInput.options[idUserInput.selectedIndex].text;
         });
 
         document.getElementById('confirmButton').addEventListener('click', function() {

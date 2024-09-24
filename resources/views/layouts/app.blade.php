@@ -31,11 +31,11 @@
             </div>
             <nav class="flex-1 px-4 py-2 space-y-2">
             <a href="{{ route('users.profile') }}" class="flex items-center px-4 py-2 rounded-lg hover:bg-orange-600 focus:bg-orange-600 focus:ring focus:ring-orange-500">
-                    <i class="fas fa-user mr-2"></i> 
+                    <i class="fas fa-user-circle mr-2"></i> 
                     <span>Perfil de Usuario</span>
                 </a>
                 <a href="{{ route('users.index') }}" class="flex items-center px-4 py-2 rounded-lg hover:bg-orange-600 focus:bg-orange-600 focus:ring focus:ring-orange-500">
-                    <i class="fas fa-users mr-2"></i> 
+                    <i class="fas fa-user-plus mr-2"></i> 
                     <span>Administracion de Usuarios</span>
                 </a>
                 <a href="{{ route('categories.index') }}" class="flex items-center px-4 py-2 rounded-lg hover:bg-orange-600 focus:bg-orange-600 focus:ring focus:ring-orange-500">
@@ -43,16 +43,20 @@
                     <span>Categorias</span>
                 </a>
                 <a href="{{ route('products.index') }}" class="flex items-center px-4 py-2 rounded-lg hover:bg-orange-600 focus:bg-orange-600 focus:ring focus:ring-orange-500">
-                    <i class="fas fa-tachometer-alt mr-2"></i> 
+                    <i class="fas fa-shopping-basket mr-2"></i> 
                     <span>Productos</span>
                 </a>
                 <a href="{{ route('customers.index') }}" class="flex items-center px-4 py-2 rounded-lg hover:bg-orange-600 focus:bg-orange-600 focus:ring focus:ring-orange-500">
-                    <i class="fas fa-table mr-2"></i> 
+                    <i class="fas fa-users mr-2"></i> 
                     <span>Clientes</span>
                 </a>
                 <a href="{{ route('activities.index') }}" class="flex items-center px-4 py-2 rounded-lg hover:bg-orange-600 focus:bg-orange-600 focus:ring focus:ring-orange-500">
-                    <i class="fas fa-table mr-2"></i> 
+                    <i class="fas fa-calendar mr-2"></i> 
                     <span>Programacion de Actividades</span>
+                </a>
+                <a href="{{ route('sales.index') }}" class="flex items-center px-4 py-2 rounded-lg hover:bg-orange-600 focus:bg-orange-600 focus:ring focus:ring-orange-500">
+                    <i class="fas fa-cart-plus mr-2"></i> 
+                    <span>Ventas</span>
                 </a>
             </nav>
         </aside>

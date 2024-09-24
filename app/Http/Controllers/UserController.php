@@ -105,4 +105,27 @@ class UserController extends Controller
         $user = Auth::user();
         return view('livewire/users.profile', compact('user'));
     }
+
+    public function updateProfile(Request $request, User $user)
+    {
+        $request->validate([
+            'name' => 'required|string|max:255',
+            'lastName' => 'required|string|max:255',
+            'secondLastName' => 'nullable|string|max:255',
+            'email' => 'required|email|max:255|unique:users,email,' . $user->id,
+            'location' => 'nullable|string|max:255',
+            'role' => 'required|string|max:255',
+        ]);
+
+        $user->update([
+            'name' => $request->name,
+            'lastName' => $request->lastName,
+            'secondLastName' => $request->secondLastName,
+            'email' => $request->email,
+            'location' => $request->location,
+            'role' => $request->role,
+        ]);
+
+        return redirect()->route('users.profile')->with('success', 'Perfil actualizado correctamente.');
+    }
 }

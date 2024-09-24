@@ -36,22 +36,22 @@
                 </div>
 
                 <div class="form-group">
-                    <label for="name">Descripcion Breve</label>
+                    <label for="description">Descripcion Breve</label>
                     <input type="text" name="description" id="description" class="form-control" value="{{ old('description') }}" required>
                 </div>
 
                 <div class="form-group">
-                    <label for="name">Stock</label>
+                    <label for="stock">Stock (Unidades)</label>
                     <input type="number" name="stock" id="stock" class="form-control" value="{{ old('stock') }}" required>
                 </div>
 
                 <div class="form-group">
-                    <label for="name">Precio Unitario</label>
+                    <label for="unitPrice">Precio Unitario Bs.</label>
                     <input type="number" name="unitPrice" id="unitPrice" class="form-control" value="{{ old('unitPrice') }}" required>
                 </div>
 
                 <div class="form-group">
-                    <label for="name">Categoria</label>
+                    <label for="categoryId">Categoria</label>
                     <select name="categoryId" id="categoryId" class="form-control" require>
                     <option value="" selected>SELECCIONE UNA CATEGORIA</option>
                     @foreach (App\Models\Categories::all() as $category)
@@ -114,10 +114,10 @@
 
         document.querySelector('[data-target="#confirmModal"]').addEventListener('click', function() {
             modalName.textContent = nameInput.value;
-            modalDescripcion.textContent = descriptionInput.value;
+            modalDescription.textContent = descriptionInput.value;
             modalStock.textContent = stockInput.value;
             modalUnitPrice.textContent = unitPriceInput.value;
-            modalCategoryId.textContent = categoryIdInput.value;
+            modalCategoryId.textContent = categoryIdInput.options[categoryIdInput.selectedIndex].text;
         });
 
         // Enviar el formulario al confirmar

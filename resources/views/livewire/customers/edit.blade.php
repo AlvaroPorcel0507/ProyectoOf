@@ -81,7 +81,8 @@
         const modalCompanyName = document.getElementById('modalCompanyName');
 
         document.querySelector('[data-target="#confirmModal"]').addEventListener('click', function() {
-            modalName.textContent = nameInput.value;
+            modalCiNit.textContent = ciNitInput.value;
+            modalCompanyName.textContent = companyNameInput.value;
         });
 
         document.getElementById('confirmButton').addEventListener('click', function() {

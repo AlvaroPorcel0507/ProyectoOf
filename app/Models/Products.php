@@ -15,7 +15,6 @@ class Products extends Model
         'name',
         'description',
         'stock',
-        'unitPrice',
         'status',
         'userId',
         'categoryId',
@@ -34,5 +33,16 @@ class Products extends Model
     public function inventories()
     {
         return $this->hasMany(Inventories::class, 'idProduct', 'id');
+    }
+    public function unitProduct()
+    {
+        return $this->hasMany(UnitProduct::class, 'productId', 'id');
+    }
+
+
+
+    public function getUnitProducts()
+    {
+        return $this->unitProduct()->get();
     }
 }

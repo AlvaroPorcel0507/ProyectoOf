@@ -4,8 +4,8 @@ use App\Http\Controllers\ActivitiesController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\CategoriesController;
 use App\Http\Controllers\Auth\AuthenticatedSessionController;
-use App\Http\Controllers\ProductsController;
 use App\Http\Controllers\CustomersController;
+use App\Http\Controllers\ProductsController;
 use App\Http\Controllers\SalesController;
 use Illuminate\Support\Facades\Route;
 
@@ -34,6 +34,15 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::put('/users/{user}/profileUpdate', [UserController::class, 'updateProfile'])->name('users.profileUpdate');
 });
 
+Route::middleware(['auth', 'verified'])->group(function () {
+    Route::get('/customers', [CustomersController::class, 'index'])->name('customers.index');
+    Route::get('/customers/create', [CustomersController::class, 'create'])->name('customers.create');
+    Route::post('/customers', [CustomersController::class, 'store'])->name('customers.store');
+    Route::get('/customers/{user}/edit', [CustomersController::class, 'edit'])->name('customers.edit');
+    Route::put('/customers/{user}', [CustomersController::class, 'update'])->name('customers.update');
+    Route::put('/customers/{user}/softDelete', [CustomersController::class, 'delete'])->name('customers.softDelete');
+});
+
 // Rutas de Categorias
 Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/categories', [CategoriesController::class, 'index'])->name('categories.index');
@@ -54,15 +63,6 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::put('/products/{product}/softDelete', [ProductsController::class, 'delete'])->name('products.softDelete');
 });
 
-// Rutas de Clientes
-Route::middleware(['auth', 'verified'])->group(function () {
-    Route::get('/customers', [CustomersController::class, 'index'])->name('customers.index');
-    Route::get('/customers/create', [CustomersController::class, 'create'])->name('customers.create');
-    Route::post('/customers', [CustomersController::class, 'store'])->name('customers.store');
-    Route::get('/customers/{customer}/edit', [CustomersController::class, 'edit'])->name('customers.edit');
-    Route::put('/customers/{customer}', [CustomersController::class, 'update'])->name('customers.update');
-    Route::put('/customers/{customer}/softDelete', [CustomersController::class, 'delete'])->name('customers.softDelete');
-});
 
 // Rutas de Actividades
 Route::middleware(['auth', 'verified'])->group(function () {

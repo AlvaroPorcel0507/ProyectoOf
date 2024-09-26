@@ -2,7 +2,7 @@
 
 @section('content')
 @php
- use App\Models\Customers;
+ use App\Models\User;
 @endphp
 
 <div class="container">

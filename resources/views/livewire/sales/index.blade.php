@@ -4,18 +4,18 @@
 @php
  use App\Models\User;
 @endphp
-
+@if(Auth::User()->role=='Cliente')
 <div class="container">
     <div class="d-flex justify-content-between align-items-center my-4">
-        <h1 class="h3 text-green-800">Lista de Ventas</h1>
+        <h1 class="h3 text-green-800">Lista de Compras</h1>
         <a href="{{ route('categories.create') }}" class="btn btn-success">
-            Registrar Nueva Venta
+            Registrar Nueva Compra
         </a>
     </div>
 
     <div class="card border-success">
         <div class="card-header bg-success text-white">
-            <i class="fas fa-cart-plus"></i> Ventas
+            <i class="fas fa-cart-plus"></i> Compras
         </div>
         <div class="card-body bg-light">
             <div class="table-responsive">
@@ -24,10 +24,8 @@
                         <tr>
                             <th scope="col">Nro.</th>
                             <th scope="col">Productor</th>
-                            <th scope="col">Cliente</th>
                             <th scope="col">Total</th>
                             <th scope="col">Estado</th>
-                            <th scope="col">Fecha</th>
                             <th scope="col">Detalle</th>
                             <th scope="col">Editar</th>
                             <th scope="col">Eliminar</th>
@@ -41,22 +39,13 @@
                         
                             <tr>
                                 <th scope="row">{{ $cont }}</th>
+                                <td>{{ $customers->name }}</td>
+                                <td>{{ $sales->total }}</td>
+                                <td>{{ $sales->status}}</td>
                                 <td>
-                                    {{ optional(User::find($user->id))->role=='Produtor' }}
-                                </td>
-                                <td>
-                                    {{ optional(User::find($user->id))->role=='Cliente' }}
-                                </td>
-                                <td></td>
-                                <td>
-                                    @if($sale==1)
-                                        Pendiente
-                                    @elseif($sale==2)
-                                        Completado
-                                    @endif
-                                </td>
-                                <td>
-                                    {{ $sale->date }}
+                                <a href="{{ route('categories.edit', $category->id) }}" class="btn btn-info">
+                                        <i class="fas fa-info-circle"></i>
+                                    </a>
                                 </td>
                                 <td>
                                     <a href="{{ route('categories.edit', $category->id) }}" class="btn btn-info">
@@ -132,5 +121,6 @@
         });
     });
 </script>
+@endif
 @endpush
 @endsection

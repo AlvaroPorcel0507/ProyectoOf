@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Products;
+use App\Models\UnitProduct;
 use Illuminate\Http\Request;
 
 class ProductsController extends Controller
@@ -13,11 +14,13 @@ class ProductsController extends Controller
         $sortDirection = $request->input('sort_direction', 'asc');
 
         // Asegúrate de que el campo de ordenación sea uno de los campos permitidos
-        $validSortFields = ['id', 'name', 'description', 'stock', 'unitPrice', 'categoryId'];
+        $validSortFields = ['id', 'name', 'description', 'stock', 'categoryId'];
         if (!in_array($sortField, $validSortFields)) {
             $sortField = 'id';
         }
 
+        $products = Products::with('unitProduct')->get();
+        
         $products = Products::where('status', 1)->orderBy($sortField, $sortDirection)->paginate(8);
 
         return view('livewire/products.index', compact('products', 'sortField', 'sortDirection'));

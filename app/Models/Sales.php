@@ -12,8 +12,8 @@ class Sales extends Model
     protected $table = 'sales'; 
 
     protected $fillable = [
-        'date',
         'status',
+        'total',
         'userId',
         'idUser',
         'customerId',
@@ -21,7 +21,7 @@ class Sales extends Model
 
     public function customer()
     {
-        return $this->belongsTo(Customers::class, 'customerId', 'id');
+        return $this->belongsTo(User::class, 'customerId', 'id');
     }
 
     public function salesDetail()

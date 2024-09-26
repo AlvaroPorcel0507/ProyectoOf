@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Sales;
+use App\Models\User;
 use Illuminate\Http\Request;
 
 class SalesController extends Controller
@@ -19,7 +20,9 @@ class SalesController extends Controller
         }
 
         $sales = Sales::where('status', '>', 0)->orderBy($sortField, $sortDirection)->paginate(8);
+        $customers = User::where('status',1);
+        dd(['customers' => $customers]);
 
-        return view('livewire/sales.index', compact('sales', 'sortField', 'sortDirection'));
+        return view('livewire/sales.index', compact('sales', 'customers', 'sortField', 'sortDirection'));
     }
 }

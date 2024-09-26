@@ -11,12 +11,13 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('customers', function (Blueprint $table) {
+        Schema::create('unit_products', function (Blueprint $table) {
             $table->id();
-            $table->string('ciNit');
-            $table->string('companyName');
+            $table->decimal('unitPrice',10,2);
+            $table->enum('measurementUnit',['Kilo','Cuartilla','Libra','Arroba','Quintal']);
             $table->tinyInteger('status')->default(1);
-            $table->smallInteger('userId');
+            $table->unsignedBigInteger('productId');
+            $table->foreign('productId')->references('id')->on('products')->onDelete('cascade');
             $table->timestamps();
         });
     }
@@ -26,6 +27,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('customers');
+        Schema::dropIfExists('unit_products');
     }
 };

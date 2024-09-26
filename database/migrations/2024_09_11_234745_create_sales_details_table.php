@@ -15,8 +15,7 @@ return new class extends Migration
             $table->id();
             $table->smallInteger('quantity');
             $table->decimal('unitPrice', 10, 2);
-            $table->tinyInteger('status')->default(1);
-            $table->smallInteger('userId');
+            $table->decimal('totalProduct', 10, 2);
             $table->unsignedBigInteger('salesId');
             $table->unsignedBigInteger('productsId');
             $table->foreign('salesId')->references('id')->on('sales');

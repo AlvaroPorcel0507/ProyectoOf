@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Customers;
+use App\Models\User;
 use Illuminate\Http\Request;
 
 class CustomersController extends Controller
@@ -18,7 +18,7 @@ class CustomersController extends Controller
             $sortField = 'id';
         }
 
-        $customers = Customers::where('status', 1)->orderBy($sortField, $sortDirection)->paginate(8);
+        $customers = User::where('status', 1)->where('role','=','Cliente')->orderBy($sortField, $sortDirection)->paginate(8);
 
         return view('livewire/customers.index', compact('customers', 'sortField', 'sortDirection'));
     }
@@ -35,7 +35,7 @@ class CustomersController extends Controller
             'companyName' => 'required|max:50|regex:/^[a-zA-Z\s]+$/',
         ]);
 
-        Customers::create([
+        User::create([
             'ciNit' => $request->ciNit,
             'companyName' => $request->companyName,
         ]);
@@ -43,12 +43,12 @@ class CustomersController extends Controller
         return redirect()->route('customers.index')->with('success', 'Cliente creado exitosamente.');
     }
 
-    public function edit(Customers $customer)
+    public function edit(User $customer)
     {
         return view('livewire/customers.edit', compact('customer'));
     }
 
-    public function update(Request $request, Customers $customer)
+    public function update(Request $request, User $customer)
     {
         $request->validate([
             'ciNit' => 'required|max:50|regex:/^[a-zA-Z0-9\s\-]+$/',
@@ -63,7 +63,7 @@ class CustomersController extends Controller
         return redirect()->route('customers.index')->with('success', 'Cliente actualizado correctamente.');
     }
 
-    public function delete(Customers $customer)
+    public function delete(User $customer)
     {
         $customer->update([
             'status' => 0

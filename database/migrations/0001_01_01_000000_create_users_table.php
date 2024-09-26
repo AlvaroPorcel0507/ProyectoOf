@@ -20,6 +20,8 @@ return new class extends Migration
             $table->string('location');
             $table->tinyInteger('status')->default(1);
             $table->string('email')->unique();
+            $table->string('companyName')->nullable();
+            $table->string('ciNit')->nullable();
             $table->timestamp('email_verified_at')->nullable();
             $table->string('password');
             $table->bigInteger('userId')->nullable();

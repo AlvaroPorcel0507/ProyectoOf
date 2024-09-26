@@ -14,8 +14,7 @@ class SalesDetail extends Model
     protected $fillable = [
         'quantity',
         'unitPrice',
-        'status',
-        'userId',
+        'totalProduct',
         'salesId',
         'productsId'
     ];

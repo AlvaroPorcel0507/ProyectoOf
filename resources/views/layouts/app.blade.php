@@ -30,7 +30,9 @@
                 <span class="text-xl font-semibold">Material Dashboard 2</span>
             </div>
             <nav class="flex-1 px-4 py-2 space-y-2">
-            <a href="{{ route('users.profile') }}" class="flex items-center px-4 py-2 rounded-lg hover:bg-orange-600 focus:bg-orange-600 focus:ring focus:ring-orange-500">
+
+            @if(Auth::User()->role=='Administrador')
+                <a href="{{ route('users.profile') }}" class="flex items-center px-4 py-2 rounded-lg hover:bg-orange-600 focus:bg-orange-600 focus:ring focus:ring-orange-500">
                     <i class="fas fa-user-circle mr-2"></i> 
                     <span>Perfil de Usuario</span>
                 </a>
@@ -58,6 +60,17 @@
                     <i class="fas fa-cart-plus mr-2"></i> 
                     <span>Ventas</span>
                 </a>
+            @elseif(Auth::User()->role=='Productor')
+            @else
+                <a href="{{ route('users.profile') }}" class="flex items-center px-4 py-2 rounded-lg hover:bg-orange-600 focus:bg-orange-600 focus:ring focus:ring-orange-500">
+                    <i class="fas fa-user-circle mr-2"></i> 
+                    <span>Perfil de Usuario</span>
+                </a>
+                <a href="{{ route('sales.index') }}" class="flex items-center px-4 py-2 rounded-lg hover:bg-orange-600 focus:bg-orange-600 focus:ring focus:ring-orange-500">
+                    <i class="fas fa-cart-plus mr-2"></i> 
+                    <span>Compras</span>
+                </a>
+            @endif    
             </nav>
         </aside>
 

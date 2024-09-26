@@ -5,6 +5,7 @@
 @section('content')
 @php
  use App\Models\Products;
+ use App\Models\UnitProduct;
  use App\Models\Categories;
 @endphp
 
@@ -29,8 +30,8 @@
                             <th scope="col">Nombre Categoria</th>
                             <th scope="col">Descripción</th>
                             <th scope="col">Stock</th>
-                            <th scope="col">Precio Unitario</th>
                             <th scope="col">Categoria</th>
+                            <th scope="col">Ver</th>
                             <th scope="col">Editar</th>
                             <th scope="col">Eliminar</th>
                         </tr>
@@ -48,8 +49,13 @@
                                 </td>
                                 <td>{{ $product->description }}</td>
                                 <td>{{ $product->stock }}</td>
-                                <td>{{ $product->unitPrice }}</td>
                                 <td>{{ optional(Categories::find($product->categoryId))->name }}</td>
+                                <td>
+                                <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#unitProductModal" 
+                                        data-product-id="{{ $product->id }}">
+                                        <i class="fas fa-info-circle"></i>
+                                    </button>
+                                </td>
                                 <td>
                                     <a href="{{ route('products.edit', $product->id) }}" class="btn btn-info">
                                         <i class="fas fa-edit"></i>
@@ -76,6 +82,42 @@
         </div>
     </div>
 </div>
+
+<div class="modal fade" id="unitProductModal" tabindex="-1" aria-labelledby="unitProductModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content border-primary">
+            <div class="modal-header bg-primary text-white">
+                <h5 class="modal-title" id="unitProductModalLabel">Detalles de Producto</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <h5>Unidades de Producto</h5>
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th scope="col">Unidad</th>
+                            <th scope="col">Precio Unitario</th>
+                        </tr>
+                    </thead>
+                    <tbody id="unitProductDetails">
+                         @foreach($products as $product)
+                         @if(($product->id))
+                         <tr>
+                            <td>{{ optional(UnitProduct::find($product->id))->measurementUnit }}</td>
+                            <td>{{ optional(UnitProduct::find($product->id))->unitPrice }}</td>
+                         </tr>
+                         @endif
+                         @endforeach
+                    </tbody>
+                </table>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+            </div>
+        </div>
+    </div>
+</div>
+
 
 <!-- Modal de Cambio de Estado -->
 <div class="modal fade" id="toggleStatusModal" tabindex="-1" aria-labelledby="toggleStatusModalLabel" aria-hidden="true">
@@ -123,6 +165,8 @@
             productNameElement.textContent = productName;
         });
     });
+
+    
 </script>
 @endpush
 @endsection

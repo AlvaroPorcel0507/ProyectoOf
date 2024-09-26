@@ -128,4 +128,6 @@ class UserController extends Controller
 
         return redirect()->route('users.profile')->with('success', 'Perfil actualizado correctamente.');
     }
+    /* VISTAS DE CLIENTES */
+    
 }

@@ -15,10 +15,9 @@ return new class extends Migration
             $table->id();
             $table->tinyInteger('status')->default(1);
             $table->smallInteger('userId');
+            $table->decimal('total',10,2);
             $table->unsignedBigInteger('customerId');
-            $table->unsignedBigInteger('idUser');
-            $table->foreign('customerId')->references('id')->on('customers');
-            $table->foreign('idUser')->references('id')->on('users');
+            $table->foreign('customerId')->references('id')->on('users');
             $table->timestamps();
         });
     }

@@ -76,6 +76,18 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
 Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/sales', [SalesController::class, 'index'])->name('sales.index');
+
+// Otras rutas...
+
+Route::middleware(['auth'])->group(function () {
+    // Ruta para mostrar el formulario de creación de una nueva venta
+    Route::get('/sales/create', [SalesController::class, 'create'])->name('sales.create');
+
+    // Ruta para almacenar una nueva venta
+    Route::post('/sales', [SalesController::class, 'store'])->name('sales.store');
+});
+
+
     Route::get('/activities/create', [ActivitiesController::class, 'create'])->name('activities.create');
     Route::post('/activities', [ActivitiesController::class, 'store'])->name('activities.store');
     Route::get('/activities/{activity}/edit', [ActivitiesController::class, 'edit'])->name('activities.edit');

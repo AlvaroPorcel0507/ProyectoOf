@@ -14,7 +14,7 @@ class SaleDetailsTableSeeder extends Seeder
      */
     public function run(): void
     {
-        DB::table('sales_details')->insert([
+        DB::table('sale_details')->insert([
             [
                 'quantity' => 2,
                 'unitPrice' => 250.38,
@@ -28,7 +28,7 @@ class SaleDetailsTableSeeder extends Seeder
                 'quantity' => 4,
                 'unitPrice' => 255.12,
                 'totalProduct' => 1020.48,
-                'salesId' => 2,
+                'salesId' => 1,
                 'productsId' => 2,
                 'created_at' => Carbon::now(),
                 'updated_at' => Carbon::now(),

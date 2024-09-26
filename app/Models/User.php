@@ -34,7 +34,7 @@ class User extends Authenticatable implements MustVerifyEmail
 
     public function sales()
     {
-        return $this->belongsTo(Sales::class, 'customerId', 'id');
+        return $this->hasMany(Sales::class, 'customerId');
     }
 
     public function invetories()
@@ -46,6 +46,7 @@ class User extends Authenticatable implements MustVerifyEmail
     {
         return $this->hasMany(Activities::class, 'idUser', 'id');
     }
+    
 
     /**
      * The attributes that should be hidden for serialization.

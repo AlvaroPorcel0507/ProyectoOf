@@ -5,11 +5,9 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class Sales extends Model
+class Sale extends Model
 {
     use HasFactory;
-
-    protected $table = 'sales'; 
 
     protected $fillable = [
         'status',
@@ -18,19 +16,14 @@ class Sales extends Model
         'idUser',
         'customerId',
     ];
-
     public function customer()
     {
-        return $this->belongsTo(User::class, 'customerId', 'id');
+        return $this->belongsTo(User::class, 'customerId');
     }
 
-    public function salesDetail()
+    // Relación con los detalles de venta
+    public function saleDetails()
     {
-        return $this->hasMany(SalesDetail::class, 'salesId', 'id');
-    }
-
-    public function users()
-    {
-        return $this->belongsTo(User::class, 'idUser', 'id');
+        return $this->hasMany(SaleDetail::class, 'salesId');
     }
 }

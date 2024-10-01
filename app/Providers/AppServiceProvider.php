@@ -2,9 +2,9 @@
 
 namespace App\Providers;
 
-use App\Models\Activities;
-use App\Models\Categories;
-use App\Models\Products;
+use App\Models\Activity;
+use App\Models\Category;
+use App\Models\Product;
 use App\Models\User;
 use App\Observers\ActivitiesObserver;
 use App\Observers\CategoriesObserver;
@@ -27,9 +27,9 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        Categories::observe(CategoriesObserver::class);
+        Category::observe(CategoriesObserver::class);
         User::observe(UserObserver::class);
-        Products::observe(ProductObserver::class);
-        Activities::observe(ActivitiesObserver::class);
+        Product::observe(ProductObserver::class);
+        Activity::observe(ActivitiesObserver::class);
     }
 }

@@ -4,7 +4,7 @@
 
 @section('content')
 @php
-  use App\Models\Categories;
+  use App\Models\Category;
 @endphp
 <div class="container">
     
@@ -55,10 +55,12 @@
                 <div class="form-group">
                     <label for="categoryId">Categoria</label>
                     <select name="categoryId" id="categoryId" class="form-control" require>
-                    <option value="{{ old('categoryId', $product->categoryId) }}" selected>{{ optional(Categories::find($product->categoryId))->name }}</option>
-                    @foreach (App\Models\Categories::all() as $category)
-                        <option value="{{ $category->id }}">{{ optional(Categories::find($category->id))->name }}</option>
-                        @endforeach
+                    <option value="{{ old('categoryId', $product->categoryId) }}" selected>{{ optional(Category::find($product->categoryId))->name }}</option>
+                    @foreach (App\Models\Category::all() as $category)
+                        @if(($category->status)==1)
+                        <option value="{{ $category->id }}">{{ optional(Category::find($category->id))->name }}</option>
+                        @endif
+                    @endforeach
                     </select>
                 </div>
 

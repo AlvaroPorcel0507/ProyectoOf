@@ -3,7 +3,7 @@
 @section('content')
 @php
  use App\Models\Products;
- use App\Models\Categories;
+ use App\Models\Category;
 @endphp
 
 <div class="container">
@@ -54,11 +54,13 @@
                     <label for="categoryId">Categoria</label>
                     <select name="categoryId" id="categoryId" class="form-control" require>
                     <option value="" selected>SELECCIONE UNA CATEGORIA</option>
-                    @foreach (App\Models\Categories::all() as $category)
-                        <option value="{{ $category->id }}">{{ optional(Categories::find($category->id))->name }}</option>
-                        @endforeach
+                    @foreach (App\Models\Category::all() as $category)
+                        @if(($category->status)==1)
+                        <option value="{{ $category->id }}">{{ optional(Category::find($category->id))->name }}</option>
+                        @endif
+                    @endforeach
                     </select>
-                </div>
+                </div>                              
 
                 <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#confirmModal">
                     Registrar

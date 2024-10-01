@@ -16,8 +16,6 @@ class User extends Authenticatable implements MustVerifyEmail
      *
      * @var array<int, string>
      */
-
-     protected $table = 'users';
     protected $fillable = [
         'name',
         'lastName',
@@ -39,12 +37,12 @@ class User extends Authenticatable implements MustVerifyEmail
 
     public function invetories()
     {
-        return $this->hasMany(Inventories::class, 'idUser', 'id');
+        return $this->hasMany(Inventory::class, 'idUser', 'id');
     }
 
     public function activities()
     {
-        return $this->hasMany(Activities::class, 'idUser', 'id');
+        return $this->hasMany(Activity::class, 'idUser', 'id');
     }
     
 

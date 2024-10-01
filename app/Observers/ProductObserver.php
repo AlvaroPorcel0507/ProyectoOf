@@ -2,18 +2,18 @@
 
 namespace App\Observers;
 
-use App\Models\Products;
+use App\Models\Product;
 use Illuminate\Support\Facades\Auth;
 
 class ProductObserver
 {
-    public function creating(Products $products){
+    public function creating(Product $products){
         $products->userId = Auth::id();
     }
-    public function updating(Products $products){
+    public function updating(Product $products){
         $products->userId = Auth::id();
     }
-    public function destroying(Products $products){
+    public function destroying(Product $products){
         $products->userId = Auth::id();
     }
 }

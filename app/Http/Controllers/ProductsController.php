@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Products;
+use App\Models\Product;
 use App\Models\UnitProduct;
 use Illuminate\Http\Request;
 
@@ -19,9 +19,9 @@ class ProductsController extends Controller
             $sortField = 'id';
         }
 
-        $products = Products::with('unitProduct')->get();
+        $products = Product::with('unitProduct')->get();
         
-        $products = Products::where('status', 1)->orderBy($sortField, $sortDirection)->paginate(8);
+        $products = Product::where('status', 1)->orderBy($sortField, $sortDirection)->paginate(8);
 
         return view('livewire/products.index', compact('products', 'sortField', 'sortDirection'));
     }
@@ -40,7 +40,7 @@ class ProductsController extends Controller
             'categoryId' => 'required|numeric|min:1|max:20',
         ]);
 
-        Products::create([
+        Product::create([
             'name' => $request->name,
             'description' => $request->description,
             'stock' => $request->stock,
@@ -51,12 +51,12 @@ class ProductsController extends Controller
         return redirect()->route('products.index')->with('success', 'Producto creado exitosamente.');
     }
 
-    public function edit(Products $product)
+    public function edit(Product $product)
     {
         return view('livewire/products.edit', compact('product'));
     }
 
-    public function update(Request $request, Products $product)
+    public function update(Request $request, Product $product)
     {
         $request->validate([
             'name' => 'required|max:50|regex:/^[a-zA-Z]+$/',
@@ -77,7 +77,7 @@ class ProductsController extends Controller
         return redirect()->route('products.index')->with('success', 'Producto actualizado correctamente.');
     }
 
-    public function delete(Products $product)
+    public function delete(Product $product)
     {
         $product->update([
             'status' => 0

@@ -61,6 +61,14 @@
                     <span>Ventas</span>
                 </a>
             @elseif(Auth::User()->role=='Productor')
+                <a href="{{ route('users.profile') }}" class="flex items-center px-4 py-2 rounded-lg hover:bg-orange-600 focus:bg-orange-600 focus:ring focus:ring-orange-500">
+                    <i class="fas fa-user-circle mr-2"></i> 
+                    <span>Perfil de Usuario</span>
+                </a>
+                <a href="{{ route('products.index') }}" class="flex items-center px-4 py-2 rounded-lg hover:bg-orange-600 focus:bg-orange-600 focus:ring focus:ring-orange-500">
+                    <i class="fas fa-shopping-basket mr-2"></i> 
+                    <span>Mis Productos</span>
+                </a>
             @else
                 <a href="{{ route('users.profile') }}" class="flex items-center px-4 py-2 rounded-lg hover:bg-orange-600 focus:bg-orange-600 focus:ring focus:ring-orange-500">
                     <i class="fas fa-user-circle mr-2"></i> 

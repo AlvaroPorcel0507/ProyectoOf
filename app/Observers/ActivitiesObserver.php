@@ -2,18 +2,18 @@
 
 namespace App\Observers;
 
-use App\Models\Activities;
+use App\Models\Activity;
 use Illuminate\Support\Facades\Auth;
 
 class ActivitiesObserver
 {
-    public function creating(Activities $activities){
+    public function creating(Activity $activities){
         $activities->userId = Auth::id();
     }
-    public function updating(Activities $activities){
+    public function updating(Activity $activities){
         $activities->userId = Auth::id();
     }
-    public function destroying(Activities $activities){
+    public function destroying(Activity $activities){
         $activities->userId = Auth::id();
     }
 }

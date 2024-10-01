@@ -2,7 +2,7 @@
 
 @section('content')
 @php
- use App\Models\Activities;
+ use App\Models\Activity;
  use App\Models\User;
 @endphp
 

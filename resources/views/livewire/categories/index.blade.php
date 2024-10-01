@@ -2,7 +2,7 @@
 
 @section('content')
 @php
- use App\Models\Categories;
+ use App\Models\Category;
  use App\Models\User;
 @endphp
 
@@ -39,7 +39,7 @@
                             <tr>
                                 <th scope="row">{{ $cont }}</th>
                                 <td>
-                                    {{ optional(Categories::find($category->id))->name }}
+                                    {{ optional(Category::find($category->id))->name }}
                                 </td>
                                 <td>{{ optional(User::find($category->userId))->name.' '.optional(User::find($category->userId))->lastName.' - '.optional(User::find($category->userId))->role }}</td>
                                 <td>

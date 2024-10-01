@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Activities;
+use App\Models\Activity;
 use Illuminate\Http\Request;
 
 class ActivitiesController extends Controller
@@ -18,7 +18,7 @@ class ActivitiesController extends Controller
             $sortField = 'id';
         }
 
-        $activities = Activities::where('status', 1)->orderBy($sortField, $sortDirection)->paginate(8);
+        $activities = Activity::where('status', 1)->orderBy($sortField, $sortDirection)->paginate(8);
 
         return view('livewire/activities.index', compact('activities', 'sortField', 'sortDirection'));
     }
@@ -39,7 +39,7 @@ class ActivitiesController extends Controller
             'idUser' => 'required|integer',
         ]);
 
-        Activities::create([
+        Activity::create([
             'name' => $request->name,
             'description' => $request->description,
             'scheduledDate' => $request->scheduledDate,
@@ -51,12 +51,12 @@ class ActivitiesController extends Controller
         return redirect()->route('activities.index')->with('success', 'Solicitud registrada exitosamente.');
     }
 
-    public function edit(Activities $activity)
+    public function edit(Activity $activity)
     {
         return view('livewire/activities.edit', compact('activity'));
     }
 
-    public function update(Request $request, Activities $activity)
+    public function update(Request $request, Activity $activity)
     {
         $request->validate([
             'name' => 'required|max:50|regex:/^[a-zA-Z\s]+$/',
@@ -79,7 +79,7 @@ class ActivitiesController extends Controller
         return redirect()->route('activities.index')->with('success', 'Solicitud actualizada correctamente.');
     }
 
-    public function delete(Activities $activity)
+    public function delete(Activity $activity)
     {
         $activity->update([
             'status' => 0

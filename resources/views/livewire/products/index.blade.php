@@ -4,9 +4,9 @@
 
 @section('content')
 @php
- use App\Models\Products;
+ use App\Models\Product;
  use App\Models\UnitProduct;
- use App\Models\Categories;
+ use App\Models\Category;
 @endphp
 
 <div class="container">
@@ -45,11 +45,11 @@
                             <tr>
                                 <th scope="row">{{ $cont }}</th>
                                 <td>
-                                    {{ optional(Products::find($product->id))->name }}
+                                    {{ optional(Product::find($product->id))->name }}
                                 </td>
                                 <td>{{ $product->description }}</td>
                                 <td>{{ $product->stock }}</td>
-                                <td>{{ optional(Categories::find($product->categoryId))->name }}</td>
+                                <td>{{ optional(Category::find($product->categoryId))->name }}</td>
                                 <td>
                                 <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#unitProductModal" 
                                         data-product-id="{{ $product->id }}">

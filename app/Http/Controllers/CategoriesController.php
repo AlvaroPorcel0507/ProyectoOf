@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Categories;
+use App\Models\Category;
 use Illuminate\Http\Request;
 
 class CategoriesController extends Controller
@@ -18,7 +18,7 @@ class CategoriesController extends Controller
             $sortField = 'id';
         }
 
-        $categories = Categories::where('status', 1)->orderBy($sortField, $sortDirection)->paginate(8);
+        $categories = Category::where('status', 1)->orderBy($sortField, $sortDirection)->paginate(8);
 
         return view('livewire/categories.index', compact('categories', 'sortField', 'sortDirection'));
     }
@@ -34,14 +34,14 @@ class CategoriesController extends Controller
             'name' => 'required|max:50|regex:/^[a-zA-Z\s]+$/',
         ]);
 
-        Categories::create([
+        Category::create([
             'name' => $request->name,
         ]);
 
         return redirect()->route('categories.index')->with('success', 'Categoria creada exitosamente.');
     }
 
-    public function delete(Categories $category)
+    public function delete(Category $category)
     {
         $category->update([
             'status' => 0
@@ -50,12 +50,12 @@ class CategoriesController extends Controller
         return redirect()->route('categories.index')->with('success', 'Categoria Eliminada con exito.');
     }
 
-    public function edit(Categories $category)
+    public function edit(Category $category)
     {
         return view('livewire/categories.edit', compact('category'));
     }
 
-    public function update(Request $request, Categories $category)
+    public function update(Request $request, Category $category)
     {
         $request->validate([
             'name' => 'required|max:50|regex:/^[a-zA-Z\s]+$/',

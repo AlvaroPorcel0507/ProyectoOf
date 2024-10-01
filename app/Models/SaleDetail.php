@@ -23,6 +23,6 @@ class SaleDetail extends Model
     // Relación con el producto
     public function product()
     {
-        return $this->belongsTo(Products::class, 'productsId');
+        return $this->belongsTo(Product::class, 'productsId');
     }
 }

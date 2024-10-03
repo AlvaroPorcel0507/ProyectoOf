@@ -21,7 +21,7 @@ class ProductTableSeeder extends Seeder
                 'stock' => 100.00,
                 'measurementUnit'=>'Caja',
                 'status' => 1,
-                'userId' => 1, // Asegúrate de que este ID de usuario exista
+                'userId' => 4, // Asegúrate de que este ID de usuario exista
                 'categoryId' => 1, // Asegúrate de que este ID de categoría exista
                 'created_at' => now(),
                 'updated_at' => now(),
@@ -33,7 +33,7 @@ class ProductTableSeeder extends Seeder
                 'stock' => 200.50,
                 'measurementUnit'=>'Caja',
                 'status' => 1,
-                'userId' => 1, // Asegúrate de que este ID de usuario exista
+                'userId' => 4, // Asegúrate de que este ID de usuario exista
                 'categoryId' => 1, // Asegúrate de que este ID de categoría exista
                 'created_at' => now(),
                 'updated_at' => now(),

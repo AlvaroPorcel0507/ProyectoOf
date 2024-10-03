@@ -28,9 +28,9 @@ class ProductsController extends Controller
     {
         return view('livewire/products.create');
     }
+
     public function store(Request $request)
     {
-        dd($request->all());
         $request->validate([
             'name' => 'required|max:100|regex:/^[a-zA-Z\s]+$/',
             'description' => 'required|max:500|regex:/^[a-zA-Z\s]+$/',
@@ -39,20 +39,23 @@ class ProductsController extends Controller
             'unitPrice' => 'required|max:50|regex:/^\d{1,5}(\.\d{0,2})?$/',
             'categoryId' => 'required|numeric|min:1|max:20',
         ]);
-
+    
+        // Calcular el stock basado en la unidad de medida
+        $conversionFactor = $request->measurementUnit === 'Caja' ? 25 : 60; // Caja: 25, Carga: 60
+        $stock = $request->quantity * $conversionFactor;
+    
         Product::create([
             'name' => $request->name,
             'description' => $request->description,
-            'quantity' => $request->quantity,
-            'measurementUnit' => $request->mesurementUnit,
+            'measurementUnit' => $request->measurementUnit, // Corrige aquí la propiedad
             'unitPrice' => $request->unitPrice,
+            'stock' => $stock, // Guarda el stock calculado
             'categoryId' => $request->categoryId,
         ]);
-
-        
-
+    
         return redirect()->route('products.index')->with('success', 'Producto creado exitosamente.');
     }
+    
 
     public function edit(Product $product)
     {
@@ -78,6 +81,8 @@ class ProductsController extends Controller
             'categoryId' => $request->categoryId,
         ]);
 
+        
+
         return redirect()->route('products.index')->with('success', 'Producto actualizado correctamente.');
     }
 
@@ -89,4 +94,36 @@ class ProductsController extends Controller
 
         return redirect()->route('products.index')->with('success', 'Producto Eliminado con exito.');
     }
+
+    public function surtir(Request $request, $id)
+    {
+        $request->validate([
+            'surtirQuantity' => 'required|numeric',
+        ]);
+
+        // Obtener el producto por su ID
+        $product = Product::findOrFail($id);
+
+        // Obtener el stock actual del producto
+        $oldStock = $product->stock;
+
+        // Obtener la cantidad ingresada en el formulario
+        $modifyQuantity = $request->input('surtirQuantity');
+
+        // Calcular el nuevo stock
+        $newStock = $oldStock + $modifyQuantity;
+
+        // Validar que el nuevo stock no sea negativo
+        if ($newStock < 0) {
+            return redirect()->back()->with('error', 'No puedes reducir el stock por debajo de 0.');
+        }
+
+        // Actualizar el stock en la base de datos
+        $product->stock = $newStock;
+        $product->save();
+
+        // Retornar una respuesta con un mensaje de éxito
+        return redirect()->back()->with('success', 'Stock actualizado correctamente. El stock anterior era ' . $oldStock . ' Kgs, y ahora es ' . $newStock . ' Kgs.');
+    }
+
 }

@@ -54,6 +54,7 @@
                     <input type="number" name="quantity" id="quantity" class="form-control" required>
                 </div>
 
+
                 <div class="form-group">
                     <label for="unitPrice">Precio Unitario Bs.</label>
                     <input type="number" name="unitPrice" id="unitPrice" class="form-control" required>

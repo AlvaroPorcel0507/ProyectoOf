@@ -61,6 +61,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/products/{product}/edit', [ProductsController::class, 'edit'])->name('products.edit');
     Route::put('/products/{product}', [ProductsController::class, 'update'])->name('products.update');
     Route::put('/products/{product}/softDelete', [ProductsController::class, 'delete'])->name('products.softDelete');
+    Route::put('/products/surtir/{id}', [ProductsController::class, 'surtir'])->name('products.surtir');
+
 });
 
 

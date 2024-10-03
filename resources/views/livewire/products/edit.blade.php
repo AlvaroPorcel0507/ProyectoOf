@@ -43,8 +43,7 @@
                 </div>
 
                 <div class="form-group">
-                    <label for="stock">Stock</label>
-                    <input type="number" name="stock" id="stock" value="{{ old('stock', $product->stock) }}" class="form-control">
+                    <input type="hidden" name="stock" id="stock" value="{{ old('stock', $product->stock) }}" class="form-control">
                 </div>
 
                 <div class="form-group">
@@ -87,7 +86,6 @@
                 <ul>
                     <li><strong>Nombre:</strong> <span id="modalName"></span></li>
                     <li><strong>Descripcion:</strong> <span id="modalDescription"></span></li>
-                    <li><strong>Stock:</strong> <span id="modalStock"></span></li>
                     <li><strong>Precio Unitario:</strong> <span id="modalUnitPrice"></span></li>
                     <li><strong>Categoria:</strong> <span id="modalCategoryId"></span></li>
                 </ul>

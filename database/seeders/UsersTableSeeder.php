@@ -61,7 +61,22 @@ class UsersTableSeeder extends Seeder
                 'userId' => null,
                 'created_at' => now(),
                 'updated_at' => now(),
-            ]
+            ],
+            [
+                'name' => 'David',
+                'lastName' => 'Rosales',
+                'secondLastName' => '',
+                'role' => 'Productor',
+                'location' => 'Av Aniceto arce',
+                'status' => 1,
+                'email' => 'DavidR@gmail.com',
+                'companyName' => 'Rosales',
+                'email_verified_at' => now(),
+                'password' => Hash::make('david1234'), // Contraseña encriptada
+                'userId' => null,
+                'created_at' => now(),
+                'updated_at' => now(),
+            ],
         ]);
     }
 }

@@ -32,22 +32,31 @@
 
                 <div class="form-group">
                     <label for="name">Nombre del Producto</label>
-                    <input type="text" name="name" id="name" class="form-control" value="{{ old('name') }}" required>
+                    <input type="text" name="name" id="name" class="form-control" required>
                 </div>
 
                 <div class="form-group">
                     <label for="description">Descripcion Breve</label>
-                    <input type="text" name="description" id="description" class="form-control" value="{{ old('description') }}" required>
+                    <input type="text" name="description" id="description" class="form-control" required>
                 </div>
 
                 <div class="form-group">
-                    <label for="stock">Stock (Unidades)</label>
-                    <input type="number" name="stock" id="stock" class="form-control" value="{{ old('stock') }}" required>
+                    <label for="measurementUnit">Medida</label>
+                    <select name="measurementUnit" id="measurementUnit" class="form-control" require>
+                    <option value="" selected>SELECCIONE UNA CATEGORIA</option>
+                        <option value="Caja">Caja</option>
+                        <option value="Carga">Carga</option>
+                    </select>
+                </div> 
+
+                <div class="form-group">
+                    <label for="quantity">Cantidad</label>
+                    <input type="number" name="quantity" id="quantity" class="form-control" required>
                 </div>
 
                 <div class="form-group">
                     <label for="unitPrice">Precio Unitario Bs.</label>
-                    <input type="number" name="unitPrice" id="unitPrice" class="form-control" value="{{ old('unitPrice') }}" required>
+                    <input type="number" name="unitPrice" id="unitPrice" class="form-control" required>
                 </div>
 
                 <div class="form-group">

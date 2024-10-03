@@ -13,6 +13,8 @@ class Product extends Model
         'name',
         'description',
         'stock',
+        'unitPrice',
+        'measurementUnit',
         'status',
         'userId',
         'categoryId',
@@ -28,19 +30,8 @@ class Product extends Model
         return $this->belongsTo(SaleDetail::class, 'productId', 'id');
     }
 
-    public function inventories()
+    public function users()
     {
-        return $this->hasMany(Inventory::class, 'idProduct', 'id');
-    }
-    public function unitProduct()
-    {
-        return $this->hasMany(UnitProduct::class, 'productId', 'id');
-    }
-
-
-
-    public function getUnitProducts()
-    {
-        return $this->unitProduct()->get();
+        return $this->belongsTo(Product::class, 'userId', 'id');
     }
 }

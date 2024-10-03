@@ -2,8 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Inventory;
 use App\Models\Product;
-use App\Models\UnitProduct;
 use Illuminate\Http\Request;
 
 class ProductsController extends Controller
@@ -18,8 +18,6 @@ class ProductsController extends Controller
         if (!in_array($sortField, $validSortFields)) {
             $sortField = 'id';
         }
-
-        $products = Product::with('unitProduct')->get();
         
         $products = Product::where('status', 1)->orderBy($sortField, $sortDirection)->paginate(8);
 
@@ -32,10 +30,12 @@ class ProductsController extends Controller
     }
     public function store(Request $request)
     {
+        dd($request->all());
         $request->validate([
             'name' => 'required|max:100|regex:/^[a-zA-Z\s]+$/',
             'description' => 'required|max:500|regex:/^[a-zA-Z\s]+$/',
-            'stock' => 'required|numeric|min:1|max:999',
+            'quantity' => 'required|numeric|min:0',
+            'measurementUnit' => 'required',
             'unitPrice' => 'required|max:50|regex:/^\d{1,5}(\.\d{0,2})?$/',
             'categoryId' => 'required|numeric|min:1|max:20',
         ]);
@@ -43,10 +43,13 @@ class ProductsController extends Controller
         Product::create([
             'name' => $request->name,
             'description' => $request->description,
-            'stock' => $request->stock,
+            'quantity' => $request->quantity,
+            'measurementUnit' => $request->mesurementUnit,
             'unitPrice' => $request->unitPrice,
             'categoryId' => $request->categoryId,
         ]);
+
+        
 
         return redirect()->route('products.index')->with('success', 'Producto creado exitosamente.');
     }
@@ -58,6 +61,7 @@ class ProductsController extends Controller
 
     public function update(Request $request, Product $product)
     {
+
         $request->validate([
             'name' => 'required|max:50|regex:/^[a-zA-Z]+$/',
             'description' => 'required|max:500|regex:/^[a-zA-Z\s]+$/',

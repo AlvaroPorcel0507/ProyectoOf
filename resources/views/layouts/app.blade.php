@@ -20,6 +20,10 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.2.1/dist/chart.umd.min.js"></script>
+    <!-- Incluye jQuery y Bootstrap en tu archivo principal -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.bundle.min.js"></script>
+
 </head>
 <body class="font-sans antialiased bg-gray-200">
     <div class="min-h-screen flex">
@@ -69,6 +73,10 @@
                     <i class="fas fa-shopping-basket mr-2"></i> 
                     <span>Mis Productos</span>
                 </a>
+                <a href="{{ route('sales.index') }}" class="flex items-center px-4 py-2 rounded-lg hover:bg-orange-600 focus:bg-orange-600 focus:ring focus:ring-orange-500">
+                    <i class="fas fa-cart-plus mr-2"></i> 
+                    <span>Ventas</span>
+                </a>
             @else
                 <a href="{{ route('users.profile') }}" class="flex items-center px-4 py-2 rounded-lg hover:bg-orange-600 focus:bg-orange-600 focus:ring focus:ring-orange-500">
                     <i class="fas fa-user-circle mr-2"></i> 
@@ -104,6 +112,15 @@
                  @if (session('success'))
                     <div class="alert alert-success">
                         {{ session('success') }}
+                    </div>
+                @endif
+                @if($errors->any())
+                    <div class="alert alert-danger">
+                        <ul>
+                            @foreach($errors->all() as $error)
+                                <li>{{ $error }}</li>
+                            @endforeach
+                        </ul>
                     </div>
                 @endif
                 @yield('content')

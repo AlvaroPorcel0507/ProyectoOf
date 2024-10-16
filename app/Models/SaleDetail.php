@@ -12,7 +12,7 @@ class SaleDetail extends Model
         'productsId',
         'quantity',
         'unitPrice',
-        'total',
+        'totalProduct',
     ];
     // Relación con la venta
     public function sale()

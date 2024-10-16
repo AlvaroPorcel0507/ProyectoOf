@@ -140,27 +140,36 @@
         <div class="card-body bg-light">
             <div class="table-responsive">
                 <table class="table table-hover align-middle text-center">
-                    <thead>
-                        <tr>
-                            <th scope="col">Nro.</th>
-                            <th scope="col">Nombre Producto</th>
-                            <th scope="col">Descripción</th>
-                            <th scope="col">Detalles</th>
-                            <th scope="col">Acciones</th>
-                        </tr>
-                    </thead>
+                <thead>
+                    <tr>
+                        <th scope="col">Nro.</th>
+                        <th scope="col">Nombre Producto</th>
+                        <th scope="col">Descripción</th>
+                        <th scope="col">Imagen</th> <!-- Nueva columna para imagen -->
+                        <th scope="col">Detalles</th>
+                        <th scope="col">Acciones</th>
+                    </tr>
+                </thead>
                     <tbody>
                         @php
-                        $cont=1;
+                        $cont = 1;
                         @endphp
                         @foreach ($products as $product)
-                            @if(Auth::User()->id==$product->userId)
+                            @if(Auth::User()->id == $product->userId)
                             <tr>
                                 <th scope="row">{{ $cont }}</th>
                                 <td>
                                     {{ optional(Product::find($product->id))->name }}
                                 </td>
                                 <td>{{ $product->description }}</td>
+                                <td class="py-2 px-4 border">
+                                    @if($product->image)
+                                        <img src="{{ asset('storage/' . $product->image) }}" alt="{{ $product->name }}" class="w-24 h-24 object-cover">
+                                    @else
+                                        <img src="{{ asset('images/default-product.png') }}" alt="Imagen por defecto" class="w-24 h-24 object-cover">
+                                    @endif
+                                </td>
+
                                 <td>   
                                     <button type="button" class="btn btn-info" 
                                         data-bs-toggle="modal" 
@@ -178,8 +187,7 @@
                                     <a href="{{ route('products.edit', $product->id) }}" class="btn btn-info">
                                         <i class="fas fa-edit"></i>
                                     </a>
-                                
-                                <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#toggleStatusModal" 
+                                    <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#toggleStatusModal" 
                                         data-product-id="{{ $product->id }}" data-product-name="{{ $product->name }}" data-product-description="{{ $product->description }}" 
                                         data-product-stock="{{ $product->stock }}" data-product-unitPrice="{{ $product->unitPrice }}" data-product-categoryId="{{ $product->categoryId }}">
                                         <i class="fas fa-trash"></i>
@@ -189,8 +197,6 @@
                                         <i class="fas fa-plus-square"></i>
                                     </button>
                                 </td>
-
-
                             </tr>
                             @php $cont++; @endphp
                             @endif
@@ -363,6 +369,7 @@
 </script>
 
 @endpush
+
 @else
 @endif
 @endsection

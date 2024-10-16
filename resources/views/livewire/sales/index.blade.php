@@ -1,71 +1,141 @@
 @extends('layouts.app')
 
 @section('content')
-<div class="container">
-<div class="d-flex justify-content-between align-items-center my-4">
-        <h1 class="h3 text-green-800">Lista de Compras</h1>
-        <a href="{{ route('sales.create') }}" class="btn btn-success">
-            Registrar Nueva Compra
-        </a>
-    </div>
+@php
+ use App\Models\User;
+ use App\Models\Product;
+ use App\Models\SaleDetail;
+@endphp
 
-    <div class="card border-success">
-        <div class="card-header bg-success text-white">
-            <i class="fas fa-cart-plus"></i> Compras
-        </div>
-        <div class="card-body bg-light">
-            <div class="table-responsive">
-                <table class="table table-hover align-middle text-center">
+
+<div class="container">
+    <h1 class="h3">Lista de Ventas</h1>
+
+    @if ($sales->isEmpty())
+        <div class="alert alert-warning">No hay compras realizadas.</div>
+    @else
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>Nro.</th>
+                    <th>Cliente</th>
+                    <th>Total Bs.</th>
+                    <th>Fecha</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                @php
+                    $cont = 1;
+                @endphp
+                @foreach ($sales as $sale)
+                <tr>
+                    <td>{{ $cont }}</td>
+                    <td>{{ optional(User::find($sale->customerId))->name }}</td>
+                    <td>{{ $sale->total }}</td>
+                    <td>{{ $sale->created_at }}</td>
+                    <td>
+                    <button type="button" class="btn btn-info" 
+                        data-toggle="modal" 
+                        data-target="#saleDetailsModal" 
+                        data-sale-id="{{ $sale->id }}">
+                        Ver Detalles
+                    </button>
+
+                    </td>
+                </tr>
+                @php $cont++; @endphp
+                @endforeach
+            </tbody>
+        </table>
+    @endif
+</div>
+
+<!-- Modal para mostrar detalles de la venta -->
+<div class="modal fade" id="saleDetailsModal" tabindex="-1" role="dialog" aria-labelledby="saleDetailsModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="saleDetailsModalLabel">Detalles de la Venta</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <table class="table">
                     <thead>
                         <tr>
-                            <th scope="col">Nro.</th>
-                            <th scope="col">Productor</th>
-                            <th scope="col">Total</th>
-                            <th scope="col">Estado</th>
-                            <th scope="col">Detalles</th>
-                            <th scope="col">Editar</th>
-                            <th scope="col">Eliminar</th>
+                            <th>Producto</th>
+                            <th>Cantidad</th>
+                            <th>Precio Unitario</th>
+                            <th>Total</th>
                         </tr>
                     </thead>
-                    <tbody>
-                        @php
-                            $cont = 1;
-                        @endphp
-                        @foreach ($sales as $sale)
-                            <tr>
-                                <th scope="row">{{ $cont }}</th>
-                                <td>{{ $sale->customer->name }}</td>
-                                <td>{{ $sale->total }}</td>
-                                <td>{{ $sale->status == 1 ? 'Activo' : 'Inactivo' }}</td>
-                                <td>
-                                    <ul>
-                                        @foreach ($sale->saleDetails as $detail)
-                                            <li>
-                                                {{ $detail->product->name }} - 
-                                                {{ $detail->quantity }} unidades 
-                                                ({{ $detail->unitPrice }} cada uno)
-                                            </li>
-                                        @endforeach
-                                    </ul>
-                                </td>
-                                <td>
-                                  
-                                </td>
-                                <td>
-                                  
-                                </td>
-                            </tr>
-                            @php $cont++; @endphp
-                        @endforeach
+                    <tbody id="saleDetailsBody">
+                        <!-- Los detalles de la venta se llenarán aquí -->
                     </tbody>
                 </table>
-            </div>
-
-            <!-- Paginación -->
-            <div class="d-flex justify-content-center">
-                {{ $sales->links() }} <!-- Enlace a la paginación -->
+                <h5>Total de la Venta: <span id="totalSale"></span></h5>
             </div>
         </div>
     </div>
 </div>
+
+@push('script')
+<script>
+$(document).ready(function() {
+    // Cuando se abre el modal
+    $('#saleDetailsModal').on('show.bs.modal', function(event) {
+        var button = $(event.relatedTarget); // Botón que abrió el modal
+        var saleId = button.data('sale-id');  // ID de la venta que viene del botón
+
+        // Verifica que el ID de la venta está siendo pasado correctamente
+        console.log('Sale ID:', saleId);
+
+        // Realizar una solicitud AJAX para obtener los detalles de la venta
+        $.ajax({
+            url: '/sales/' + saleId,  // URL para obtener la venta
+            type: 'GET',
+            success: function(sale) {
+                console.log('Datos recibidos del servidor:', sale);  // Verifica los datos recibidos
+
+                var body = $('#saleDetailsBody');
+                body.empty();  // Limpia el contenido del modal antes de agregar los detalles
+
+                var totalSum = 0; // Variable para sumar los totales de los productos
+
+                // Si hay detalles de venta
+                if (sale.sale_details.length > 0) {
+                    sale.sale_details.forEach(function(detail) {
+                        var productTotal = detail.totalProduct;  // Obtiene el total por producto
+                        totalSum += productTotal;  // Suma al total general
+
+                        body.append(`
+                            <tr>
+                                <td>${detail.product.name}</td>
+                                <td>${detail.quantity} kg</td>
+                                <td>${detail.unitPrice.toFixed(2)}</td>
+                                <td>${productTotal.toFixed(2)}</td>
+                            </tr>
+                        `);
+                    });
+                } else {
+                    body.append('<tr><td colspan="4">No hay detalles disponibles para esta venta.</td></tr>');
+                }
+
+                // Mostrar la suma total de los productos
+                $('#totalSale').text(totalSum.toFixed(2));
+            },
+            error: function() {
+                // Si ocurre algún error, muestra un mensaje de error en el modal
+                $('#saleDetailsBody').html('<tr><td colspan="4">No se pudieron cargar los detalles de la venta.</td></tr>');
+                console.log('Error al cargar los detalles de la venta');
+            }
+        });
+    });
+});
+
+</script>
+@endpush
+
 @endsection

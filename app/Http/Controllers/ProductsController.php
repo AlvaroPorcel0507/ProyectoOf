@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use App\Models\Inventory;
 use App\Models\Product;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
+
 
 class ProductsController extends Controller
 {
@@ -38,53 +40,79 @@ class ProductsController extends Controller
             'measurementUnit' => 'required',
             'unitPrice' => 'required|max:50|regex:/^\d{1,5}(\.\d{0,2})?$/',
             'categoryId' => 'required|numeric|min:1|max:20',
+            'image' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048', // Validación de imagen
         ]);
-    
+
         // Calcular el stock basado en la unidad de medida
         $conversionFactor = $request->measurementUnit === 'Caja' ? 25 : 60; // Caja: 25, Carga: 60
         $stock = $request->quantity * $conversionFactor;
-    
+
+        // Manejar la imagen
+        $image = $request->file('image')->store('image', 'public'); // Guardar imagen en public/storage/images
+
         Product::create([
             'name' => $request->name,
             'description' => $request->description,
-            'measurementUnit' => $request->measurementUnit, // Corrige aquí la propiedad
+            'measurementUnit' => $request->measurementUnit,
             'unitPrice' => $request->unitPrice,
-            'stock' => $stock, // Guarda el stock calculado
+            'stock' => $stock,
+            'image' => $image, // Almacenar la ruta de la imagen
             'categoryId' => $request->categoryId,
+            'userId' => auth()->id(), // Asumiendo que estás guardando el ID del usuario autenticado
         ]);
-    
+
         return redirect()->route('products.index')->with('success', 'Producto creado exitosamente.');
     }
-    
+
 
     public function edit(Product $product)
     {
         return view('livewire/products.edit', compact('product'));
     }
 
-    public function update(Request $request, Product $product)
+    public function update(Request $request, $id)
     {
-
-        $request->validate([
-            'name' => 'required|max:50|regex:/^[a-zA-Z]+$/',
-            'description' => 'required|max:500|regex:/^[a-zA-Z\s]+$/',
-            'stock' => 'required|numeric|min:1|max:999',
-            'unitPrice' => 'required|max:50|regex:/^\d{1,5}(\.\d{0,2})?$/',
-            'categoryId' => 'required|numeric|min:1|max:20',
+        // Validar los datos de entrada
+        $validatedData = $request->validate([
+            'name' => 'required|string|max:255',
+            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048', // Asegúrate de ajustar el tamaño máximo según tus necesidades
+            'description' => 'required|string|max:1000',
+            'stock' => 'required|integer|min:0',
+            'unitPrice' => 'required|numeric|min:0',
+            'categoryId' => 'required|exists:categories,id',
         ]);
 
-        $product->update([
-            'name' => $request->name,
-            'description' => $request->description,
-            'stock' => $request->stock,
-            'unitPrice' => $request->unitPrice,
-            'categoryId' => $request->categoryId,
-        ]);
+        // Encontrar el producto por ID
+        $product = Product::findOrFail($id);
 
-        
+        // Actualizar el nombre y la descripción
+        $product->name = $validatedData['name'];
+        $product->description = $validatedData['description'];
+        $product->stock = $validatedData['stock'];
+        $product->unitPrice = $validatedData['unitPrice'];
+        $product->categoryId = $validatedData['categoryId'];
 
+        // Manejar la imagen si se proporciona
+        if ($request->hasFile('image')) {
+            // Eliminar la imagen anterior si existe
+            if ($product->image) {
+                Storage::disk('public')->delete($product->image);
+            }
+
+            // Guardar la nueva imagen y obtener su ruta
+            $path = $request->file('image')->store('products', 'public');
+            $product->image = $path; // Actualizar el campo de imagen en el producto
+        }
+
+        // Guardar los cambios en la base de datos
+        $product->save();
+
+        // Redireccionar a la lista de productos con un mensaje de éxito
         return redirect()->route('products.index')->with('success', 'Producto actualizado correctamente.');
     }
+
+
+
 
     public function delete(Product $product)
     {

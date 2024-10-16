@@ -17,6 +17,7 @@ class Product extends Model
         'measurementUnit',
         'status',
         'userId',
+        'image',
         'categoryId',
     ];
 
@@ -25,9 +26,9 @@ class Product extends Model
         return $this->belongsTo(Category::class, 'categoryId', 'id');
     }
 
-    public function saleDetails()
+    public function product()
     {
-        return $this->belongsTo(SaleDetail::class, 'productId', 'id');
+        return $this->belongsTo(Product::class, 'productsId');
     }
 
     public function users()

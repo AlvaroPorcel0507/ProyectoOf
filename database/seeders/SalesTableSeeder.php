@@ -17,7 +17,7 @@ class SalesTableSeeder extends Seeder
         DB::table('sales')->insert([
             [
                 'status' => 1,
-                'userId' => 3,  // ID del usuario que realizó la venta
+                'userId' => 2,  // ID del usuario que realizó la venta
                 'total' => 500.75,
                 'customerId' => 3,  // ID del cliente
                 'created_at' => Carbon::now(),
@@ -25,15 +25,15 @@ class SalesTableSeeder extends Seeder
             ],
             [
                 'status' => 1,
-                'userId' => 3,
+                'userId' => 2,
                 'total' => 1020.50,
                 'customerId' => 3,
                 'created_at' => Carbon::now(),
                 'updated_at' => Carbon::now(),
             ],
             [
-                'status' => 0,
-                'userId' => 3,
+                'status' => 1,
+                'userId' => 1,
                 'total' => 250.99,
                 'customerId' => 3,
                 'created_at' => Carbon::now(),

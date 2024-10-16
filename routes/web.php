@@ -78,6 +78,14 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
 Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/sales', [SalesController::class, 'index'])->name('sales.index');
+    Route::get('sales/create', [SalesController::class, 'create'])->name('sales.create');
+Route::post('sales/store', [SalesController::class, 'store'])->name('sales.store');
+
+// Ruta para obtener los productos según el productor seleccionado
+Route::get('sales/get-products/{userId}', [SalesController::class, 'getProductsByProducer'])->name('sales.getProducts');
+
+Route::get('/sales/{id}', [SaleController::class, 'show'])->name('sales.show');
+
 
 // Otras rutas...
 

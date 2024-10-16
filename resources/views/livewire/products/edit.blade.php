@@ -1,7 +1,5 @@
 @extends('layouts.app')
 
-
-
 @section('content')
 @php
   use App\Models\Category;
@@ -28,13 +26,21 @@
                 </div>
             @endif
 
-            <form id="productForm" action="{{ route('products.update', $product->id) }}" method="POST">
+            <form id="productForm" action="{{ route('products.update', $product->id) }}" method="POST" enctype="multipart/form-data">
                 @csrf
                 @method('PUT')
 
                 <div class="form-group">
                     <label for="name">Nombre de Producto</label>
                     <input type="text" name="name" id="name" value="{{ old('name', $product->name) }}" class="form-control" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="image">Imagen del Producto</label>
+                    <input type="file" name="image" id="image" class="form-control-file" accept="image/*">
+                    @if ($product->image)
+                        <img src="{{ asset('storage/' . $product->image) }}" alt="Imagen del producto" class="img-fluid mt-2" style="max-width: 150px;">
+                    @endif
                 </div>
 
                 <div class="form-group">
@@ -53,13 +59,13 @@
 
                 <div class="form-group">
                     <label for="categoryId">Categoria</label>
-                    <select name="categoryId" id="categoryId" class="form-control" require>
-                    <option value="{{ old('categoryId', $product->categoryId) }}" selected>{{ optional(Category::find($product->categoryId))->name }}</option>
-                    @foreach (App\Models\Category::all() as $category)
-                        @if(($category->status)==1)
-                        <option value="{{ $category->id }}">{{ optional(Category::find($category->id))->name }}</option>
-                        @endif
-                    @endforeach
+                    <select name="categoryId" id="categoryId" class="form-control" required>
+                        <option value="{{ old('categoryId', $product->categoryId) }}" selected>{{ optional(Category::find($product->categoryId))->name }}</option>
+                        @foreach (App\Models\Category::all() as $category)
+                            @if(($category->status) == 1)
+                                <option value="{{ $category->id }}">{{ optional(Category::find($category->id))->name }}</option>
+                            @endif
+                        @endforeach
                     </select>
                 </div>
 
@@ -82,7 +88,7 @@
                 </button>
             </div>
             <div class="modal-body">
-                <p>Estás a punto de actualizar los datos del usuario con los siguientes detalles:</p>
+                <p>Estás a punto de actualizar los datos del producto con los siguientes detalles:</p>
                 <ul>
                     <li><strong>Nombre:</strong> <span id="modalName"></span></li>
                     <li><strong>Descripcion:</strong> <span id="modalDescription"></span></li>
@@ -111,7 +117,7 @@
         const modalDescription = document.getElementById('modalDescription');
         const modalStock = document.getElementById('modalStock');
         const modalUnitPrice = document.getElementById('modalUnitPrice');
-        const modalCategoryId= document.getElementById('modalCategoryId');
+        const modalCategoryId = document.getElementById('modalCategoryId');
 
         document.querySelector('[data-target="#confirmModal"]').addEventListener('click', function() {
             modalName.textContent = nameInput.value;

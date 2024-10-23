@@ -124,34 +124,41 @@ class ProductsController extends Controller
     }
 
     public function surtir(Request $request, $id)
-    {
-        $request->validate([
-            'surtirQuantity' => 'required|numeric',
-        ]);
+{
+    $request->validate([
+        'surtirQuantity' => 'required|numeric', // Permitimos cantidades negativas para reducción de stock
+    ]);
 
-        // Obtener el producto por su ID
-        $product = Product::findOrFail($id);
+    // Obtener el producto por su ID
+    $product = Product::findOrFail($id);
 
-        // Obtener el stock actual del producto
-        $oldStock = $product->stock;
+    // Obtener el stock actual del producto
+    $oldStock = $product->stock;
 
-        // Obtener la cantidad ingresada en el formulario
-        $modifyQuantity = $request->input('surtirQuantity');
+    // Obtener la cantidad ingresada en el formulario
+    $modifyQuantity = $request->input('surtirQuantity');
 
-        // Calcular el nuevo stock
-        $newStock = $oldStock + $modifyQuantity;
+    // Calcular el factor de conversión basado en la unidad de medida
+    $conversionFactor = $product->measurementUnit === 'Caja' ? 25 : 60; // Caja: 25 Kgs, Carga: 60 Kgs
 
-        // Validar que el nuevo stock no sea negativo
-        if ($newStock < 0) {
-            return redirect()->back()->with('error', 'No puedes reducir el stock por debajo de 0.');
-        }
+    // Calcular la cantidad a modificar en kilogramos (permite incrementos y disminuciones)
+    $convertedQuantity = $modifyQuantity * $conversionFactor;
 
-        // Actualizar el stock en la base de datos
-        $product->stock = $newStock;
-        $product->save();
+    // Calcular el nuevo stock
+    $newStock = $oldStock + $convertedQuantity;
 
-        // Retornar una respuesta con un mensaje de éxito
-        return redirect()->back()->with('success', 'Stock actualizado correctamente. El stock anterior era ' . $oldStock . ' Kgs, y ahora es ' . $newStock . ' Kgs.');
+    // Validar que el nuevo stock no sea negativo
+    if ($newStock < 0) {
+        return redirect()->back()->with('error', 'No puedes reducir el stock por debajo de 0 Kgs.');
     }
+
+    // Actualizar el stock en la base de datos
+    $product->stock = $newStock;
+    $product->save();
+
+    // Retornar una respuesta con un mensaje de éxito
+    return redirect()->back()->with('success', 'Stock actualizado correctamente. El stock anterior era ' . $oldStock . ' Kgs, y ahora es ' . $newStock . ' Kgs.');
+}
+
 
 }

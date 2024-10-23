@@ -193,7 +193,8 @@
                                         <i class="fas fa-trash"></i>
                                     </button>
                                     <button type="button" class="btn btn-warning" data-bs-toggle="modal" data-bs-target="#surtirProductModal" 
-                                        data-product-id="{{ $product->id }}" data-product-name="{{ $product->name }}" data-product-stock="{{ $product->stock }}">
+                                        data-product-id="{{ $product->id }}" data-product-name="{{ $product->name }}" data-product-stock="{{ $product->stock }}"
+                                        data-product-measurementUnit="{{ $product->measurementUnit }}">
                                         <i class="fas fa-plus-square"></i>
                                     </button>
                                 </td>
@@ -223,6 +224,7 @@
             </div>
             <div class="modal-body">
                 <p>Producto: <strong id="surtirProductName"></strong></p>
+                <p>Medida Ingresada: <strong id="surtirProductMeasurementUnit"></strong></p>
                 <p>Stock Actual: <strong id="currentStock"></strong> Kgs.</p>
                 <form id="surtirProductForm" action="{{ route('products.surtir', $product->id) }}" method="POST">
                     @csrf
@@ -299,11 +301,13 @@
         surtirProductModal.addEventListener('show.bs.modal', function (event) {
             var button = event.relatedTarget; 
             var productId = button.getAttribute('data-product-id'); 
+            var productMeasurementUnit = button.getAttribute('data-product-measurementUnit'); 
             var productName = button.getAttribute('data-product-name'); 
             var productStock = parseInt(button.getAttribute('data-product-stock')); 
 
             // Cargar información en el modal
             document.getElementById('surtirProductName').textContent = productName;
+            document.getElementById('surtirProductMeasurementUnit').textContent = productMeasurementUnit;
             document.getElementById('currentStock').textContent = productStock;
             document.getElementById('surtirQuantity').value = 0; // Inicializar a 0
 

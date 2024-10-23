@@ -9,7 +9,10 @@
 
 
 <div class="container">
-    <h1 class="h3">Lista de Ventas</h1>
+    <div class="d-flex justify-content-between align-items-center my-4">
+        <h1 class="h3">Lista de Ventas</h1>
+        <a href="{{ route('sales.create') }}" class="btn btn-success">Registrar Nueva Venta</a>
+    </div>
 
     @if ($sales->isEmpty())
         <div class="alert alert-warning">No hay compras realizadas.</div>
@@ -35,13 +38,11 @@
                     <td>{{ $sale->total }}</td>
                     <td>{{ $sale->created_at }}</td>
                     <td>
-                    <button type="button" class="btn btn-info" 
-                        data-toggle="modal" 
-                        data-target="#saleDetailsModal" 
-                        data-sale-id="{{ $sale->id }}">
-                        Ver Detalles
-                    </button>
-
+                        <form action="{{ route('sales.show', $sale->id) }}">
+                            <button type="submit" class="btn btn-info">
+                                <i class="fa fa-info-circle"></i>
+                            </button>
+                        </form>
                     </td>
                 </tr>
                 @php $cont++; @endphp

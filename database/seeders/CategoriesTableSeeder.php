@@ -15,28 +15,28 @@ class CategoriesTableSeeder extends Seeder
     {
         $categories = [
             [
-                'name' => 'Electronics',
+                'name' => 'Legumbres',
                 'status' => 1,
-                'userId' => 1, // Asegúrate de que este ID de usuario exista
+                'userId' => 1, 
             ],
             [
-                'name' => 'Clothing',
+                'name' => 'Hortalizas',
                 'status' => 1,
-                'userId' => 2, // Asegúrate de que este ID de usuario exista
+                'userId' => 1, 
             ],
             [
-                'name' => 'Home Appliances',
+                'name' => 'Tuberculos',
                 'status' => 1,
-                'userId' => null, // Sin usuario asignado
+                'userId' => 1, 
             ],
             [
                 'name' => 'Books',
-                'status' => 0, // Categoría inactiva
-                'userId' => 3, // Asegúrate de que este ID de usuario exista
+                'status' => 0, 
+                'userId' => 3, 
             ],
             [
                 'name' => 'Toys',
-                'status' => 1,
+                'status' => 0,
                 'userId' => null, // Sin usuario asignado
             ],
         ];

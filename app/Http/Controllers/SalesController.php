@@ -21,20 +21,16 @@ class SalesController extends Controller
     }
 
     // Método show
-    public function show($id)
+    public function show($saleId)
     {
-    // Cargar la venta junto con sus detalles y el producto relacionado
-    $sale = Sale::with('saleDetails.product')->findOrFail($id);
-    // Calcular el total de los productos vendidos
-    foreach ($sale->saleDetails as $detail) {
-        $detail->totalProduct = $detail->quantity * $detail->unitPrice;
-    }
+        $sale = Sale::find($saleId);
 
-    // Devolver los detalles de la venta como respuesta JSON
-    dd([
-        'sale' => $sale,
-    ]);
-    return response()->json($sale);
+        if (!$sale) {
+            return redirect()->back()->with('error', 'Venta no encontrada');
+        }
+        $saleDetail = SaleDetail::with(['product'])->where('salesId', $saleId)->get();
+
+        return view('livewire.sales.saleDetail', compact('sale', 'saleDetail'));
     }
 
     public function create()

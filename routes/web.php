@@ -84,7 +84,7 @@ Route::post('sales/store', [SalesController::class, 'store'])->name('sales.store
 // Ruta para obtener los productos según el productor seleccionado
 Route::get('sales/get-products/{userId}', [SalesController::class, 'getProductsByProducer'])->name('sales.getProducts');
 
-Route::get('/sales/{id}', [SaleController::class, 'show'])->name('sales.show');
+
 
 
 // Otras rutas...
@@ -95,6 +95,7 @@ Route::middleware(['auth'])->group(function () {
 
     // Ruta para almacenar una nueva venta
     Route::post('/sales', [SalesController::class, 'store'])->name('sales.store');
+    Route::get('/sales/{id}/detail', [SalesController::class, 'show'])->name('sales.show');
 });
 
 

@@ -15,6 +15,7 @@ class Sale extends Model
         'userId',
         'idUser',
         'customerId',
+        'producerId',
     ];
     public function saleDetails()
     {
@@ -24,12 +25,12 @@ class Sale extends Model
     // Definición de la relación con el cliente
     public function customer()
     {
-        return $this->belongsTo(User::class, 'customerId');
+        return $this->belongsTo(User::class, 'customerId', 'id');
     }
 
     // Definición de la relación con el vendedor
-    public function user()
+    public function producer()
     {
-        return $this->belongsTo(User::class, 'userId');
+        return $this->belongsTo(User::class, 'producerId', 'id');
     }
 }

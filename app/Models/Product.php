@@ -35,4 +35,14 @@ class Product extends Model
     {
         return $this->belongsTo(Product::class, 'userId', 'id');
     }
+
+    public function totalProduct()
+    {
+        return $this->hasMany(TotalProduct::class, 'productId', 'id');
+    }
+
+    public function inventory()
+    {
+        return $this->hasMany(Inventory::class, 'productId', 'id');
+    }
 }

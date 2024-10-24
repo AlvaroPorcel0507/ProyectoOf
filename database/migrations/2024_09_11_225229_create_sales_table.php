@@ -16,8 +16,12 @@ return new class extends Migration
             $table->tinyInteger('status')->default(1);
             $table->smallInteger('userId');
             $table->decimal('total',10,2);
+
             $table->unsignedBigInteger('customerId');
             $table->foreign('customerId')->references('id')->on('users');
+
+            $table->unsignedBigInteger('producerId');
+            $table->foreign('producerId')->references('id')->on('users');
             $table->timestamps();
         });
     }

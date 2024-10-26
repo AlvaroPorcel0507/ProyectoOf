@@ -16,7 +16,6 @@ return new class extends Migration
             $table->decimal('stock', 10,2);
             $table->unsignedBigInteger('userId');
             $table->unsignedBigInteger('productId');
-
             $table->foreign('userId')->references('id')->on('users');
             $table->foreign('productId')->references('id')->on('products');
             $table->timestamps();

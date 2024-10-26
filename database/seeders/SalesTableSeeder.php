@@ -14,31 +14,35 @@ class SalesTableSeeder extends Seeder
      */
     public function run(): void
     {
-        DB::table('sales')->insert([
+        $sales = [
             [
                 'status' => 1,
-                'userId' => 2,  // ID del usuario que realizó la venta
+                'producerId' => 2, // ID de un productor existente
                 'total' => 500.75,
-                'customerId' => 3,  // ID del cliente
-                'created_at' => Carbon::now(),
-                'updated_at' => Carbon::now(),
+                'customerId' => 3, // ID de un cliente existente
+                'created_at' => now(),
+                'updated_at' => now(),
             ],
             [
                 'status' => 1,
-                'userId' => 2,
+                'producerId' => 2, // ID de un productor existente
                 'total' => 1020.50,
-                'customerId' => 3,
-                'created_at' => Carbon::now(),
-                'updated_at' => Carbon::now(),
+                'customerId' => 3, // ID de un cliente existente
+                'created_at' => now(),
+                'updated_at' => now(),
             ],
             [
                 'status' => 1,
-                'userId' => 1,
+                'producerId' => 1, // ID de un productor existente
                 'total' => 250.99,
-                'customerId' => 3,
-                'created_at' => Carbon::now(),
-                'updated_at' => Carbon::now(),
-            ]
-        ]);
+                'customerId' => 3, // ID de un cliente existente
+                'created_at' => now(),
+                'updated_at' => now(),
+            ],
+        ];
+        
+        DB::table('sales')->insert($sales);
+        
+        
     }
 }

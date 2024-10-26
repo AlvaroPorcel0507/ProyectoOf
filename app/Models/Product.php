@@ -13,11 +13,8 @@ class Product extends Model
         'name',
         'description',
         'stock',
-        'unitPrice',
-        'measurementUnit',
         'status',
         'userId',
-        'image',
         'categoryId',
     ];
 

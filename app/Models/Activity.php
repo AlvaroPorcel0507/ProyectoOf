@@ -17,7 +17,6 @@ class Activity extends Model
         'priority',
         'status',
         'idUser',
-        'userId',
     ];
 
     public function users()

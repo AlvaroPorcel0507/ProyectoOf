@@ -15,10 +15,7 @@ return new class extends Migration
             $table->id();
             $table->string('name');
             $table->string('description');
-            $table->string('measurementUnit');
-            $table->decimal('unitPrice', 10, 2);
             $table->decimal('stock', 10, 2)->default(0);
-            $table->string('image')->nullable(); // Nuevo campo para la imagen
             $table->tinyInteger('status')->default(1);
             $table->unsignedBigInteger('categoryId');
             $table->foreign('categoryId')->references('id')->on('categories');

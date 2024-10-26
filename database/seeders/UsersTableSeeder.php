@@ -15,47 +15,46 @@ class UsersTableSeeder extends Seeder
      */
     public function run()
     {
-        // Insert multiple users
-        DB::table('users')->insert([
+        $users = [
             [
                 'name' => 'Alvaro Ivan',
                 'lastName' => 'Porcel',
                 'secondLastName' => 'Moreno',
                 'role' => 'Administrador',
-                'location' => 'Urbanizacion Manantial',
+                'location' => 'Urbanización Manantial',
                 'status' => 1,
                 'email' => 'porcel.moreno.alvaro@gmail.com',
                 'companyName' => 'Porcel',
                 'email_verified_at' => now(),
-                'password' => Hash::make('12345678'), // Contraseña encriptada
+                'password' => Hash::make('12345678'),
                 'userId' => null,
                 'created_at' => now(),
                 'updated_at' => now(),
             ],
             [
                 'name' => 'Juan',
-                'lastName' => 'Perez',
+                'lastName' => 'Pérez',
                 'secondLastName' => 'Calisaya',
                 'role' => 'Productor',
-                'location' => 'Calle los lirios',
+                'location' => 'Calle los Lirios',
                 'status' => 1,
                 'email' => 'Jperez@gmail.com',
-                'companyName' => 'Perez',
+                'companyName' => 'Pérez',
                 'email_verified_at' => now(),
-                'password' => Hash::make('hola1234'), // Contraseña encriptada
+                'password' => Hash::make('hola1234'),
                 'userId' => null,
                 'created_at' => now(),
                 'updated_at' => now(),
             ],
             [
                 'name' => 'Carlos',
-                'lastName' => 'Gonzalez',
-                'secondLastName' => 'Perez',
+                'lastName' => 'González',
+                'secondLastName' => 'Pérez',
                 'role' => 'Cliente',
                 'location' => 'Avenida Ayacucho',
                 'status' => 1,
                 'email' => 'carlosg@gmail.com',
-                'companyName' => 'Gonzalez',
+                'companyName' => 'González',
                 'email_verified_at' => now(),
                 'password' => Hash::make('carlos1234'),
                 'userId' => null,
@@ -67,16 +66,19 @@ class UsersTableSeeder extends Seeder
                 'lastName' => 'Rosales',
                 'secondLastName' => '',
                 'role' => 'Productor',
-                'location' => 'Av Aniceto arce',
+                'location' => 'Av Aniceto Arce',
                 'status' => 1,
                 'email' => 'DavidR@gmail.com',
                 'companyName' => 'Rosales',
                 'email_verified_at' => now(),
-                'password' => Hash::make('david1234'), // Contraseña encriptada
+                'password' => Hash::make('david1234'),
                 'userId' => null,
                 'created_at' => now(),
                 'updated_at' => now(),
             ],
-        ]);
+        ];
+        
+        DB::table('users')->insert($users);
+        
     }
 }

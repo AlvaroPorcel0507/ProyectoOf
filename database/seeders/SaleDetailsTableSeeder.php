@@ -14,15 +14,15 @@ class SaleDetailsTableSeeder extends Seeder
      */
     public function run(): void
     {
-        DB::table('sale_details')->insert([
+        $sale_details = [
             [
                 'quantity' => 2,
                 'unitPrice' => 250.38,
-                'totalProduct' => 500.76,  // Cantidad * Precio unitario
-                'salesId' => 1,  // ID de la venta
-                'productsId' => 1,  // ID del producto
-                'created_at' => Carbon::now(),
-                'updated_at' => Carbon::now(),
+                'totalProduct' => 500.76,
+                'salesId' => 1,
+                'productsId' => 1,
+                'created_at' => now(),
+                'updated_at' => now(),
             ],
             [
                 'quantity' => 4,
@@ -30,8 +30,8 @@ class SaleDetailsTableSeeder extends Seeder
                 'totalProduct' => 1020.48,
                 'salesId' => 2,
                 'productsId' => 2,
-                'created_at' => Carbon::now(),
-                'updated_at' => Carbon::now(),
+                'created_at' => now(),
+                'updated_at' => now(),
             ],
             [
                 'quantity' => 4,
@@ -39,8 +39,8 @@ class SaleDetailsTableSeeder extends Seeder
                 'totalProduct' => 1020.48,
                 'salesId' => 3,
                 'productsId' => 2,
-                'created_at' => Carbon::now(),
-                'updated_at' => Carbon::now(),
+                'created_at' => now(),
+                'updated_at' => now(),
             ],
             [
                 'quantity' => 1,
@@ -48,9 +48,12 @@ class SaleDetailsTableSeeder extends Seeder
                 'totalProduct' => 250.99,
                 'salesId' => 3,
                 'productsId' => 3,
-                'created_at' => Carbon::now(),
-                'updated_at' => Carbon::now(),
-            ]
-        ]);
+                'created_at' => now(),
+                'updated_at' => now(),
+            ],
+        ];
+        
+        DB::table('sale_details')->insert($sale_details);
+        
     }
 }

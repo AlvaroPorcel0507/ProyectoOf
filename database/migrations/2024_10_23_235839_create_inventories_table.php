@@ -14,10 +14,10 @@ return new class extends Migration
         Schema::create('inventories', function (Blueprint $table) {
             $table->id();
             $table->decimal('quantity',10,2);
-
+            $table->string('measurementUnit');
+            $table->decimal('unitPrice', 10, 2);
             $table->unsignedBigInteger('userId');
             $table->foreign('userId')->references('id')->on('users');
-
             $table->unsignedBigInteger('productId');
             $table->foreign('productId')->references('id')->on('products');
             $table->timestamps();

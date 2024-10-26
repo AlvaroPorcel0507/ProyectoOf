@@ -17,27 +17,27 @@ class CategoriesTableSeeder extends Seeder
             [
                 'name' => 'Legumbres',
                 'status' => 1,
-                'userId' => 1, 
+                'userId' => 1,
             ],
             [
                 'name' => 'Hortalizas',
                 'status' => 1,
-                'userId' => 1, 
+                'userId' => 1,
             ],
             [
-                'name' => 'Tuberculos',
+                'name' => 'Tubérculos',
                 'status' => 1,
-                'userId' => 1, 
+                'userId' => 1,
             ],
             [
                 'name' => 'Books',
-                'status' => 0, 
-                'userId' => 3, 
+                'status' => 0,
+                'userId' => 1,
             ],
             [
                 'name' => 'Toys',
                 'status' => 0,
-                'userId' => null, // Sin usuario asignado
+                'userId' => 1, // Sin usuario asignado
             ],
         ];
 

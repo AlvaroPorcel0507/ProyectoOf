@@ -35,20 +35,26 @@ class SalesController extends Controller
 
     public function create()
     {
-        // Obtener todos los productores
-        $producers = User::where('role', 'Productor')->get();
+        // Obtener todos los productos que están activos
+        $products = Product::where('status', 1)->get();
 
-        return view('livewire.sales.create', compact('producers'));
+        return view('livewire.sales.create', compact('products'));
     }
+
 
     // Método para obtener productos basados en el productor seleccionado
     public function getProductsByProducer($userId)
     {
-        // Obtener todos los productos asociados al productor con el userId proporcionado
-        $products = Product::where('userId', $userId)->get();
+        // Obtener productos asociados al productor con los campos necesarios
+        $products = Product::where('userId', $userId)
+            ->select('id', 'name', 'description', 'unitPrice', 'stock')
+            ->get();
 
         return response()->json($products);
     }
+
+ 
+
 
     public function store(Request $request)
     {

@@ -93,6 +93,9 @@ Route::middleware(['auth'])->group(function () {
     // Ruta para mostrar el formulario de creación de una nueva venta
     Route::get('/sales/create', [SalesController::class, 'create'])->name('sales.create');
 
+Route::get('/products/search', [SalesController::class, 'search'])->name('products.search');
+
+
     // Ruta para almacenar una nueva venta
     Route::post('/sales', [SalesController::class, 'store'])->name('sales.store');
     Route::get('/sales/{id}/detail', [SalesController::class, 'show'])->name('sales.show');

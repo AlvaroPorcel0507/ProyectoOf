@@ -2,10 +2,11 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Inventory;
-use App\Models\Product;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\DB;
+use App\Models\Product;
+use App\Models\Inventory;
+use App\Models\TotalProduct;
 
 
 class ProductsController extends Controller
@@ -33,35 +34,79 @@ class ProductsController extends Controller
 
     public function store(Request $request)
     {
+        // Validación de los datos de entrada
         $request->validate([
-            'name' => 'required|max:100|regex:/^[a-zA-Z\s]+$/',
-            'description' => 'required|max:500|regex:/^[a-zA-Z\s]+$/',
-            'quantity' => 'required|numeric|min:0',
-            'measurementUnit' => 'required',
-            'unitPrice' => 'required|max:50|regex:/^\d{1,5}(\.\d{0,2})?$/',
-            'categoryId' => 'required|numeric|min:1|max:20',
-            'image' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048', // Validación de imagen
+            'name' => 'required|string|max:255',
+            'description' => 'required|string',
+            'quantity' => 'required|numeric',
+            'measurementUnit' => 'required|in:Caja,Carga',
+            'unitPrice' => 'required|numeric',
+            'categoryId' => 'required|exists:categories,id',
         ]);
 
-        // Calcular el stock basado en la unidad de medida
-        $conversionFactor = $request->measurementUnit === 'Caja' ? 25 : 60; // Caja: 25, Carga: 60
-        $stock = $request->quantity * $conversionFactor;
+        // Convertir la cantidad de acuerdo a la unidad de medida seleccionada
+        $quantity = $request->input('quantity');
+        $measurementUnit = $request->input('measurementUnit');
+        $convertedQuantity = ($measurementUnit === 'Caja') ? ($quantity * 25) : ($quantity * 60);
 
-        // Manejar la imagen
-        $image = $request->file('image')->store('image', 'public'); // Guardar imagen en public/storage/images
+        // Iniciar transacción
+        DB::beginTransaction();
 
-        Product::create([
-            'name' => $request->name,
-            'description' => $request->description,
-            'measurementUnit' => $request->measurementUnit,
-            'unitPrice' => $request->unitPrice,
-            'stock' => $stock,
-            'image' => $image, // Almacenar la ruta de la imagen
-            'categoryId' => $request->categoryId,
-            'userId' => auth()->id(), // Asumiendo que estás guardando el ID del usuario autenticado
-        ]);
+        try {
+            // Verificar si el producto ya existe
+            $product = Product::where('name', $request->input('name'))->first();
 
-        return redirect()->route('products.index')->with('success', 'Producto creado exitosamente.');
+            if ($product) {
+                // Si el producto ya existe, actualizar el stock
+                $product->stock += $convertedQuantity;
+                $product->save();
+            } else {
+                // Si el producto no existe, crear un nuevo producto
+                $product = Product::create([
+                    'name' => $request->input('name'),
+                    'description' => $request->input('description'),
+                    'stock' => $convertedQuantity,
+                    'status' => 1,
+                    'categoryId' => $request->input('categoryId'),
+                ]);
+            }
+
+            // Registrar en la tabla 'inventories'
+            Inventory::create([
+                'quantity' => $request->input('quantity'),
+                'measurementUnit' => $measurementUnit,
+                'unitPrice' => $request->input('unitPrice'),
+                'userId' => auth()->id(), // ID del usuario productor autenticado
+                'productId' => $product->id,
+            ]);
+
+            // Actualizar o insertar en la tabla 'total_products'
+            $totalProduct = TotalProduct::where('userId', auth()->id())
+                ->where('productId', $product->id)
+                ->first();
+
+            if ($totalProduct) {
+                // Si ya existe un registro, actualizar el stock
+                $totalProduct->stock += $convertedQuantity;
+                $totalProduct->save();
+            } else {
+                // Si no existe, crear un nuevo registro
+                TotalProduct::create([
+                    'stock' => $convertedQuantity,
+                    'userId' => auth()->id(),
+                    'productId' => $product->id,
+                ]);
+            }
+
+            // Confirmar la transacción
+            DB::commit();
+            return redirect()->route('products.index')->with('success', 'Producto registrado exitosamente.');
+
+        } catch (\Exception $e) {
+            // Revertir la transacción en caso de error
+            DB::rollBack();
+            return redirect()->back()->withErrors(['error' => 'Ocurrió un error durante el registro: ' . $e->getMessage()]);
+        }
     }
 
 

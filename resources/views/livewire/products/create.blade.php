@@ -34,12 +34,6 @@
                     <label for="name">Nombre del Producto</label>
                     <input type="text" name="name" id="name" class="form-control" required>
                 </div>
-                <div class="form-group">
-                    <label for="image">Imagen</label>
-                    <input type="file" name="image" id="image" accept="image/*" required>
-                </div>
-
-
 
                 <div class="form-group">
                     <label for="description">Descripcion Breve</label>
@@ -53,13 +47,12 @@
                         <option value="Caja">Caja</option>
                         <option value="Carga">Carga</option>
                     </select>
-                </div> 
+                </div>
 
                 <div class="form-group">
                     <label for="quantity">Cantidad</label>
-                    <input type="number" name="quantity" id="quantity" class="form-control" required>
-                </div>
-
+                    <input type="text" name="quantity" id="quantity" class="form-control" required>
+                </div> 
 
                 <div class="form-group">
                     <label for="unitPrice">Precio Unitario Bs.</label>

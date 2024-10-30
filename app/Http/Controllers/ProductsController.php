@@ -33,81 +33,91 @@ class ProductsController extends Controller
     }
 
     public function store(Request $request)
-    {
-        // Validación de los datos de entrada
-        $request->validate([
-            'name' => 'required|string|max:255',
-            'description' => 'required|string',
-            'quantity' => 'required|numeric',
-            'measurementUnit' => 'required|in:Caja,Carga',
-            'unitPrice' => 'required|numeric',
-            'categoryId' => 'required|exists:categories,id',
-        ]);
+{
+    // Validar el request
+    $request->validate([
+        'productSelect' => 'nullable|exists:products,id',
+        'newProductName' => 'nullable|string|max:255',
+        'measurementUnit' => 'required|string',
+        'quantity' => 'required|numeric',
+        'unitPrice' => 'required|numeric',
+        'categoryId' => 'required|exists:categories,id',
+    ]);
 
-        // Convertir la cantidad de acuerdo a la unidad de medida seleccionada
-        $quantity = $request->input('quantity');
-        $measurementUnit = $request->input('measurementUnit');
-        $convertedQuantity = ($measurementUnit === 'Caja') ? ($quantity * 25) : ($quantity * 60);
+    DB::beginTransaction(); // Iniciar la transacción
 
-        // Iniciar transacción
-        DB::beginTransaction();
+    try {
+        // Obtener la cantidad según la unidad seleccionada
+        $quantityInKg = $request->quantity; // Cantidad ingresada
 
-        try {
-            // Verificar si el producto ya existe
-            $product = Product::where('name', $request->input('name'))->first();
+        // Realizar la conversión de acuerdo a la unidad
+        if ($request->measurementUnit === 'Caja') {
+            $quantityInKg *= 25; // Convertir a kilogramos
+        } elseif ($request->measurementUnit === 'Carga') {
+            $quantityInKg *= 60; // Convertir a kilogramos
+        }
 
-            if ($product) {
-                // Si el producto ya existe, actualizar el stock
-                $product->stock += $convertedQuantity;
-                $product->save();
-            } else {
-                // Si el producto no existe, crear un nuevo producto
-                $product = Product::create([
-                    'name' => $request->input('name'),
-                    'description' => $request->input('description'),
-                    'stock' => $convertedQuantity,
-                    'status' => 1,
-                    'categoryId' => $request->input('categoryId'),
-                ]);
-            }
+        // Verificar si se ha seleccionado un producto existente o si se va a crear uno nuevo
+        if ($request->filled('productSelect')) {
+            // Se seleccionó un producto existente
+            $product = Product::findOrFail($request->productSelect);
 
-            // Registrar en la tabla 'inventories'
+            // Actualizar el stock del producto
+            $product->stock += $quantityInKg; // Incrementar el stock según la cantidad convertida
+            $product->unitPrice = $request->unitPrice; // Actualizar el precio unitario
+            $product->save();
+
+            // Actualizar el stock en total_products
+            TotalProduct::updateOrCreate(
+                ['productId' => $product->id, 'userId' => auth()->id()],
+                ['stock' => $product->stock]
+            );
+
+            // Solo registrar un nuevo inventario
             Inventory::create([
-                'quantity' => $request->input('quantity'),
-                'measurementUnit' => $measurementUnit,
-                'unitPrice' => $request->input('unitPrice'),
-                'userId' => auth()->id(), // ID del usuario productor autenticado
+                'quantity' => $quantityInKg,
+                'measurementUnit' => $request->measurementUnit,
+                'unitPrice' => $request->unitPrice, // Usar el precio proporcionado
+                'userId' => auth()->id(),
                 'productId' => $product->id,
             ]);
+        } else {
+            // Se debe crear un nuevo producto
+            $newProduct = Product::create([
+                'name' => $request->newProductName,
+                'description' => $request->description,
+                'stock' => $quantityInKg, // Se asume que al crear, se establece el stock inicial
+                'unitPrice' => $request->unitPrice, // Guardar el precio unitario
+                'userId' => auth()->id(),
+                'categoryId' => $request->categoryId,
+            ]);
 
-            // Actualizar o insertar en la tabla 'total_products'
-            $totalProduct = TotalProduct::where('userId', auth()->id())
-                ->where('productId', $product->id)
-                ->first();
+            // Registrar un nuevo inventario para el nuevo producto
+            Inventory::create([
+                'quantity' => $quantityInKg,
+                'measurementUnit' => $request->measurementUnit,
+                'unitPrice' => $request->unitPrice,
+                'userId' => auth()->id(),
+                'productId' => $newProduct->id,
+            ]);
 
-            if ($totalProduct) {
-                // Si ya existe un registro, actualizar el stock
-                $totalProduct->stock += $convertedQuantity;
-                $totalProduct->save();
-            } else {
-                // Si no existe, crear un nuevo registro
-                TotalProduct::create([
-                    'stock' => $convertedQuantity,
-                    'userId' => auth()->id(),
-                    'productId' => $product->id,
-                ]);
-            }
-
-            // Confirmar la transacción
-            DB::commit();
-            return redirect()->route('products.index')->with('success', 'Producto registrado exitosamente.');
-
-        } catch (\Exception $e) {
-            // Revertir la transacción en caso de error
-            DB::rollBack();
-            return redirect()->back()->withErrors(['error' => 'Ocurrió un error durante el registro: ' . $e->getMessage()]);
+            // Registrar el nuevo producto en total_products
+            TotalProduct::create([
+                'stock' => $newProduct->stock,
+                'userId' => auth()->id(),
+                'productId' => $newProduct->id,
+            ]);
         }
+
+        DB::commit(); // Confirmar la transacción
+        return redirect()->route('products.index')->with('success', 'Producto registrado correctamente.');
+    } catch (\Exception $e) {
+        DB::rollBack(); // Revertir la transacción en caso de error
+        return redirect()->back()->withErrors(['error' => 'Ocurrió un error al registrar el producto.']);
     }
+}
+
+
 
 
     public function edit(Product $product)

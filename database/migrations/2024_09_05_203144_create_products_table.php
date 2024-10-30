@@ -16,6 +16,7 @@ return new class extends Migration
             $table->string('name');
             $table->string('description');
             $table->decimal('stock', 10, 2)->default(0);
+            $table->decimal('unitPrice',10,2);
             $table->tinyInteger('status')->default(1);
             $table->smallInteger('userId')->nullable();
             $table->unsignedBigInteger('categoryId');

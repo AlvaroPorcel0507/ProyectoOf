@@ -18,6 +18,7 @@ class ProductTableSeeder extends Seeder
                 'name' => 'Papa',
                 'description' => 'La papa es uno de los alimentos básicos más populares y consumidos en todo el mundo.',
                 'stock' => 100.00,
+                'unitPrice' => 12.50,
                 'status' => 1,
                 'userId' => 2,
                 'categoryId' => 3, // ID existente
@@ -28,6 +29,7 @@ class ProductTableSeeder extends Seeder
                 'name' => 'Lenteja',
                 'description' => 'Las lentejas son un tipo de legumbre altamente nutritiva y versátil.',
                 'stock' => 200.50,
+                'unitPrice' => 18.75,
                 'status' => 1,
                 'userId' => 2,
                 'categoryId' => 1, // ID existente
@@ -38,6 +40,7 @@ class ProductTableSeeder extends Seeder
                 'name' => 'Acelga',
                 'description' => 'La acelga es una hoja verde fresca y sabrosa, reconocida por su alto contenido en nutrientes esenciales.',
                 'stock' => 0,
+                'unitPrice' => 10.00,
                 'status' => 1,
                 'userId' => 2,
                 'categoryId' => 2, // ID existente
@@ -48,6 +51,7 @@ class ProductTableSeeder extends Seeder
                 'name' => 'Product 4',
                 'description' => 'Description of Product 4',
                 'stock' => 150.75,
+                'unitPrice' => 20.00,
                 'status' => 1,
                 'userId' => 2,
                 'categoryId' => 3, // ID existente
@@ -58,6 +62,7 @@ class ProductTableSeeder extends Seeder
                 'name' => 'Product 5',
                 'description' => 'Description of Product 5',
                 'stock' => 50.00,
+                'unitPrice' => 15.50,
                 'status' => 1,
                 'userId' => 2,
                 'categoryId' => 2, // ID existente
@@ -68,6 +73,7 @@ class ProductTableSeeder extends Seeder
                 'name' => 'Product 6',
                 'description' => 'Description of Product 6',
                 'stock' => 50.00,
+                'unitPrice' => 15.50,
                 'status' => 1,
                 'userId' => 2,
                 'categoryId' => 3, // ID existente

@@ -148,7 +148,6 @@
                         <th scope="col">Descripción</th>
                         <th scope="col">Stock Total Kgs.</th> 
                         <th scope="col">Detalles</th>
-                        <th scope="col">Acciones</th>
                     </tr>
                 </thead>
                     <tbody>
@@ -178,21 +177,6 @@
                                         data-product-measurementUnit="{{ $product->measurementUnit }}" 
                                         data-product-categoryid="{{ optional(Category::find($product->categoryId))->name }}">
                                             <i class="fas fa-info-circle"></i>
-                                    </button>
-                                </td>
-                                <td>
-                                    <a href="{{ route('products.edit', $product->id) }}" class="btn btn-info">
-                                        <i class="fas fa-edit"></i>
-                                    </a>
-                                    <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#toggleStatusModal" 
-                                        data-product-id="{{ $product->id }}" data-product-name="{{ $product->name }}" data-product-description="{{ $product->description }}" 
-                                        data-product-stock="{{ $product->stock }}" data-product-unitPrice="{{ $product->unitPrice }}" data-product-categoryId="{{ $product->categoryId }}">
-                                        <i class="fas fa-trash"></i>
-                                    </button>
-                                    <button type="button" class="btn btn-warning" data-bs-toggle="modal" data-bs-target="#surtirProductModal" 
-                                        data-product-id="{{ $product->id }}" data-product-name="{{ $product->name }}" data-product-stock="{{ $product->stock }}"
-                                        data-product-measurementUnit="{{ $product->measurementUnit }}">
-                                        <i class="fas fa-plus-square"></i>
                                     </button>
                                 </td>
                             </tr>

@@ -116,48 +116,74 @@ class ProductsController extends Controller
     }
 
     public function update(Request $request, $id)
-    {
-        // Validar los datos de entrada
-        $validatedData = $request->validate([
-            'name' => 'required|string|max:255',
-            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048', // Asegúrate de ajustar el tamaño máximo según tus necesidades
-            'description' => 'required|string|max:1000',
-            'stock' => 'required|integer|min:0',
-            'unitPrice' => 'required|numeric|min:0',
-            'categoryId' => 'required|exists:categories,id',
-        ]);
+{
+    // Validar los datos del formulario
+    $request->validate([
+        'quantity' => 'required|numeric',
+        'measurementUnit' => 'required|in:Caja,Carga',
+        'unitPrice' => 'required|numeric',
+        'categoryId' => 'required|exists:categories,id',
+    ]);
 
-        // Encontrar el producto por ID
-        $product = Product::findOrFail($id);
-
-        // Actualizar el nombre y la descripción
-        $product->name = $validatedData['name'];
-        $product->description = $validatedData['description'];
-        $product->stock = $validatedData['stock'];
-        $product->unitPrice = $validatedData['unitPrice'];
-        $product->categoryId = $validatedData['categoryId'];
-
-        // Manejar la imagen si se proporciona
-        if ($request->hasFile('image')) {
-            // Eliminar la imagen anterior si existe
-            if ($product->image) {
-                Storage::disk('public')->delete($product->image);
-            }
-
-            // Guardar la nueva imagen y obtener su ruta
-            $path = $request->file('image')->store('products', 'public');
-            $product->image = $path; // Actualizar el campo de imagen en el producto
+    // Obtener el producto por su ID
+    $product = Product::findOrFail($id);
+    $measurementUnit = $request->input('measurementUnit');
+    
+    // Convertir la cantidad de acuerdo a la unidad de medida seleccionada
+    $quantity = $request->input('quantity');
+    $convertedQuantity = ($measurementUnit === 'Caja') ? ($quantity * 25) : ($quantity * 60);
+    
+    // Verificar si la cantidad es negativa para decrementar el stock
+    if ($quantity < 0) {
+        // Validar que la reducción no baje el stock por debajo del mínimo permitido
+        if (($product->stock + $convertedQuantity) < (($measurementUnit === 'Caja') ? 25 : 60)) {
+            return redirect()->back()->withErrors(['error' => 'El stock no puede reducirse por debajo de la cantidad mínima de una ' . $measurementUnit . '.']);
         }
-
-        // Guardar los cambios en la base de datos
-        $product->save();
-
-        // Redireccionar a la lista de productos con un mensaje de éxito
-        return redirect()->route('products.index')->with('success', 'Producto actualizado correctamente.');
     }
 
+    // Iniciar transacción
+    DB::beginTransaction();
+    try {
+        // Actualizar el stock del producto
+        $product->stock += $convertedQuantity;
+        $product->save();
 
+        // Buscar el inventario existente
+        $inventory = Inventory::where('productId', $product->id)->firstOrFail();
+        
+        // Actualizar el registro existente en la tabla 'inventories'
+        $inventory->quantity += $quantity; // Aumentar o disminuir según la cantidad ingresada
+        $inventory->measurementUnit = $measurementUnit; // Mantener la unidad de medida
+        $inventory->unitPrice = $request->input('unitPrice'); // Actualizar el precio unitario
+        $inventory->userId = auth()->id(); // Actualizar el ID del usuario
+        $inventory->save();
 
+        // Actualizar la tabla 'total_products'
+        $totalProduct = TotalProduct::where('userId', auth()->id())
+            ->where('productId', $product->id)
+            ->first();
+
+        if ($totalProduct) {
+            $totalProduct->stock += $convertedQuantity;
+            $totalProduct->save();
+        } else {
+            TotalProduct::create([
+                'stock' => $convertedQuantity,
+                'userId' => auth()->id(),
+                'productId' => $product->id,
+            ]);
+        }
+
+        // Confirmar la transacción
+        DB::commit();
+        return redirect()->route('products.index')->with('success', 'Producto actualizado exitosamente.');
+
+    } catch (\Exception $e) {
+        // Revertir la transacción en caso de error
+        DB::rollBack();
+        return redirect()->back()->withErrors(['error' => 'Ocurrió un error durante la actualización: ' . $e->getMessage()]);
+    }
+}
 
     public function delete(Product $product)
     {

@@ -23,6 +23,7 @@
             <div class="table-responsive">
                 <table class="table table-hover align-middle text-center">
                     <thead>
+                        
                         <tr>
                             <th scope="col">Nro.</th>
                             <th scope="col">Nombre Producto</th>
@@ -145,7 +146,7 @@
                         <th scope="col">Nro.</th>
                         <th scope="col">Nombre Producto</th>
                         <th scope="col">Descripción</th>
-                        <th scope="col">Imagen</th> <!-- Nueva columna para imagen -->
+                        <th scope="col">Stock Total Kgs.</th> 
                         <th scope="col">Detalles</th>
                         <th scope="col">Acciones</th>
                     </tr>
@@ -162,12 +163,8 @@
                                     {{ optional(Product::find($product->id))->name }}
                                 </td>
                                 <td>{{ $product->description }}</td>
-                                <td class="py-2 px-4 border">
-                                    @if($product->image)
-                                        <img src="{{ asset('storage/' . $product->image) }}" alt="{{ $product->name }}" class="w-24 h-24 object-cover">
-                                    @else
-                                        <img src="{{ asset('images/default-product.png') }}" alt="Imagen por defecto" class="w-24 h-24 object-cover">
-                                    @endif
+                                <td>
+                                    {{ $product->stock }}
                                 </td>
 
                                 <td>   
@@ -253,9 +250,9 @@
             <div class="modal-body">
                 <table class="table table-hover align-middle text-center">
                     <tr>
-                        <th>Descripcion</th>
-                        <th>Medida Ingresada</th>
-                        <th>Stock (Kgs.)</th>
+                        <th>Productor</th>
+                        <th>Stock Disponible Kgs.</th>
+                        <th>Precio Unitario</th>
                         <th>Precio Unitario Bs.</th>
                         <th>Categoria</th>
                     </tr>

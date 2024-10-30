@@ -37,13 +37,27 @@
                         <option value="" selected>SELECCIONE UN PRODUCTO</option>
                         @foreach (Product::all() as $product)
                             @if ($product->status == 1)
-                                <option value="{{ $product->id }}" 
-                                        data-description="{{ $product->description }}" 
-                                        data-measurement-unit="{{ optional(Inventory::find($product->id))->measurementUnit }}" 
-                                        data-category-id="{{ $product->categoryId }}"
-                                        data-unit-price="{{ optional(Inventory::find($product->id))->unitPrice }}">
-                                    {{ $product->name }}
-                                </option>
+                            @php
+                                $totalQuantity = Inventory::where('productId', $product->id)->sum('quantity');
+            
+                                $measurementUnit = Inventory::where('productId', $product->id)->first()->measurementUnit ?? '';
+            
+                                if ($measurementUnit === 'Caja') {
+                                    $convertedQuantity = $totalQuantity / 25;
+                                } elseif ($measurementUnit === 'Carga') {
+                                    $convertedQuantity = $totalQuantity / 60;
+                                } else {
+                                    $convertedQuantity = $totalQuantity;
+                                }
+                            @endphp
+                            <option value="{{ $product->id }}" 
+                                    data-description="{{ $product->description }}" 
+                                    data-measurement-unit="{{ $measurementUnit }}" 
+                                    data-category-id="{{ $product->categoryId }}"
+                                    data-quantity="{{ $convertedQuantity }}"
+                                    data-unit-price="{{ optional(Inventory::where('productId', $product->id)->first())->unitPrice }}">
+                                {{ $product->name }}
+                            </option>
                             @endif
                         @endforeach
                     </select>
@@ -66,6 +80,10 @@
                         <option value="Caja">Caja</option>
                         <option value="Carga">Carga</option>
                     </select>
+                </div>
+
+                <div class="form-group">
+                    <h1>Stock Disponible: <span id="currentStock">0</span></h1> <!-- Actualiza el stock aquí -->
                 </div>
 
                 <div class="form-group">
@@ -121,21 +139,19 @@
     document.addEventListener('DOMContentLoaded', function() {
         const nameInput = document.getElementById('newProductName');
         const descriptionInput = document.getElementById('description');
-        const stockInput = document.getElementById('quantity'); // Cambiar a 'quantity'
+        const stockInput = document.getElementById('quantity');
         const unitPriceInput = document.getElementById('unitPrice');
         const categoryIdInput = document.getElementById('categoryId');
+        const currentStock = document.getElementById('currentStock');
 
         document.getElementById('openConfirmModal').addEventListener('click', function() {
-            // Cargar los datos en el modal
-            descriptionInput.value = descriptionInput.value; // Se puede agregar más información si es necesario
-
             // Mostrar el modal
             $('#confirmModal').modal('show');
         });
 
         // Enviar el formulario al confirmar
         document.getElementById('confirmSubmit').addEventListener('click', function() {
-            document.getElementById('productsForm').submit(); // Enviar el formulario
+            document.getElementById('productsForm').submit();
         });
 
         document.getElementById('productSelect').addEventListener('change', function() {
@@ -147,6 +163,7 @@
                 document.getElementById('measurementUnit').value = selectedOption.getAttribute('data-measurement-unit');
                 document.getElementById('categoryId').value = selectedOption.getAttribute('data-category-id');
                 document.getElementById('unitPrice').value = selectedOption.getAttribute('data-unit-price');
+                currentStock.textContent = selectedOption.getAttribute('data-quantity'); // Mostrar stock disponible
 
                 // Hacer los campos solo lectura
                 document.getElementById('description').readOnly = true;
@@ -161,6 +178,7 @@
                 document.getElementById('measurementUnit').value = '';
                 document.getElementById('categoryId').value = '';
                 document.getElementById('unitPrice').value = ''; // Limpiar el precio
+                currentStock.textContent = '0'; // Restablecer el stock
 
                 // Hacer los campos editables
                 document.getElementById('description').readOnly = false;

@@ -17,6 +17,8 @@ return new class extends Migration
             $table->decimal('unitPrice', 10, 2);
             $table->decimal('totalProduct', 10, 2)->nullable(false);
             $table->string('description')->default('Sin descripción');
+            $table->unsignedBigInteger('producerId');
+            $table->foreign('producerId')->references('id')->on('users');
             $table->unsignedBigInteger('salesId');
             $table->unsignedBigInteger('productsId');
             $table->foreign('salesId')->references('id')->on('sales');

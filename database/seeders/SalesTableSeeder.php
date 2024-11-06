@@ -17,7 +17,6 @@ class SalesTableSeeder extends Seeder
         $sales = [
             [
                 'status' => 1,
-                'producerId' => 2, // ID de un productor existente
                 'total' => 500.75,
                 'customerId' => 3, // ID de un cliente existente
                 'created_at' => now(),
@@ -25,7 +24,6 @@ class SalesTableSeeder extends Seeder
             ],
             [
                 'status' => 1,
-                'producerId' => 2, // ID de un productor existente
                 'total' => 1020.50,
                 'customerId' => 3, // ID de un cliente existente
                 'created_at' => now(),
@@ -33,7 +31,7 @@ class SalesTableSeeder extends Seeder
             ],
             [
                 'status' => 1,
-                'producerId' => 1, // ID de un productor existente
+             
                 'total' => 250.99,
                 'customerId' => 3, // ID de un cliente existente
                 'created_at' => now(),

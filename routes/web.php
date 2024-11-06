@@ -89,6 +89,9 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::post('sales/addToCart', [SalesController::class, 'addToCart'])->name('sales.addToCart');
     Route::post('sales/removeFromCart', [SalesController::class, 'removeFromCart'])->name('sales.removeFromCart');
     Route::post('sales/updateQuantity', [SalesController::class, 'updateQuantity'])->name('sales.updateQuantity');
+    // Ruta para procesar la venta
+Route::post('/sales/process', [SalesController::class, 'processSale'])->name('sales.processSale');
+
 });
 
 Route::middleware(['auth', 'verified'])->group(function () {

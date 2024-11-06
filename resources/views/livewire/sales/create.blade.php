@@ -4,6 +4,19 @@
 <div class="container">
     <h1>Crear Venta</h1>
 
+    <!-- Mostrar mensajes de éxito o error -->
+    @if(session('success'))
+        <div class="alert alert-success">
+            {{ session('success') }}
+        </div>
+    @endif
+
+    @if(session('error'))
+        <div class="alert alert-danger">
+            {{ session('error') }}
+        </div>
+    @endif
+
     <!-- Formulario para seleccionar categoría y producto -->
     <form method="GET" action="{{ route('sales.create') }}">
         <div class="row">
@@ -38,62 +51,63 @@
     </form>
 
     @if (isset($inventory) && count($inventory) > 0)
-    <div class="form-group mt-3">
-        <label>Inventarios del Producto Seleccionado:</label>
-        <table class="table table-bordered">
-            <thead>
-                <tr>
-                    <th>Producto (ID)</th>
-                    <th>Productor (ID)</th>
-                    <th>Stock Disponible</th>
-                    <th>Precio Unitario</th>
-                    <th>Acciones</th>
-                </tr>
-            </thead>
-            <tbody>
-                @foreach($inventory as $item)
+        <div class="form-group mt-3">
+            <label>Inventarios del Producto Seleccionado:</label>
+            <table class="table table-bordered">
+                <thead>
                     <tr>
-                        <!-- Nombre del producto y su ID -->
-                        <td>{{ $item['name'] }} (ID: {{ $item['productId'] }})</td>
-                        
-                        <!-- Nombre del productor y su ID -->
-                        <td>{{ $item['user']->name ?? 'Desconocido' }} (ID: {{ $item['user']->id }})</td>
-                        
-                        <!-- Stock disponible -->
-                        <td>{{ $item['quantity'] }}</td>
-                        
-                        <!-- Precio unitario -->
-                        <td>{{ $item['unitPrice'] }}</td>
-                        
-                        <td>
-                            <!-- Formulario para agregar al carrito -->
-                            <form action="{{ route('sales.addToCart') }}" method="POST" style="display:inline;">
-                                @csrf
-                                <input type="hidden" name="productId" value="{{ $item['productId'] }}"> <!-- ID del producto -->
-                                <input type="hidden" name="unitPrice" value="{{ $item['unitPrice'] }}"> <!-- Precio unitario -->
-                                <input type="hidden" name="productName" value="{{ $item['name'] }}"> <!-- Nombre del producto -->
-                                <input type="hidden" name="producerName" value="{{ $item['user']->name ?? 'Desconocido' }}"> <!-- Nombre del productor -->
-                                
-                                <input type="number" name="quantity" value="1" min="1" class="form-control" style="width: 70px; display: inline-block;" required>
-                                <button type="submit" class="btn btn-success btn-sm">Agregar</button>
-                            </form>
-                            
-                            <!-- Formulario para disminuir la cantidad -->
-                            <form action="{{ route('sales.removeFromCart') }}" method="POST" style="display:inline;">
-                                @csrf
-                                <input type="hidden" name="productId" value="{{ $item['productId'] }}">
-                                <button type="submit" class="btn btn-danger btn-sm">Disminuir</button>
-                            </form>
-                        </td>
+                        <th>Producto (ID)</th>
+                        <th>Productor (ID)</th>
+                        <th>Stock Disponible</th>
+                        <th>Precio Unitario</th>
+                        <th>Acciones</th>
                     </tr>
-                @endforeach
-            </tbody>
-        </table>
-    </div>
-@else
-    <p>No se encontraron inventarios para el producto seleccionado.</p>
-@endif
-
+                </thead>
+                <tbody>
+                    @foreach($inventory as $item)
+                        <tr>
+                            <!-- Mostrar nombre y ID del producto -->
+                            <td>{{ $item['product']->name }} (ID: {{ $item['product']->id }})</td>
+                            
+                            <!-- Mostrar nombre y ID del productor -->
+                            <td>{{ $item['user']->name ?? 'Desconocido' }} (ID: {{ $item['user']->id }})</td>
+                            
+                            <!-- Stock disponible -->
+                            <td>{{ $item['quantity'] }}</td>
+                            
+                            <!-- Precio unitario -->
+                            <td>{{ $item['unitPrice'] }}</td>
+                            
+                            <td>
+                                <!-- Formulario para agregar al carrito -->
+                                <form action="{{ route('sales.addToCart') }}" method="POST" style="display:inline;">
+                                    @csrf
+                                    <input type="hidden" name="productId" value="{{ $item['product']->id }}"> <!-- ID del producto -->
+                                    <input type="hidden" name="unitPrice" value="{{ $item['unitPrice'] }}"> <!-- Precio unitario -->
+                                    <input type="hidden" name="productName" value="{{ $item['product']->name }}"> <!-- Nombre del producto -->
+                                    <input type="hidden" name="producerName" value="{{ $item['user']->name ?? 'Desconocido' }}"> <!-- Nombre del productor -->
+                                    <input type="hidden" name="producerId" value="{{ $item['user']->id }}"> <!-- ID del productor (nuevo campo) -->
+                                    
+                                    <!-- Validar que la cantidad no sea mayor al stock disponible -->
+                                    <input type="number" name="quantity" value="1" min="1" max="{{ $item['quantity'] }}" class="form-control" style="width: 70px; display: inline-block;" required>
+                                    <button type="submit" class="btn btn-success btn-sm">Agregar</button>
+                                </form>
+                                
+                                <!-- Formulario para disminuir la cantidad -->
+                                <form action="{{ route('sales.removeFromCart') }}" method="POST" style="display:inline;">
+                                    @csrf
+                                    <input type="hidden" name="productId" value="{{ $item['product']->id }}">
+                                    <button type="submit" class="btn btn-danger btn-sm">Disminuir</button>
+                                </form>
+                            </td>
+                        </tr>
+                    @endforeach
+                </tbody>
+            </table>
+        </div>
+    @else
+        <p>No se encontraron inventarios para el producto seleccionado.</p>
+    @endif
 
     <!-- Carrito -->
     <div class="mt-3">
@@ -118,6 +132,7 @@
                                 <form action="{{ route('sales.updateQuantity') }}" method="POST" style="display:inline;" class="update-quantity-form">
                                     @csrf
                                     <input type="hidden" name="productId" value="{{ $productId }}">
+                                    <input type="hidden" name="producerId" value="{{ $item['producer_id'] ?? '' }}"> <!-- ID del productor -->
                                     <input type="number" name="quantity" value="{{ $item['quantity'] }}" min="1" class="form-control quantity" style="width: 70px; display: inline-block;" required oninput="updateTotal()">
                                     <button type="submit" class="btn btn-primary btn-sm mt-2">Actualizar</button>
                                 </form>
@@ -134,7 +149,6 @@
                                 </form>
                             </td>
                         </tr>
-
                     @endforeach
                 </tbody>
             </table>
@@ -147,6 +161,20 @@
             <p>No hay productos en el carrito.</p>
         @endif
     </div>
+    <form action="{{ route('sales.processSale') }}" method="POST">
+    @csrf
+    @foreach(session('cart', []) as $productId => $item)
+
+        <input type="hidden" name="cart[{{ $productId }}][productId]" value="{{ $productId }}">
+        <input type="hidden" name="cart[{{ $productId }}][quantity]" value="{{ $item['quantity'] }}">
+        <input type="hidden" name="cart[{{ $productId }}][unitPrice]" value="{{ $item['unitPrice'] }}">
+        <input type="hidden" name="cart[{{ $productId }}][totalProduct]" value="{{ $item['totalProduct'] }}">
+        <input type="hidden" name="cart[{{ $productId }}][productName]" value="{{ $item['name'] }}">
+        <input type="hidden" name="cart[{{ $productId }}][producerId]" value="{{ $item['producer_id'] }}">
+    @endforeach
+    <button type="submit" class="btn btn-success">Vender Todos</button>
+</form>
+
 </div>
 
 <script>

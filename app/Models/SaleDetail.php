@@ -25,4 +25,8 @@ class SaleDetail extends Model
     {
         return $this->belongsTo(Product::class, 'productsId');
     }
+    public function producer()
+    {
+        return $this->belongsTo(User::class, 'producerId');
+    }
 }

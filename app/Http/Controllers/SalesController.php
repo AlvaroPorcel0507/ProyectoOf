@@ -34,48 +34,51 @@ class SalesController extends Controller
     }
 
     public function create(Request $request)
-{
-    // Obtener categorías activas (status = 1)
-    $categories = Category::where('status', 1)->get();
-
-    // Filtrar productos activos (status = 1) y por categoría si se pasa un filtro
-    $products = Product::where('status', 1); // Solo productos activos
-    if ($request->has('categoryId') && $request->categoryId != '') {
-        // Si hay una categoría seleccionada, filtrar productos por esa categoría
-        $products = $products->where('categoryId', $request->categoryId);
-    }
-    $products = $products->get();
-
-    // Obtener inventarios agrupados por producto y productor, solo si se pasa un producto seleccionado
-    $inventory = [];
-    if ($request->has('productId') && $request->productId != '') {
-        $inventory = Inventory::where('productId', $request->productId)
-            ->with('user')  // Obtener el productor relacionado
-            ->get()
-            ->groupBy(function($item) {
-                // Agrupar por combinación de productId y userId para obtener datos por productor
-                return $item->productId . '-' . $item->userId;
+    {
+        // Obtener categorías activas (status = 1)
+        $categories = Category::where('status', 1)->get();
+    
+        // Filtrar productos activos (status = 1) y por categoría si se pasa un filtro
+        $products = Product::where('status', 1); // Solo productos activos
+        if ($request->has('categoryId') && $request->categoryId != '') {
+            // Si hay una categoría seleccionada, filtrar productos por esa categoría
+            $products = $products->where('categoryId', $request->categoryId);
+        }
+        $products = $products->get();
+    
+        // Obtener inventarios agrupados por producto y productor, solo si se pasa un producto seleccionado
+        $inventory = [];
+        if ($request->has('productId') && $request->productId != '') {
+            $inventory = Inventory::where('productId', $request->productId)
+                ->with('user', 'product')  // Obtener el productor y el producto relacionado
+                ->get()
+                ->groupBy(function($item) {
+                    // Agrupar por combinación de productId y userId para obtener datos por productor
+                    return $item->productId . '-' . $item->userId;
+                });
+    
+            // Agrupar las cantidades y obtener el último precio unitario para cada grupo
+            $inventory = $inventory->map(function($group) {
+                $totalQuantity = $group->sum('quantity'); // Sumar las cantidades
+                $unitPrice = $group->last()->unitPrice;  // Obtener el último precio unitario del grupo
+    
+                // Incluir todos los detalles requeridos en el resultado
+                return [
+                    'product' => $group->first()->product,  // Producto completo
+                    'user' => $group->first()->user,       // Productor (usuario)
+                    'quantity' => $totalQuantity,          // Cantidad total disponible por productor
+                    'unitPrice' => $unitPrice              // Precio unitario
+                ];
             });
-
-        // Agrupar las cantidades y obtener el último precio unitario para cada grupo
-        $inventory = $inventory->map(function($group) {
-            $totalQuantity = $group->sum('quantity'); // Sumar las cantidades
-            $unitPrice = $group->last()->unitPrice;  // Obtener el último precio unitario del grupo
-
-            return [
-                'user' => $group->first()->user,   // Obtener el productor del primer elemento del grupo
-                'quantity' => $totalQuantity,      // Cantidad total por grupo
-                'unitPrice' => $unitPrice          // Precio unitario
-            ];
-        });
+        }
+    
+        return view('livewire.sales.create', [
+            'categories' => $categories,  // Categorías activas
+            'products' => $products,      // Productos activos filtrados
+            'inventory' => $inventory,    // Inventarios agrupados por producto y productor
+        ]);
     }
-
-    return view('livewire.sales.create', [
-        'categories' => $categories,  // Categorías activas
-        'products' => $products,      // Productos activos filtrados
-        'inventory' => $inventory,    // Inventarios agrupados por producto y productor
-    ]);
-}
+    
 
 
     public function addToCart(Request $request)
@@ -85,31 +88,39 @@ class SalesController extends Controller
     $unitPrice = $request->input('unitPrice');
     $productName = $request->input('productName');  // Nombre del producto
     $producerName = $request->input('producerName');  // Nombre del productor
-    
+    $producerId = $request->input('producerId');  // ID del productor
+
     // Asegúrate de que el carrito exista en la sesión
     $cart = session()->get('cart', []);
-    
+
+    // Crea una clave única para el producto basado en productId y producerId
+    $cartKey = $productId . '-' . $producerId;
+
     // Verifica si el producto ya está en el carrito
-    if (isset($cart[$productId])) {
+    if (isset($cart[$cartKey])) {
         // Si el producto ya está en el carrito, actualiza la cantidad
-        $cart[$productId]['quantity'] += $quantity;
-        $cart[$productId]['totalProduct'] = $cart[$productId]['unitPrice'] * $cart[$productId]['quantity'];  // Actualizar el total del producto
+        $cart[$cartKey]['quantity'] += $quantity;
+        $cart[$cartKey]['totalProduct'] = $cart[$cartKey]['unitPrice'] * $cart[$cartKey]['quantity'];  // Actualizar el total del producto
     } else {
         // Si el producto no está en el carrito, agrégalo
-        $cart[$productId] = [
+        $cart[$cartKey] = [
             'name' => $productName,
             'quantity' => $quantity,
             'unitPrice' => $unitPrice,
             'totalProduct' => $unitPrice * $quantity,
-            'producer_name' => $producerName,  // Agregar el nombre del productor
+            'producer_name' => $producerName,  // Nombre del productor
+            'producer_id' => $producerId,  // ID del productor
         ];
     }
-    
+
     // Guarda el carrito actualizado en la sesión
     session()->put('cart', $cart);
-    
+
     return redirect()->route('sales.create')->with('success', 'Producto agregado al carrito');
 }
+
+    
+
 
 
 
@@ -154,6 +165,75 @@ public function updateQuantity(Request $request)
     session()->put('cart', $cart);
 
     return redirect()->route('sales.create')->with('success', 'Cantidad actualizada');
+}
+public function processSale(Request $request)
+{
+    $cart = $request->input('cart'); // Obtener los productos del carrito
+
+    // Si el carrito está vacío, muestra el error y termina la ejecución
+    if (empty($cart)) {
+        return redirect()->route('sales.create')->with('error', 'No hay productos en el carrito para procesar la venta.');
+    }
+
+    // Obtener el cliente que está realizando la compra (puedes obtenerlo desde el usuario autenticado)
+    $customerId = auth()->user()->id;
+
+    // Calcular el total de la venta
+    $totalVenta = 0;
+    foreach ($cart as $item) {
+        $totalVenta += $item['totalProduct']; // Sumar los totales de cada producto
+    }
+
+    // Iniciar la transacción para asegurar la integridad
+    DB::beginTransaction();
+
+    try {
+        // Crear el registro de la venta
+        $sale = Sale::create([
+            'customerId' => $customerId,  // El cliente que hace la compra
+            'status' => 1,  // Estado de la venta (1 = pendiente)
+            'total' => $totalVenta,
+        ]);
+
+        // Procesar cada producto del carrito y agregarlo a sale_details
+        foreach ($cart as $item) {
+            // Tomar solo la primera parte del productId (antes del '-')
+            $productId = explode('-', $item['productId'])[0]; // Tomamos la primera parte
+            $producerId = $item['producerId']; // Asigna el producerId
+
+            // Verificar que el producto exista
+            $product = Product::find($productId);
+            $producer = User::find($producerId);
+
+            if ($product && $producer) {
+                // Crear el detalle de la venta sin afectar el stock por ahora
+                SaleDetail::create([
+                    'salesId' => $sale->id,
+                    'productsId' => $productId,
+                    'producerId' => $producerId,
+                    'quantity' => $item['quantity'],
+                    'unitPrice' => $item['unitPrice'],
+                    'totalProduct' => $item['totalProduct'],
+                    'description' => $item['productName'], // Usar el nombre del producto o una descripción
+                ]);
+            } else {
+                return redirect()->route('sales.create')->with('error', 'Uno o más productos no fueron encontrados.');
+            }
+        }
+
+        // Commit de la transacción
+        DB::commit();
+
+        // Limpiar el carrito después de la venta
+        session()->forget('cart');
+
+        return redirect()->route('sales.create')->with('success', 'Venta procesada con éxito.');
+    } catch (\Exception $e) {
+        // Rollback en caso de error
+        DB::rollback();
+
+        return redirect()->route('sales.create')->with('error', 'Hubo un problema al procesar la venta. Intenta nuevamente.');
+    }
 }
 
 }

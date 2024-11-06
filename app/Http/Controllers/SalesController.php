@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 use App\Models\Sale;
 use App\Models\SaleDetail;
 use App\Models\Product;
+use App\Models\Category;
+use App\Models\TotalProduct;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -35,25 +37,36 @@ class SalesController extends Controller
 
     public function create()
     {
-        // Obtener todos los productos que están activos
-        $products = Product::where('status', 1)->get();
+        $categories = Category::where('status', 1)->get();
+        $products = Product::where('status', 1)->get(); // Asegurarse de que el status es el correcto
 
-        return view('livewire.sales.create', compact('products'));
+        return view('livewire.sales.create', compact('categories', 'products'));
     }
 
 
-    // Método para obtener productos basados en el productor seleccionado
-    public function getProductsByProducer($userId)
+    public function getStockByProduct($productId)
     {
-        // Obtener productos asociados al productor con los campos necesarios
-        $products = Product::where('userId', $userId)
-            ->select('id', 'name', 'description', 'unitPrice', 'stock')
+        // Realizamos la consulta a la base de datos con las adaptaciones necesarias para SQLite
+        $stocks = DB::table('total_products')
+            ->join('users as u', 'total_products.userId', '=', 'u.id')
+            ->join('products as p', 'total_products.productId', '=', 'p.id')
+            ->select(
+                DB::raw("u.name || ' ' || u.lastName as producer_name"), // Concatenamos nombre y apellido
+                'p.unitPrice as unit_price', // Precio unitario desde productos
+                'total_products.stock'       // Stock disponible
+            )
+            ->where('total_products.productId', $productId)
+            ->where('u.role', 'Productor') // Asegurarse de que 'productor' esté en comillas simples
             ->get();
 
-        return response()->json($products);
+        // Verificamos si se encontraron datos y devolvemos el resultado en JSON
+        if ($stocks->isEmpty()) {
+            return response()->json(['message' => 'No se encontraron registros para el producto especificado'], 404);
+        }
+
+        return response()->json($stocks);
     }
 
- 
 
 
     public function store(Request $request)

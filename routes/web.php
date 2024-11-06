@@ -79,15 +79,15 @@ Route::middleware(['auth', 'verified'])->group(function () {
 Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/sales', [SalesController::class, 'index'])->name('sales.index');
     Route::get('sales/create', [SalesController::class, 'create'])->name('sales.create');
-Route::post('sales/store', [SalesController::class, 'store'])->name('sales.store');
+    Route::post('sales/store', [SalesController::class, 'store'])->name('sales.store');
+    Route::get('/sales/stock/{productId}', [SalesController::class, 'getStockByProduct']);
+    Route::get('/sales/{id}/detail', [SalesController::class, 'show'])->name('sales.show');
 
-// Ruta para obtener los productos según el productor seleccionado
-Route::get('sales/get-products/{userId}', [SalesController::class, 'getProductsByProducer'])->name('sales.getProducts');
+});
 
 
 
-
-// Otras rutas...
+/* Otras rutas...
 
 Route::middleware(['auth'])->group(function () {
     // Ruta para mostrar el formulario de creación de una nueva venta
@@ -98,10 +98,10 @@ Route::get('/products/search', [SalesController::class, 'search'])->name('produc
 
     // Ruta para almacenar una nueva venta
     Route::post('/sales', [SalesController::class, 'store'])->name('sales.store');
-    Route::get('/sales/{id}/detail', [SalesController::class, 'show'])->name('sales.show');
-});
+    
+});*/
 
-
+Route::middleware(['auth'])->group(function () {
     Route::get('/activities/create', [ActivitiesController::class, 'create'])->name('activities.create');
     Route::post('/activities', [ActivitiesController::class, 'store'])->name('activities.store');
     Route::get('/activities/{activity}/edit', [ActivitiesController::class, 'edit'])->name('activities.edit');

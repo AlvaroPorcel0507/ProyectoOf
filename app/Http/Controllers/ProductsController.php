@@ -29,8 +29,14 @@ class ProductsController extends Controller
 
     public function create()
     {
-        return view('livewire/products.create');
+        // Obtener el último registro de inventario del usuario autenticado
+        $lastInventory = Inventory::where('userId', auth()->id())->orderBy('created_at', 'desc')->first();
+
+        return view('livewire/products.create', [
+            'lastInventory' => $lastInventory,
+        ]);
     }
+
 
     public function store(Request $request)
 {

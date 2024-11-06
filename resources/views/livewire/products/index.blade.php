@@ -4,6 +4,7 @@
  use App\Models\User;
  use App\Models\Product;
  use App\Models\Category;
+ use App\Models\TotalProduct;
 @endphp
 <!-----------------------------VISTA ADMINSITRADOR --------------------------------- -->
 @if(Auth::User()->role=='Administrador')
@@ -163,7 +164,7 @@
                                 </td>
                                 <td>{{ $product->description }}</td>
                                 <td>
-                                    {{ $product->stock }}
+                                    {{ optional(TotalProduct::find($product->id))->stock }}
                                 </td>
 
                                 <td>   

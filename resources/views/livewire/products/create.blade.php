@@ -2,9 +2,9 @@
 
 @section('content')
 @php
- use App\Models\Product;
- use App\Models\Category;
- use App\Models\Inventory;
+    use App\Models\Product;
+    use App\Models\Category;
+    use App\Models\Inventory;
 @endphp
 
 <div class="container">
@@ -39,8 +39,9 @@
                             @if ($product->status == 1)
                             @php
                                 $totalQuantity = Inventory::where('productId', $product->id)->sum('quantity');
-            
-                                $measurementUnit = Inventory::where('productId', $product->id)->first()->measurementUnit ?? '';
+                                $latestInventory = Inventory::where('productId', $product->id)->latest()->first();
+                                $measurementUnit = $latestInventory ? $latestInventory->measurementUnit : '';
+                                $unitPrice = $latestInventory ? $latestInventory->unitPrice : 0;
             
                                 if ($measurementUnit === 'Caja') {
                                     $convertedQuantity = $totalQuantity / 25;
@@ -55,7 +56,7 @@
                                     data-measurement-unit="{{ $measurementUnit }}" 
                                     data-category-id="{{ $product->categoryId }}"
                                     data-quantity="{{ $convertedQuantity }}"
-                                    data-unit-price="{{ optional(Inventory::where('productId', $product->id)->first())->unitPrice }}">
+                                    data-unit-price="{{ $unitPrice }}">
                                 {{ $product->name }}
                             </option>
                             @endif
@@ -83,17 +84,17 @@
                 </div>
 
                 <div class="form-group">
-                    <h1>Stock Disponible: <span id="currentStock">0</span></h1> <!-- Actualiza el stock aquí -->
+                    <h1>Stock Disponible: <span id="currentStock">0</span></h1>
                 </div>
 
                 <div class="form-group">
                     <label for="quantity">Cantidad</label>
                     <input type="text" name="quantity" id="quantity" class="form-control" required>
-                </div> 
+                </div>
 
                 <div class="form-group">
                     <label for="unitPrice">Precio Unitario Bs.</label>
-                    <input type="number" name="unitPrice" id="unitPrice" class="form-control" required>
+                    <input type="number" name="unitPrice" id="unitPrice" class="form-control" value="{{ old('unitPrice', $lastInventory->unitPrice ?? '') }}" required>
                 </div>
 
                 <div class="form-group">
@@ -145,11 +146,9 @@
         const currentStock = document.getElementById('currentStock');
 
         document.getElementById('openConfirmModal').addEventListener('click', function() {
-            // Mostrar el modal
             $('#confirmModal').modal('show');
         });
 
-        // Enviar el formulario al confirmar
         document.getElementById('confirmSubmit').addEventListener('click', function() {
             document.getElementById('productsForm').submit();
         });
@@ -163,7 +162,7 @@
                 document.getElementById('measurementUnit').value = selectedOption.getAttribute('data-measurement-unit');
                 document.getElementById('categoryId').value = selectedOption.getAttribute('data-category-id');
                 document.getElementById('unitPrice').value = selectedOption.getAttribute('data-unit-price');
-                currentStock.textContent = selectedOption.getAttribute('data-quantity'); // Mostrar stock disponible
+                currentStock.textContent = selectedOption.getAttribute('data-quantity');
 
                 // Hacer los campos solo lectura
                 document.getElementById('description').readOnly = true;

@@ -39,7 +39,7 @@ class ProductTableSeeder extends Seeder
             [
                 'name' => 'Acelga',
                 'description' => 'La acelga es una hoja verde fresca y sabrosa, reconocida por su alto contenido en nutrientes esenciales.',
-                'stock' => 0,
+                'stock' => 1,
                 'unitPrice' => 10.00,
                 'status' => 1,
                 'userId' => 2,

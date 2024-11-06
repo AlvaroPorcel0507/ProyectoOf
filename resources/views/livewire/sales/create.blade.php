@@ -4,58 +4,93 @@
 <div class="container">
     <h1>Crear Venta</h1>
 
-    <!-- Selector de categoría -->
-    <div class="row">
-        <div class="col-lg-4">
-            <div class="form-group">
-                <label for="categoryId">Selecciona Categoría:</label>
-                <select name="categoryId" id="categoryId" class="form-control" onchange="loadProductsByCategory(this.value)">
-                    <option value="">Seleccione una categoría</option>
-                    @foreach($categories as $category)
-                        <option value="{{ $category->id }}">{{ $category->name }}</option>
-                    @endforeach
-                </select>
+    <!-- Formulario para seleccionar categoría y producto -->
+    <form method="GET" action="{{ route('sales.create') }}">
+        <!-- Selector de categoría -->
+        <div class="row">
+            <div class="col-lg-4">
+                <div class="form-group">
+                    <label for="categoryId">Selecciona Categoría:</label>
+                    <select name="categoryId" id="categoryId" class="form-control" onchange="this.form.submit()" required>
+                        <option value="">Seleccione una categoría</option>
+                        @foreach($categories as $category)
+                            <option value="{{ $category->id }}" {{ old('categoryId', request()->categoryId) == $category->id ? 'selected' : '' }}>
+                                {{ $category->name }}
+                            </option>
+                        @endforeach
+                    </select>
+                </div>
             </div>
-        </div>
-        <div class="col-lg-4">
-            <div class="form-group">
-                <label for="productId">Selecciona Producto:</label>
-                <select name="productId" id="productId" class="form-control" required>
-                    <option value="">Seleccione un producto</option>
-                </select>
-            </div>
-        </div>
-        <div class="col-lg-4"><br>
-            <button type="button" class="btn btn-primary" onclick="loadStockTable()">Cargar Productos en Tabla</button>
-        </div>
-    </div>
 
-    <!-- Tabla para mostrar el stock de cada productor -->
-    <div class="form-group mt-3">
-        <label>Stock por Productor:</label>
-        <table class="table table-bordered mt-2" id="stockTable">
-            <thead>
-                <tr>
-                    <th>Nro.</th>
-                    <th>Productor</th>
-                    <th>Precio Unitario Bs.</th>
-                    <th>Stock Disponible</th>
-                    <th>Acción</th>
-                </tr>
-            </thead>
-            <tbody id="stockTableBody">
-                <!-- Los datos de stock se cargarán aquí dinámicamente -->
-            </tbody>
-        </table>
-    </div>
+            <div class="col-lg-4">
+                <div class="form-group">
+                    <label for="productId">Selecciona Producto:</label>
+                    <select name="productId" id="productId" class="form-control" onchange="this.form.submit()" required>
+                        <option value="">Seleccione un producto</option>
+                        @foreach($products as $product)
+                            <option value="{{ $product->id }}" {{ old('productId', request()->productId) == $product->id ? 'selected' : '' }}>
+                                {{ $product->name }}
+                            </option>
+                        @endforeach
+                    </select>
+                </div>
+            </div>
+        </div>
+    </form>
+
+    <!-- Mostrar inventarios relacionados al producto seleccionado -->
+    @if (isset($inventory) && count($inventory) > 0)
+        <div class="form-group mt-3">
+            <label>Inventarios del Producto Seleccionado:</label>
+            <table class="table table-bordered">
+                <thead>
+                    <tr>
+                        <th>Productor</th>
+                        <th>Stock Disponible</th>
+                        <th>Precio Unitario</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach($inventory as $item)
+                        <tr>
+                            <!-- Si 'producer_name' no existe, muestra el nombre del productor, y usa el 'user' asociado -->
+                            <td>{{ $item->user->name ?? 'Desconocido' }}</td> <!-- Asumiendo que hay una relación con User -->
+                            <td>{{ $item->quantity }}</td>
+                            <td>{{ $item->unitPrice }}</td>
+                        </tr>
+                    @endforeach
+                </tbody>
+            </table>
+        </div>
+    @else
+        <p>No se encontraron inventarios para el producto seleccionado.</p>
+    @endif
 </div>
 
 <script>
-// Almacena todos los productos en un objeto
+// Función para cargar productos según la categoría seleccionada
+document.addEventListener('DOMContentLoaded', function() {
+    const selectedCategoryId = "{{ old('categoryId', request()->categoryId) }}";
+    const selectedProductId = "{{ old('productId', request()->productId) }}";
+    
+    const productSelect = document.getElementById('productId');
+
+    // Si hay una categoría seleccionada, actualizar productos
+    if (selectedCategoryId) {
+        loadProductsByCategory(selectedCategoryId, selectedProductId);
+    }
+
+    // Si ya hay un producto previamente seleccionado, mantener la selección
+    if (selectedProductId) {
+        productSelect.value = selectedProductId;
+    }
+});
+
+// Almacena todos los productos en un objeto, agrupados por categoría
 const productsByCategory = @json($products->groupBy('categoryId'));
 
 // Función para cargar productos según la categoría seleccionada
-function loadProductsByCategory(categoryId) {
+function loadProductsByCategory(categoryId, selectedProductId = null) {
     const productSelect = document.getElementById('productId');
     productSelect.innerHTML = '<option value="">Seleccione un producto</option>'; // Reiniciar opciones
 
@@ -65,61 +100,13 @@ function loadProductsByCategory(categoryId) {
             const option = document.createElement('option');
             option.value = product.id;
             option.textContent = product.name;
+            if (product.id == selectedProductId) {
+                option.selected = true;
+            }
             productSelect.appendChild(option);
         });
-    } else {
-        console.warn("No hay productos para la categoría seleccionada.");
-    }
-}
-
-// Función para cargar el stock del producto seleccionado en la tabla
-function loadStockTable() {
-    const productId = document.getElementById('productId').value;
-    const stockTableBody = document.getElementById('stockTableBody');
-    stockTableBody.innerHTML = ''; // Limpiar tabla antes de cargar nuevos datos
-
-    if (productId) {
-        fetch(`/sales/stock/${productId}`)
-            .then(response => response.json())
-            .then(data => {
-                if (data.message) {
-                    alert(data.message); // Mostrar mensaje si no hay datos encontrados
-                } else {
-                    data.forEach((stock, index) => {
-                        const row = document.createElement('tr');
-
-                        const nroCell = document.createElement('td');
-                        nroCell.textContent = index + 1;
-                        row.appendChild(nroCell);
-
-                        const producerCell = document.createElement('td');
-                        producerCell.textContent = stock.producer_name || 'N/A';
-                        row.appendChild(producerCell);
-
-                        const priceCell = document.createElement('td');
-                        priceCell.textContent = stock.unit_price || 'N/A';
-                        row.appendChild(priceCell);
-
-                        const stockCell = document.createElement('td');
-                        stockCell.textContent = stock.stock || 'N/A';
-                        row.appendChild(stockCell);
-
-                        const actionCell = document.createElement('td');
-                        const buyButton = document.createElement('button');
-                        buyButton.className = 'btn btn-success';
-                        buyButton.textContent = 'Comprar';
-                        buyButton.onclick = () => alert(`Compra registrada para ${stock.producer_name}`);
-                        actionCell.appendChild(buyButton);
-                        row.appendChild(actionCell);
-
-                        stockTableBody.appendChild(row);
-                    });
-                }
-            })
-            .catch(error => console.error('Error al cargar stock:', error));
-    } else {
-        alert("Seleccione un producto primero.");
     }
 }
 </script>
+
 @endsection

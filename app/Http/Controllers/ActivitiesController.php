@@ -18,7 +18,7 @@ class ActivitiesController extends Controller
             $sortField = 'id';
         }
 
-        $activities = Activity::where('status', 1)->orderBy($sortField, $sortDirection)->paginate(8);
+        $activities = Activity::where('status', '>', 0)->orderBy($sortField, $sortDirection)->paginate(8);
 
         return view('livewire/activities.index', compact('activities', 'sortField', 'sortDirection'));
     }
@@ -86,5 +86,15 @@ class ActivitiesController extends Controller
         ]);
 
         return redirect()->route('activities.index')->with('success', 'Solicitud Eliminada con exito.');
+    }
+
+    public function updateConclusion(Request $request, $id)
+    {
+        $activity = Activity::findOrFail($id);
+
+        $activity->status = 2; 
+        $activity->save();
+
+        return redirect()->route('activities.index')->with('success', 'La actividad ha sido actualizada.');
     }
 }

@@ -6,6 +6,7 @@ use App\Models\SaleDetail;
 use App\Models\Product;
 use App\Models\Category;
 use App\Models\TotalProduct;
+use App\Models\Inventory;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -35,37 +36,60 @@ class SalesController extends Controller
         return view('livewire.sales.saleDetail', compact('sale', 'saleDetail'));
     }
 
-    public function create()
-    {
-        $categories = Category::where('status', 1)->get();
-        $products = Product::where('status', 1)->get(); // Asegurarse de que el status es el correcto
+    public function create(Request $request)
+{
+    // Obtener todas las categorías activas
+    $categories = Category::where('status', 1)->get();
 
-        return view('livewire.sales.create', compact('categories', 'products'));
+    // Filtrar productos por categoría si se pasa la categoría
+    $products = Product::where('status', 1);
+    if ($request->has('categoryId') && $request->categoryId != '') {
+        $products = $products->where('categoryId', $request->categoryId);
     }
+    $products = $products->get();
+    
+    $inventory = [];
+    if ($request->has('productId') && $request->productId != '') {
+        // Filtramos los inventarios por el producto seleccionado
+        $inventory = Inventory::where('productId', $request->productId)->get();
+    }
+
+    return view('livewire.sales.create', [
+        'categories' => $categories,
+        'products' => $products,
+        'inventory' => $inventory,
+    ]);
+}
+
+    
+
+
+
 
 
     public function getStockByProduct($productId)
-    {
-        // Realizamos la consulta a la base de datos con las adaptaciones necesarias para SQLite
-        $stocks = DB::table('total_products')
-            ->join('users as u', 'total_products.userId', '=', 'u.id')
-            ->join('products as p', 'total_products.productId', '=', 'p.id')
-            ->select(
-                DB::raw("u.name || ' ' || u.lastName as producer_name"), // Concatenamos nombre y apellido
-                'p.unitPrice as unit_price', // Precio unitario desde productos
-                'total_products.stock'       // Stock disponible
-            )
-            ->where('total_products.productId', $productId)
-            ->where('u.role', 'Productor') // Asegurarse de que 'productor' esté en comillas simples
-            ->get();
+{
+    // Realizamos la consulta a la base de datos usando la tabla 'inventories'
+    $stocks = DB::table('inventories')
+        ->join('users as u', 'inventories.userId', '=', 'u.id')  // Une con la tabla 'users' para obtener el productor
+        ->join('products as p', 'inventories.productId', '=', 'p.id')  // Une con la tabla 'products' para obtener el producto
+        ->select(
+            DB::raw("u.name || ' ' || u.lastName as producer_name"),  // Concatenamos nombre y apellido del productor
+            'p.unitPrice as unit_price',  // Precio unitario del producto
+            'inventories.stock'          // Stock disponible desde la tabla 'inventories'
+        )
+        ->where('inventories.productId', $productId)  // Filtra por el ID del producto
+        ->where('u.role', 'Productor')  // Filtra solo los usuarios con el rol de 'Productor'
+        ->get();
 
-        // Verificamos si se encontraron datos y devolvemos el resultado en JSON
-        if ($stocks->isEmpty()) {
-            return response()->json(['message' => 'No se encontraron registros para el producto especificado'], 404);
-        }
-
-        return response()->json($stocks);
+    // Verificamos si se encontraron datos y devolvemos el resultado en formato JSON
+    if ($stocks->isEmpty()) {
+        return response()->json(['message' => 'No se encontraron registros para el producto especificado'], 404);
     }
+
+    return response()->json($stocks);  // Devuelve los datos de stock en formato JSON
+}
+
 
 
 
@@ -159,5 +183,8 @@ class SalesController extends Controller
         }
     }
     
+    public function test(Request $request){
+        dd($request);
+    }
 }
 

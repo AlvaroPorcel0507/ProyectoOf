@@ -18,10 +18,11 @@ class Inventory extends Model
     ];
     public function user()
     {
-        return $this->belongsTo(Inventory::class, 'userId', 'id');
+        return $this->belongsTo(User::class, 'userId');
     }
     public function product()
     {
         return $this->belongsTo(Product::class, 'productId', 'id');
     }
+
 }

@@ -69,8 +69,7 @@ class ProductsController extends Controller
             $product = Product::findOrFail($request->productSelect);
 
             // Actualizar el stock del producto
-            $product->stock += $quantityInKg; // Incrementar el stock según la cantidad convertida
-            $product->unitPrice = $request->unitPrice; // Actualizar el precio unitario
+            $product->stock += $quantityInKg; 
             $product->save();
 
             // Actualizar el stock en total_products
@@ -92,8 +91,7 @@ class ProductsController extends Controller
             $newProduct = Product::create([
                 'name' => $request->newProductName,
                 'description' => $request->description,
-                'stock' => $quantityInKg, // Se asume que al crear, se establece el stock inicial
-                'unitPrice' => $request->unitPrice, // Guardar el precio unitario
+                'stock' => $quantityInKg,
                 'userId' => auth()->id(),
                 'categoryId' => $request->categoryId,
             ]);

@@ -52,10 +52,6 @@
                     <i class="fas fa-shopping-basket mr-2"></i> 
                     <span>Productos</span>
                 </a>
-                <a href="{{ route('customers.index') }}" class="flex items-center px-4 py-2 rounded-lg hover:bg-orange-600 focus:bg-orange-600 focus:ring focus:ring-orange-500">
-                    <i class="fas fa-users mr-2"></i> 
-                    <span>Clientes</span>
-                </a>
                 <a href="{{ route('activities.index') }}" class="flex items-center px-4 py-2 rounded-lg hover:bg-orange-600 focus:bg-orange-600 focus:ring focus:ring-orange-500">
                     <i class="fas fa-calendar mr-2"></i> 
                     <span>Programacion de Actividades</span>
@@ -63,6 +59,10 @@
                 <a href="{{ route('sales.index') }}" class="flex items-center px-4 py-2 rounded-lg hover:bg-orange-600 focus:bg-orange-600 focus:ring focus:ring-orange-500">
                     <i class="fas fa-cart-plus mr-2"></i> 
                     <span>Ventas</span>
+                </a>
+                <a href="{{ route('reports.index') }}" class="flex items-center px-4 py-2 rounded-lg hover:bg-orange-600 focus:bg-orange-600 focus:ring focus:ring-orange-500">
+                    <i class="fas fa-file-text mr-2"></i> 
+                    <span>Reportes</span>
                 </a>
             @elseif(Auth::User()->role=='Productor')
                 <a href="{{ route('users.profile') }}" class="flex items-center px-4 py-2 rounded-lg hover:bg-orange-600 focus:bg-orange-600 focus:ring focus:ring-orange-500">
@@ -72,6 +72,10 @@
                 <a href="{{ route('products.index') }}" class="flex items-center px-4 py-2 rounded-lg hover:bg-orange-600 focus:bg-orange-600 focus:ring focus:ring-orange-500">
                     <i class="fas fa-shopping-basket mr-2"></i> 
                     <span>Mis Productos</span>
+                </a>
+                <a href="{{ route('activities.index') }}" class="flex items-center px-4 py-2 rounded-lg hover:bg-orange-600 focus:bg-orange-600 focus:ring focus:ring-orange-500">
+                    <i class="fas fa-calendar mr-2"></i> 
+                    <span>Mis Actividades</span>
                 </a>
                 <a href="{{ route('sales.index') }}" class="flex items-center px-4 py-2 rounded-lg hover:bg-orange-600 focus:bg-orange-600 focus:ring focus:ring-orange-500">
                     <i class="fas fa-cart-plus mr-2"></i> 

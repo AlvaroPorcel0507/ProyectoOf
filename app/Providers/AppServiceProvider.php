@@ -30,6 +30,5 @@ class AppServiceProvider extends ServiceProvider
         Category::observe(CategoriesObserver::class);
         User::observe(UserObserver::class);
         Product::observe(ProductObserver::class);
-        Activity::observe(ActivitiesObserver::class);
     }
 }

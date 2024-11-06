@@ -53,18 +53,30 @@
                         <option value="3 ">Urgente</option>
                     </select>
                 </div>
+                @if(Auth::User()->role=='Administrador')
                 <div class="form-group">
                     <label for="idUser">Solicitado</label>
                     <select name="idUser" id="idUser" class="form-control" require>
                     <option value="" selected>SELECCIONE UNA PRODUCTOR</option>
                     @foreach (App\Models\User::all() as $user)
                     @if((optional(user::find($user->id))->role)=='Productor')
-                        <option value="{{ $user->id }}">{{ optional(user::find($user->id))->name . ' ' . optional(User::find($user->idUser))->lastName }}</option>
+                        <option value="{{ $user->id }}">{{ optional(user::find($user->id))->name . ' ' . optional(User::find($user->id))->lastName }}</option>
                     @endif
                     @endforeach
                     </select>
                 </div>
-
+                @else
+                <div class="form-group">
+                    <label for="idUser">Solicitado</label>
+                    <select name="idUser" id="idUser" class="form-control" required>
+                        @if (Auth::check() && Auth::user()->role == 'Productor') <!-- Verificar si es productor -->
+                            <option value="{{ Auth::user()->id }}">
+                                {{ Auth::user()->name . ' ' . Auth::user()->lastName }}
+                            </option>
+                        @endif
+                    </select>
+                </div>
+                @endif
                 <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#confirmModal">
                     Registrar
                 </button>

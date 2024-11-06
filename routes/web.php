@@ -7,6 +7,8 @@ use App\Http\Controllers\Auth\AuthenticatedSessionController;
 use App\Http\Controllers\CustomersController;
 use App\Http\Controllers\ProductsController;
 use App\Http\Controllers\SalesController;
+use App\Http\Controllers\ReportsController;
+
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -73,6 +75,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::post('/activities', [ActivitiesController::class, 'store'])->name('activities.store');
     Route::get('/activities/{activity}/edit', [ActivitiesController::class, 'edit'])->name('activities.edit');
     Route::put('/activities/{activity}', [ActivitiesController::class, 'update'])->name('activities.update');
+    Route::put('/activities/{id}/update-conclusion', [ActivitiesController::class, 'updateConclusion'])->name('activities.updateConclusion');
     Route::put('/activities/{activity}/softDelete', [ActivitiesController::class, 'delete'])->name('activities.softDelete');
 });
 
@@ -82,7 +85,17 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::post('sales/store', [SalesController::class, 'store'])->name('sales.store');
     Route::get('/sales/stock/{productId}', [SalesController::class, 'getStockByProduct']);
     Route::get('/sales/{id}/detail', [SalesController::class, 'show'])->name('sales.show');
+    Route::get('/sales/{id}', [SalesController::class, 'test'])->name('sales.test');
 
+});
+
+Route::middleware(['auth', 'verified'])->group(function () {
+    Route::get('/reports', [ReportsController::class, 'index'])->name('reports.index');
+    /*Route::get('sales/create', [SalesController::class, 'create'])->name('sales.create');
+    Route::post('sales/store', [SalesController::class, 'store'])->name('sales.store');
+    Route::get('/sales/stock/{productId}', [SalesController::class, 'getStockByProduct']);
+    Route::get('/sales/{id}/detail', [SalesController::class, 'show'])->name('sales.show');
+    Route::get('/sales/{id}', [SalesController::class, 'test'])->name('sales.test');*/
 });
 
 

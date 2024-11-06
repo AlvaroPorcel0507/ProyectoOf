@@ -9,33 +9,52 @@ use App\Models\SaleDetail;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\View;
 use App\Models\Product;
+use Barryvdh\DomPDF\Facade\Pdf;
 
 class ReportsController extends Controller
 {
     public function index(Request $request)
-    {
-        // Obtener las fechas de inicio y fin
-        $startDate = $request->input('startDate');
-        $endDate = $request->input('endDate');
+{
+    // Obtener y formatear las fechas de inicio y fin
+    $startDate = $request->input('start_date') ? Carbon::parse($request->input('start_date'))->startOfDay() : now()->startOfMonth();
+    $endDate = $request->input('end_date') ? Carbon::parse($request->input('end_date'))->endOfDay() : now()->endOfDay();
 
-        // Asegúrate de que las fechas estén en formato adecuado (puedes hacer validaciones adicionales si es necesario)
-        $startDate = Carbon::parse($startDate)->startOfDay();
-        $endDate = Carbon::parse($endDate)->endOfDay();
-
-        // Consulta para obtener los tres productos más vendidos en el rango de fechas
-        $topProducts = SaleDetail::whereHas('sale', function ($query) use ($startDate, $endDate) {
-            // Filtrar las ventas dentro del rango de fechas
-            $query->whereBetween('created_at', [$startDate, $endDate]);
-        })
-        ->select('productsId', DB::raw('SUM(quantity) as total_sold'))
-        ->groupBy('productsId')
+    // Obtener los 5 productos más vendidos en el rango de fechas seleccionado
+    $topProducts = DB::table('products')
+        ->join('sale_details', 'products.id', '=', 'sale_details.productsId') // Asegurarse de que los campos coincidan
+        ->join('sales', 'sales.id', '=', 'sale_details.id') // Asegurarse de que los campos coincidan
+        ->select('products.name', DB::raw('SUM(sale_details.quantity) as total_sold'), DB::raw('SUM(sale_details.quantity * sale_details.unitPrice) as total_revenue'))
+        ->whereBetween('sales.created_at', [$startDate, $endDate])
+        ->groupBy('products.name')
         ->orderByDesc('total_sold')
-        ->limit(3)
-        ->with('product') // Relacionar con el modelo Product para obtener los detalles del producto
+        ->limit(5)
         ->get();
 
-        // Retornar los resultados a la vista
-        return view('livewire.reports.index', compact('topProducts'));
-    }
+    // Renderizar la vista con los datos obtenidos
+    return view('livewire.reports.index', compact('topProducts', 'startDate', 'endDate'));
+}
+
+public function generatePDF(Request $request)
+{
+    // Obtener los productos más vendidos
+    $startDate = $request->input('start_date') ? Carbon::parse($request->input('start_date'))->startOfDay() : now()->startOfMonth();
+    $endDate = $request->input('end_date') ? Carbon::parse($request->input('end_date'))->endOfDay() : now()->endOfDay();
+
+    $topProducts = DB::table('products')
+        ->join('sale_details', 'products.id', '=', 'sale_details.productsId')
+        ->join('sales', 'sales.id', '=', 'sale_details.id')
+        ->select('products.name', DB::raw('SUM(sale_details.quantity) as total_sold'), DB::raw('SUM(sale_details.quantity * sale_details.unitPrice) as total_revenue'))
+        ->whereBetween('sales.created_at', [$startDate, $endDate])
+        ->groupBy('products.name')
+        ->orderByDesc('total_sold')
+        ->limit(5)
+        ->get();
+
+    // Generar el PDF
+    $pdf = PDF::loadView('livewire/reports.report', compact('topProducts', 'startDate', 'endDate'));
+
+    // Devolver el PDF al navegador o descargarlo
+    return $pdf->download('productos_mas_vendidos.pdf');
+}
 
 }

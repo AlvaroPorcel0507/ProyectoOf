@@ -67,10 +67,10 @@
                     @foreach($inventory as $item)
                         <tr>
                             <!-- Mostrar nombre y ID del producto -->
-                            <td>{{ $item['product']->name }} (ID: {{ $item['product']->id }})</td>
+                            <td>{{ $item['product']->name }} </td>
                             
                             <!-- Mostrar nombre y ID del productor -->
-                            <td>{{ $item['user']->name ?? 'Desconocido' }} (ID: {{ $item['user']->id }})</td>
+                            <td>{{ $item['user']->name ?? 'Desconocido' }}</td>
                             
                             <!-- Stock disponible -->
                             <td>{{ $item['quantity'] }}</td>

@@ -6,6 +6,7 @@ use App\Models\SaleDetail;
 use App\Models\Product;
 use App\Models\Category;
 use App\Models\Inventory;
+use App\Models\TotalProduct;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -33,98 +34,43 @@ class SalesController extends Controller
         return view('livewire.sales.saleDetail', compact('sale', 'saleDetail'));
     }
 
-    public function create(Request $request)
-    {
-        // Obtener categorías activas (status = 1)
-        $categories = Category::where('status', 1)->get();
-    
-        // Filtrar productos activos (status = 1) y por categoría si se pasa un filtro
-        $products = Product::where('status', 1); // Solo productos activos
-        if ($request->has('categoryId') && $request->categoryId != '') {
-            // Si hay una categoría seleccionada, filtrar productos por esa categoría
-            $products = $products->where('categoryId', $request->categoryId);
-        }
-        $products = $products->get();
-    
-        // Obtener inventarios agrupados por producto y productor, solo si se pasa un producto seleccionado
-        $inventory = [];
-        if ($request->has('productId') && $request->productId != '') {
-            $inventory = Inventory::where('productId', $request->productId)
-                ->with('user', 'product')  // Obtener el productor y el producto relacionado
-                ->get()
-                ->groupBy(function($item) {
-                    // Agrupar por combinación de productId y userId para obtener datos por productor
-                    return $item->productId . '-' . $item->userId;
-                });
-    
-            // Agrupar las cantidades y obtener el último precio unitario para cada grupo
-            $inventory = $inventory->map(function($group) {
-                $totalQuantity = $group->sum('quantity'); // Sumar las cantidades
-                $unitPrice = $group->last()->unitPrice;  // Obtener el último precio unitario del grupo
-    
-                // Incluir todos los detalles requeridos en el resultado
-                return [
-                    'product' => $group->first()->product,  // Producto completo
-                    'user' => $group->first()->user,       // Productor (usuario)
-                    'quantity' => $totalQuantity,          // Cantidad total disponible por productor
-                    'unitPrice' => $unitPrice              // Precio unitario
-                ];
-            });
-        }
-    
-        return view('livewire.sales.create', [
-            'categories' => $categories,  // Categorías activas
-            'products' => $products,      // Productos activos filtrados
-            'inventory' => $inventory,    // Inventarios agrupados por producto y productor
-        ]);
-    }
-    
-
-
     public function addToCart(Request $request)
-{
-    $productId = $request->input('productId');
-    $quantity = $request->input('quantity');
-    $unitPrice = $request->input('unitPrice');
-    $productName = $request->input('productName');  // Nombre del producto
-    $producerName = $request->input('producerName');  // Nombre del productor
-    $producerId = $request->input('producerId');  // ID del productor
+    {
+        $productId = $request->input('productId');
+        $quantity = $request->input('quantity');
+        $unitPrice = $request->input('unitPrice');
+        $productName = $request->input('productName');  // Nombre del producto
+        $producerName = $request->input('producerName');  // Nombre del productor
+        $producerId = $request->input('producerId');  // ID del productor
 
-    // Asegúrate de que el carrito exista en la sesión
-    $cart = session()->get('cart', []);
+        // Asegúrate de que el carrito exista en la sesión
+        $cart = session()->get('cart', []);
 
-    // Crea una clave única para el producto basado en productId y producerId
-    $cartKey = $productId . '-' . $producerId;
+        // Crea una clave única para el producto basado en productId y producerId
+        $cartKey = $productId . '-' . $producerId;
 
-    // Verifica si el producto ya está en el carrito
-    if (isset($cart[$cartKey])) {
-        // Si el producto ya está en el carrito, actualiza la cantidad
-        $cart[$cartKey]['quantity'] += $quantity;
-        $cart[$cartKey]['totalProduct'] = $cart[$cartKey]['unitPrice'] * $cart[$cartKey]['quantity'];  // Actualizar el total del producto
-    } else {
-        // Si el producto no está en el carrito, agrégalo
-        $cart[$cartKey] = [
-            'name' => $productName,
-            'quantity' => $quantity,
-            'unitPrice' => $unitPrice,
-            'totalProduct' => $unitPrice * $quantity,
-            'producer_name' => $producerName,  // Nombre del productor
-            'producer_id' => $producerId,  // ID del productor
-        ];
+        // Verifica si el producto ya está en el carrito
+        if (isset($cart[$cartKey])) {
+            // Si el producto ya está en el carrito, actualiza la cantidad
+            $cart[$cartKey]['quantity'] += $quantity;
+            $cart[$cartKey]['totalProduct'] = $cart[$cartKey]['unitPrice'] * $cart[$cartKey]['quantity'];  // Actualizar el total del producto
+        } else {
+            // Si el producto no está en el carrito, agrégalo
+            $cart[$cartKey] = [
+                'name' => $productName,
+                'quantity' => $quantity,
+                'unitPrice' => $unitPrice,
+                'totalProduct' => $unitPrice * $quantity,
+                'producer_name' => $producerName,  // Nombre del productor
+                'producer_id' => $producerId,  // ID del productor
+            ];
+        }
+
+        // Guarda el carrito actualizado en la sesión
+        session()->put('cart', $cart);
+
+        return redirect()->route('sales.create')->with('success', 'Producto agregado al carrito');
     }
-
-    // Guarda el carrito actualizado en la sesión
-    session()->put('cart', $cart);
-
-    return redirect()->route('sales.create')->with('success', 'Producto agregado al carrito');
-}
-
-    
-
-
-
-
-    
 
 
    // Método para eliminar un producto del carrito
@@ -234,6 +180,47 @@ public function processSale(Request $request)
 
         return redirect()->route('sales.create')->with('error', 'Hubo un problema al procesar la venta. Intenta nuevamente.');
     }
+}
+
+public function create(Request $request)
+{
+    // Obtener categorías activas (status = 1)
+    $categories = Category::where('status', 1)->get();
+
+    // Filtrar productos activos (status = 1) y por categoría si se pasa un filtro
+    $products = Product::where('status', 1); // Solo productos activos
+    if ($request->has('categoryId') && $request->categoryId != '') {
+        // Si hay una categoría seleccionada, filtrar productos por esa categoría
+        $products = $products->where('categoryId', $request->categoryId);
+    }
+    $products = $products->get();
+
+    // Inicializar inventario vacío
+    $inventory = [];
+
+    // Si se selecciona un producto, obtener su inventario asociado y detalles del productor
+    if ($request->has('productId') && $request->productId != '') {
+        // Consultar los datos de la tabla total_products asociados al productId seleccionado
+        $inventory = TotalProduct::where('productId', $request->productId)
+            ->with(['user', 'product']) // Relación con el usuario (productor) y producto
+            ->get()
+            ->map(function ($totalProduct) {
+                return [
+                    'product' => $totalProduct->product, 
+                    'user' => $totalProduct->user,
+                    'product_name' => $totalProduct->product->name,       // Nombre del producto
+                    'producer_name' => $totalProduct->user->name,         // Nombre del productor
+                    'stock' => $totalProduct->stock,                      // Stock del producto
+                    'unitPrice' => $totalProduct->unitPrice               // Precio unitario
+                ];
+            });
+    }
+
+    return view('livewire.sales.create', [
+        'categories' => $categories,  // Categorías activas
+        'products' => $products,      // Productos activos filtrados
+        'inventory' => $inventory,    // Datos agrupados del inventario
+    ]);
 }
 
 }

@@ -81,19 +81,21 @@ class ProductsController extends Controller
                 $product->stock += $quantityInKg;
                 $product->save();
 
-                // Actualizar el stock en total_products para el usuario autenticado y el producto
+                // Actualizar el stock y el unitPrice en total_products para el usuario autenticado y el producto
                 $totalProduct = TotalProduct::where('productId', $product->id)
                     ->where('userId', auth()->id())
                     ->first();
 
                 if ($totalProduct) {
-                    // Actualizar el stock sumando la cantidad nueva
-                    $totalProduct->stock += $quantityInKg;
+                    // Solo actualizar el stock y el unitPrice
+                    $totalProduct->stock = $quantityInKg;
+                    $totalProduct->unitPrice = $request->unitPrice; // Actualizar el unitPrice
                     $totalProduct->save();
                 } else {
                     // Crear un nuevo registro si no existe en total_products
                     TotalProduct::create([
                         'stock' => $quantityInKg,
+                        'unitPrice' => $request->unitPrice,
                         'userId' => auth()->id(),
                         'productId' => $product->id,
                     ]);
@@ -120,6 +122,7 @@ class ProductsController extends Controller
                 // Crear el registro en total_products para el nuevo producto y usuario
                 TotalProduct::create([
                     'stock' => $quantityInKg,
+                    'unitPrice' => $request->unitPrice,
                     'userId' => auth()->id(),
                     'productId' => $newProduct->id,
                 ]);

@@ -16,6 +16,7 @@ class TotalProductTableSeeder extends Seeder
         $totalProducts = [
             [
                 'stock' => 150.50,
+                'unitPrice' => 10,
                 'userId' => 1, // ID del usuario existente
                 'productId' => 1, // ID del producto existente
                 'created_at' => now(),
@@ -23,6 +24,7 @@ class TotalProductTableSeeder extends Seeder
             ],
             [
                 'stock' => 200.00,
+                'unitPrice' => 10,
                 'userId' => 2, // ID del usuario existente
                 'productId' => 2, // ID del producto existente
                 'created_at' => now(),
@@ -30,6 +32,7 @@ class TotalProductTableSeeder extends Seeder
             ],
             [
                 'stock' => 75.25,
+                'unitPrice' => 10,
                 'userId' => 3, // ID del usuario existente
                 'productId' => 3, // ID del producto existente
                 'created_at' => now(),
@@ -37,6 +40,7 @@ class TotalProductTableSeeder extends Seeder
             ],
             [
                 'stock' => 500.00,
+                'unitPrice' => 10,
                 'userId' => 1, // ID del usuario existente
                 'productId' => 4, // ID del producto existente
                 'created_at' => now(),
@@ -44,6 +48,7 @@ class TotalProductTableSeeder extends Seeder
             ],
             [
                 'stock' => 350.75,
+                'unitPrice' => 10,
                 'userId' => 2, // ID del usuario existente
                 'productId' => 5, // ID del producto existente
                 'created_at' => now(),

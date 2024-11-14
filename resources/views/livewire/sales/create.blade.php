@@ -22,7 +22,7 @@
         <div class="row">
             <div class="col-lg-4">
                 <div class="form-group">
-                    <label for="categoryId">Selecciona Categoría:</label>
+                    <label for="categoryId" style="font-size: 18px; font-weight: bold;">Selecciona Categoría:</label>
                     <select name="categoryId" id="categoryId" class="form-control" onchange="this.form.submit()" required>
                         <option value="">Seleccione una categoría</option>
                         @foreach($categories as $category)
@@ -34,17 +34,20 @@
                 </div>
             </div>
 
-            <div class="col-lg-4">
-                <div class="form-group">
-                    <label for="productId">Selecciona Producto:</label>
-                    <select name="productId" id="productId" class="form-control" onchange="this.form.submit()" required>
-                        <option value="">Seleccione un producto</option>
-                        @foreach($products as $product)
-                            <option value="{{ $product->id }}" {{ old('productId', request()->productId) == $product->id ? 'selected' : '' }}>
+            <div class="mb-3 row">
+                <label for="product_name" class="form-label">Selecciona Producto</label>
+                <div class="col-md-8">
+                    <input list="product-list" id="product_name" class="form-control" placeholder="Selecciona un producto" required>
+                    
+                    <datalist id="product-list">
+                        @foreach ($products as $product)
+                            <option value="{{ $product->name }}  {{ old('productId', request()->productId) == $product->id ? 'selected' : '' }}" data-id="{{ $product->id }}">
                                 {{ $product->name }}
                             </option>
                         @endforeach
-                    </select>
+                    </datalist>
+                    
+                    <input type="hidden" id="productId" name="productId" required>
                 </div>
             </div>
         </div>
@@ -52,12 +55,12 @@
 
     @if (isset($inventory) && count($inventory) > 0)
         <div class="form-group mt-3">
-            <label>Inventarios del Producto Seleccionado:</label>
+            <label style="font-size: 25px; font-weight: bold;">Inventarios del Producto Seleccionado:</label>
             <table class="table table-bordered">
                 <thead>
                     <tr>
-                        <th>Producto (ID)</th>
-                        <th>Productor (ID)</th>
+                        <th>Producto</th>
+                        <th>Productor</th>
                         <th>Stock Disponible</th>
                         <th>Precio Unitario</th>
                         <th>Acciones</th>
@@ -67,13 +70,13 @@
                     @foreach($inventory as $item)
                         <tr>
                             <!-- Mostrar nombre y ID del producto -->
-                            <td>{{ $item['product']->name }} </td>
+                            <td>{{ $item['product_name'] }} </td>
                             
                             <!-- Mostrar nombre y ID del productor -->
-                            <td>{{ $item['user']->name ?? 'Desconocido' }}</td>
+                            <td>{{ $item['producer_name'] ?? 'Desconocido' }}</td>
                             
                             <!-- Stock disponible -->
-                            <td>{{ $item['quantity'] }}</td>
+                            <td>{{ $item['stock'] }}</td>
                             
                             <!-- Precio unitario -->
                             <td>{{ $item['unitPrice'] }}</td>
@@ -89,15 +92,8 @@
                                     <input type="hidden" name="producerId" value="{{ $item['user']->id }}"> <!-- ID del productor (nuevo campo) -->
                                     
                                     <!-- Validar que la cantidad no sea mayor al stock disponible -->
-                                    <input type="number" name="quantity" value="1" min="1" max="{{ $item['quantity'] }}" class="form-control" style="width: 70px; display: inline-block;" required>
+                                    <input type="number" name="stock" value="1" min="1" max="{{ $item['stock'] }}" class="form-control" style="width: 70px; display: inline-block;" required>
                                     <button type="submit" class="btn btn-success btn-sm">Agregar</button>
-                                </form>
-                                
-                                <!-- Formulario para disminuir la cantidad -->
-                                <form action="{{ route('sales.removeFromCart') }}" method="POST" style="display:inline;">
-                                    @csrf
-                                    <input type="hidden" name="productId" value="{{ $item['product']->id }}">
-                                    <button type="submit" class="btn btn-danger btn-sm">Disminuir</button>
                                 </form>
                             </td>
                         </tr>
@@ -106,12 +102,12 @@
             </table>
         </div>
     @else
-        <p>No se encontraron inventarios para el producto seleccionado.</p>
+        <p style="font-size: 15px; font-weight: bold;">No se encontraron inventarios para el producto seleccionado.</p>
     @endif
 
     <!-- Carrito -->
     <div class="mt-3">
-        <h4>Carrito de Compras</h4>
+        <h4 style="font-size: 25px; font-weight: bold;">Carrito de Compras</h4>
         @if(session('cart') && count(session('cart')) > 0)
             <table class="table table-bordered">
                 <thead>
@@ -158,7 +154,7 @@
                 <strong>Total General: </strong> <span id="total-general"></span>
             </div>
         @else
-            <p>No hay productos en el carrito.</p>
+            <p style="font-size: 15px; font-weight: bold;">No hay productos en el carrito.</p>
         @endif
     </div>
     <form action="{{ route('sales.processSale') }}" method="POST">
@@ -203,5 +199,23 @@ function updateTotal() {
 document.addEventListener('DOMContentLoaded', function() {
     updateTotal();
 });
+
+
+    // Script para capturar el id del producto seleccionado
+    document.getElementById('product_name').addEventListener('input', function() {
+        const productList = document.getElementById('product-list');
+        const productIdField = document.getElementById('productId');
+        
+        // Buscar la opción que coincida con el nombre ingresado
+        let selectedOption = Array.from(productList.options).find(option => option.value === this.value);
+        
+        // Si se encuentra la opción, actualizar el campo oculto con el productId
+        if (selectedOption) {
+            productIdField.value = selectedOption.getAttribute('data-id');
+        } else {
+            // Si no hay coincidencia, limpiar el campo oculto
+            productIdField.value = '';
+        }
+    });
 </script>
 @endsection

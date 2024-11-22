@@ -43,7 +43,7 @@ class ProductsController extends Controller
         // Validar el request
         $request->validate([
             'productSelect' => 'nullable|exists:products,id',
-            'newProductName' => 'nullable|string|max:255',
+            'newProductName' => 'nullable|string|regex:/^[a-zA-Z]+$/|max:255',
             'measurementUnit' => 'required|string',
             'quantity' => 'required|numeric',
             'unitPrice' => 'required|numeric',

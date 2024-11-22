@@ -10,8 +10,8 @@
 
 <div class="container">
     <div class="d-flex justify-content-between align-items-center my-4">
-        <h1 class="h3">Lista de Ventas</h1>
-        <a href="{{ route('sales.create') }}" class="btn btn-success">Registrar Nueva Venta</a>
+        <h1 class="h3">Registro de Compras</h1>
+        <a href="{{ route('sales.create') }}" class="btn btn-success">Registrar Nueva Compra</a>
     </div>
 
     @if ($sales->isEmpty())
@@ -28,24 +28,25 @@
                 </tr>
             </thead>
             <tbody>
-                @php
-                    $cont = 1;
-                @endphp
+                @php $cont = 1; @endphp
+
                 @foreach ($sales as $sale)
-                <tr>
-                    <td>{{ $cont }}</td>
-                    <td>{{ optional(User::find($sale->customerId))->name }}</td>
-                    <td>{{ $sale->total }}</td>
-                    <td>{{ $sale->created_at }}</td>
-                    <td>
-                        <form action="{{ route('sales.show', $sale->id) }}">
-                            <button type="submit" class="btn btn-info">
-                                <i class="fa fa-info-circle"></i>
-                            </button>
-                        </form>
-                    </td>
-                </tr>
-                @php $cont++; @endphp
+                    @if ($sale->customerId == Auth::id()) <!-- Filtra por cliente autenticado -->
+                        <tr>
+                            <td>{{ $cont }}</td>
+                            <td>{{ optional($sale->customer)->name }}</td> <!-- Relación para obtener nombre del cliente -->
+                            <td>{{ $sale->total }}</td>
+                            <td>{{ $sale->created_at->format('d/m/Y H:i') }}</td> <!-- Formatear fecha -->
+                            <td>
+                                <form action="{{ route('sales.show', $sale->id) }}" method="GET">
+                                    <button type="submit" class="btn btn-info">
+                                        <i class="fa fa-info-circle"></i>
+                                    </button>
+                                </form>
+                            </td>
+                        </tr>
+                        @php $cont++; @endphp
+                    @endif
                 @endforeach
             </tbody>
         </table>

@@ -86,9 +86,10 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/sales/stock/{productId}', [SalesController::class, 'getStockByProduct']);
     Route::get('/sales/{id}/detail', [SalesController::class, 'show'])->name('sales.show');
     Route::get('/sales/{id}', [SalesController::class, 'test'])->name('sales.test');
-    Route::post('sales/addToCart', [SalesController::class, 'addToCart'])->name('sales.addToCart');
-    Route::post('sales/removeFromCart', [SalesController::class, 'removeFromCart'])->name('sales.removeFromCart');
-    Route::post('sales/updateQuantity', [SalesController::class, 'updateQuantity'])->name('sales.updateQuantity');
+    Route::post('/cart/add', [SalesController::class, 'addToCart'])->name('cart.add');
+    Route::post('/remove-from-cart', [SalesController::class, 'removeFromCart']);
+    Route::post('/finalize-purchase', [SalesController::class, 'finalizePurchase'])->name('finalize.purchase');
+
     // Ruta para procesar la venta
 Route::post('/sales/process', [SalesController::class, 'processSale'])->name('sales.processSale');
 

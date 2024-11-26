@@ -93,7 +93,7 @@
                 </div>
 
                 <div class="form-group">
-                    <label for="unitPrice">Precio Unitario Bs.</label>
+                    <label for="unitPrice">Precio Unitario Bs. (Por Kgs.)</label>
                     <input type="number" name="unitPrice" id="unitPrice" class="form-control" value="{{ old('unitPrice', $lastInventory->unitPrice ?? '') }}" required>
                 </div>
 

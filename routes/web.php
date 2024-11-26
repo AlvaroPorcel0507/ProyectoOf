@@ -63,7 +63,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/products/{product}/edit', [ProductsController::class, 'edit'])->name('products.edit');
     Route::put('/products/{product}', [ProductsController::class, 'update'])->name('products.update');
     Route::put('/products/{product}/softDelete', [ProductsController::class, 'delete'])->name('products.softDelete');
-    Route::put('/products/surtir/{id}', [ProductsController::class, 'surtir'])->name('products.surtir');
+    Route::get('/products/{id}/details', [ProductController::class, 'getProductDetails']);
 
 });
 
@@ -97,11 +97,11 @@ Route::post('/sales/process', [SalesController::class, 'processSale'])->name('sa
 
 Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/reports', [ReportsController::class, 'index'])->name('reports.index');
-    Route::get('reports/productos-pdf', [ReportsController::class, 'generatePDF'])->name('reports.generatePdf');
-    /*Route::post('sales/store', [SalesController::class, 'store'])->name('sales.store');
-    Route::get('/sales/stock/{productId}', [SalesController::class, 'getStockByProduct']);
-    Route::get('/sales/{id}/detail', [SalesController::class, 'show'])->name('sales.show');
-    Route::get('/sales/{id}', [SalesController::class, 'test'])->name('sales.test');*/
+    Route::get('reports/products-pdf', [ReportsController::class, 'generatePDF'])->name('reports.generatePdf');
+    Route::get('/reports/sale', [ReportsController::class, 'saleIndex'])->name('reports.sale');
+    Route::get('reports/productsSale-pdf', [ReportsController::class, 'generateSalePDF'])->name('reports.generateSalePdf');
+    Route::get('/reports/saleProducer', [ReportsController::class, 'producerIndex'])->name('reports.saleProducer');
+    Route::get('/reports/saleProducer-pdf', [ReportsController::class, 'generateSaleProducerPDF'])->name('reports.generateSaleProducerPdf');
 });
 
 

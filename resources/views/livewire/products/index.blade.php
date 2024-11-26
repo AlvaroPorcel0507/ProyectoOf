@@ -74,14 +74,13 @@
                                     <td>{{ $product->description }}</td>
 
                                     <td>   
-                                        <button type="button" class="btn btn-info" 
+                                        <button 
+                                            type="button" 
+                                            class="btn btn-info" 
                                             data-bs-toggle="modal" 
                                             data-bs-target="#toggleStatusModal" 
-                                            data-product-name="{{ $product->name }}" 
-                                            data-product-stock="{{ $product->stock }}" 
-                                            data-product-unitprice="{{ optional($product->inventory->first())->unitPrice }}" 
-                                            data-product-measurementunit="{{ optional($product->inventory->first())->measurementUnit }}"
-                                            data-product-categoryid="{{ optional($product->categories)->name }}">
+                                            data-product-id="{{ $product->id }}"
+                                            onclick="loadProductDetails(this)">
                                             <i class="fas fa-info-circle"></i>
                                         </button>
                                     </td>
@@ -115,9 +114,9 @@
                     <thead>
                         <tr>
                             <th>Producto</th>
-                            <th>Stock Disponible Kgs.</th>
+                            <th>Stock Disponible</th>
                             <th>Precio Unitario</th>
-                            <th>Categoría</th>
+                            <th>Unidad de Medida</th>
                         </tr>
                     </thead>
                     <tbody id="productDetailsBody">
@@ -129,43 +128,37 @@
     </div>
 </div>
 
+
 @push('scripts')
 <script>
 // Escuchar el evento 'show.bs.modal' para mostrar los detalles del producto
-document.getElementById('toggleStatusModal').addEventListener('show.bs.modal', function (event) {
-    var button = event.relatedTarget; // El botón que activó el modal
+function loadProductDetails(button) {
+    const productId = button.getAttribute('data-product-id');
     
-    var name = button.getAttribute('data-product-name');
-    var stock = button.getAttribute('data-product-stock');
-    var unitPrice = button.getAttribute('data-product-unitprice');
-    var measurementUnit = button.getAttribute('data-product-measurementunit');
-    var categoryName = button.getAttribute('data-product-categoryid');
-    
-    // Limpiar la tabla antes de agregar nuevas filas
-    var tableBody = document.getElementById('productDetailsBody');
-    tableBody.innerHTML = ''; // Limpiar el contenido
+    fetch(`/products/${productId}/details`)
+        .then(response => response.json())
+        .then(data => {
+            const tbody = document.getElementById('productDetailsBody');
+            tbody.innerHTML = '';
 
-    // Mostrar los detalles del producto en el modal
-    var row = document.createElement('tr');
-    
-    var nameCell = document.createElement('td');
-    nameCell.textContent = name || 'No disponible';
-    row.appendChild(nameCell);
+            if (data.inventory.length > 0) {
+                data.inventory.forEach(item => {
+                    const row = `
+                        <tr>
+                            <td>${data.product.name ?? No encontrado}</td>
+                            <td>${item.quantity ?? No encontrado}</td>
+                            <td>${item.unitPrice ?? No encontrado}</td>
+                            <td>${item.measurementUnit ?? No encontrado}</td>
+                        </tr>`;
+                    tbody.innerHTML += row;
+                });
+            } else {
+                tbody.innerHTML = `<tr><td colspan="4">No hay registros disponibles</td></tr>`;
+            }
+        })
+        .catch(error => console.error('Error al cargar los detalles:', error));
+}
 
-    var stockCell = document.createElement('td');
-    stockCell.textContent = stock || 'No disponible';
-    row.appendChild(stockCell);
-    
-    var unitPriceCell = document.createElement('td');
-    unitPriceCell.textContent = unitPrice || 'No disponible';
-    row.appendChild(unitPriceCell);
-    
-    var categoryCell = document.createElement('td');
-    categoryCell.textContent = categoryName || 'No disponible';
-    row.appendChild(categoryCell);
-    
-    tableBody.appendChild(row);
-});
 </script>
 @endpush
 

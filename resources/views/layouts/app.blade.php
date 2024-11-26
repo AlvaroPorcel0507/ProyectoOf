@@ -62,7 +62,15 @@
                 </a>
                 <a href="{{ route('reports.index') }}" class="flex items-center px-4 py-2 rounded-lg hover:bg-orange-600 focus:bg-orange-600 focus:ring focus:ring-orange-500">
                     <i class="fas fa-file-text mr-2"></i> 
-                    <span>Reportes</span>
+                    <span>Producto Mas Vendido</span>
+                </a>
+                <a href="{{ route('reports.sale') }}" class="flex items-center px-4 py-2 rounded-lg hover:bg-orange-600 focus:bg-orange-600 focus:ring focus:ring-orange-500">
+                    <i class="fas fa-file-text mr-2"></i> 
+                    <span>Detalle de Ventas</span>
+                </a>
+                <a href="{{ route('reports.saleProducer') }}" class="flex items-center px-4 py-2 rounded-lg hover:bg-orange-600 focus:bg-orange-600 focus:ring focus:ring-orange-500">
+                    <i class="fas fa-file-text mr-2"></i> 
+                    <span>Detalle de Ventas por Productor</span>
                 </a>
             @elseif(Auth::User()->role=='Productor')
                 <a href="{{ route('users.profile') }}" class="flex items-center px-4 py-2 rounded-lg hover:bg-orange-600 focus:bg-orange-600 focus:ring focus:ring-orange-500">
@@ -102,6 +110,7 @@
                     
                 </h1>
                 <div class="flex items-center space-x-4">
+                    {{ Auth::user()->name }} {{ Auth::user()->last_name }}<br> {{ Auth::user()->role }}
                     <form method="POST" action="{{ route('logout') }}" class="inline">
                             @csrf
                             <button type="submit" class="block px-4 py-2 text-sm hover:bg-gray-200 w-full text-left text-black">

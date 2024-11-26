@@ -27,6 +27,30 @@ class ProductsController extends Controller
         return view('livewire/products.index', compact('products', 'sortField', 'sortDirection'));
     }
 
+    public function getProductDetails($id)
+    {
+        $product = Product::with(['inventory' => function ($query) {
+            $query->where('userId', auth()->id());
+        }])->find($id);
+
+        if (!$product) {
+            return response()->json(['error' => 'Producto no encontrado'], 404);
+        }
+
+        return response()->json([
+            'product' => [
+                'name' => $product->name,
+            ],
+            'inventory' => $product->inventory->map(function ($item) {
+                return [
+                    'quantity' => $item->quantity,
+                    'measurementUnit' => $item->measurementUnit,
+                    'unitPrice' => $item->unitPrice,
+                ];
+            }),
+        ]);
+    }
+
     public function create()
     {
         // Obtener el último registro de inventario del usuario autenticado

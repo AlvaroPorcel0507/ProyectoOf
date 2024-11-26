@@ -16,7 +16,6 @@ class ProductsController extends Controller
         $sortField = $request->input('sort_field', 'id');
         $sortDirection = $request->input('sort_direction', 'asc');
 
-        // Asegúrate de que el campo de ordenación sea uno de los campos permitidos
         $validSortFields = ['id', 'name', 'description', 'stock', 'categoryId'];
         if (!in_array($sortField, $validSortFields)) {
             $sortField = 'id';
@@ -53,7 +52,6 @@ class ProductsController extends Controller
 
     public function create()
     {
-        // Obtener el último registro de inventario del usuario autenticado
         $lastInventory = Inventory::where('userId', auth()->id())->orderBy('created_at', 'desc')->first();
 
         return view('livewire/products.create', [
@@ -64,7 +62,6 @@ class ProductsController extends Controller
 
     public function store(Request $request)
     {
-        // Validar el request
         $request->validate([
             'productSelect' => 'nullable|exists:products,id',
             'newProductName' => 'nullable|string|regex:/^[a-zA-Z]+$/|max:255',
@@ -74,25 +71,20 @@ class ProductsController extends Controller
             'categoryId' => 'required|exists:categories,id',
         ]);
 
-        DB::beginTransaction(); // Iniciar la transacción
+        DB::beginTransaction(); 
 
         try {
-            // Obtener la cantidad según la unidad seleccionada
-            $quantityInKg = $request->quantity; // Cantidad ingresada
+            $quantityInKg = $request->quantity; 
 
-            // Realizar la conversión de acuerdo a la unidad
             if ($request->measurementUnit === 'Caja') {
-                $quantityInKg *= 25; // Convertir a kilogramos
+                $quantityInKg *= 25; 
             } elseif ($request->measurementUnit === 'Carga') {
-                $quantityInKg *= 60; // Convertir a kilogramos
+                $quantityInKg *= 60; 
             }
 
-            // Verificar si se ha seleccionado un producto existente o si se va a crear uno nuevo
             if ($request->filled('productSelect')) {
-                // Producto existente
                 $product = Product::findOrFail($request->productSelect);
 
-                // Registrar el nuevo inventario
                 Inventory::create([
                     'quantity' => $quantityInKg,
                     'measurementUnit' => $request->measurementUnit,
@@ -101,22 +93,18 @@ class ProductsController extends Controller
                     'productId' => $product->id,
                 ]);
 
-                // Actualizar el stock en la tabla de productos globalmente
                 $product->stock += $quantityInKg;
                 $product->save();
 
-                // Actualizar el stock y el unitPrice en total_products para el usuario autenticado y el producto
                 $totalProduct = TotalProduct::where('productId', $product->id)
                     ->where('userId', auth()->id())
                     ->first();
 
                 if ($totalProduct) {
-                    // Solo actualizar el stock y el unitPrice
                     $totalProduct->stock = $quantityInKg;
-                    $totalProduct->unitPrice = $request->unitPrice; // Actualizar el unitPrice
+                    $totalProduct->unitPrice = $request->unitPrice; 
                     $totalProduct->save();
                 } else {
-                    // Crear un nuevo registro si no existe en total_products
                     TotalProduct::create([
                         'stock' => $quantityInKg,
                         'unitPrice' => $request->unitPrice,
@@ -125,7 +113,6 @@ class ProductsController extends Controller
                     ]);
                 }
             } else {
-                // Crear un nuevo producto si no existe
                 $newProduct = Product::create([
                     'name' => $request->newProductName,
                     'description' => $request->description,
@@ -134,7 +121,6 @@ class ProductsController extends Controller
                     'categoryId' => $request->categoryId,
                 ]);
 
-                // Registrar el nuevo inventario para el nuevo producto
                 Inventory::create([
                     'quantity' => $quantityInKg,
                     'measurementUnit' => $request->measurementUnit,
@@ -143,7 +129,6 @@ class ProductsController extends Controller
                     'productId' => $newProduct->id,
                 ]);
 
-                // Crear el registro en total_products para el nuevo producto y usuario
                 TotalProduct::create([
                     'stock' => $quantityInKg,
                     'unitPrice' => $request->unitPrice,
@@ -152,10 +137,10 @@ class ProductsController extends Controller
                 ]);
             }
 
-            DB::commit(); // Confirmar la transacción
+            DB::commit(); 
             return redirect()->route('products.index')->with('success', 'Producto registrado correctamente.');
         } catch (\Exception $e) {
-            DB::rollBack(); // Revertir la transacción en caso de error
+            DB::rollBack(); 
             return redirect()->back()->withErrors(['error' => 'Ocurrió un error al registrar el producto.']);
         }
     }
@@ -167,7 +152,6 @@ class ProductsController extends Controller
 
     public function update(Request $request, $id)
 {
-    // Validar los datos del formulario
     $request->validate([
         'quantity' => 'required|numeric',
         'measurementUnit' => 'required|in:Caja,Carga',
@@ -175,40 +159,31 @@ class ProductsController extends Controller
         'categoryId' => 'required|exists:categories,id',
     ]);
 
-    // Obtener el producto por su ID
     $product = Product::findOrFail($id);
     $measurementUnit = $request->input('measurementUnit');
     
-    // Convertir la cantidad de acuerdo a la unidad de medida seleccionada
     $quantity = $request->input('quantity');
     $convertedQuantity = ($measurementUnit === 'Caja') ? ($quantity * 25) : ($quantity * 60);
     
-    // Verificar si la cantidad es negativa para decrementar el stock
     if ($quantity < 0) {
-        // Validar que la reducción no baje el stock por debajo del mínimo permitido
         if (($product->stock + $convertedQuantity) < (($measurementUnit === 'Caja') ? 25 : 60)) {
             return redirect()->back()->withErrors(['error' => 'El stock no puede reducirse por debajo de la cantidad mínima de una ' . $measurementUnit . '.']);
         }
     }
 
-    // Iniciar transacción
     DB::beginTransaction();
     try {
-        // Actualizar el stock del producto
         $product->stock += $convertedQuantity;
         $product->save();
 
-        // Buscar el inventario existente
         $inventory = Inventory::where('productId', $product->id)->firstOrFail();
         
-        // Actualizar el registro existente en la tabla 'inventories'
-        $inventory->quantity += $quantity; // Aumentar o disminuir según la cantidad ingresada
-        $inventory->measurementUnit = $measurementUnit; // Mantener la unidad de medida
-        $inventory->unitPrice = $request->input('unitPrice'); // Actualizar el precio unitario
-        $inventory->userId = auth()->id(); // Actualizar el ID del usuario
+        $inventory->quantity += $quantity; 
+        $inventory->measurementUnit = $measurementUnit; 
+        $inventory->unitPrice = $request->input('unitPrice');
+        $inventory->userId = auth()->id(); 
         $inventory->save();
 
-        // Actualizar la tabla 'total_products'
         $totalProduct = TotalProduct::where('userId', auth()->id())
             ->where('productId', $product->id)
             ->first();
@@ -224,12 +199,10 @@ class ProductsController extends Controller
             ]);
         }
 
-        // Confirmar la transacción
         DB::commit();
         return redirect()->route('products.index')->with('success', 'Producto actualizado exitosamente.');
 
     } catch (\Exception $e) {
-        // Revertir la transacción en caso de error
         DB::rollBack();
         return redirect()->back()->withErrors(['error' => 'Ocurrió un error durante la actualización: ' . $e->getMessage()]);
     }
@@ -247,37 +220,28 @@ class ProductsController extends Controller
     public function surtir(Request $request, $id)
 {
     $request->validate([
-        'surtirQuantity' => 'required|numeric', // Permitimos cantidades negativas para reducción de stock
+        'surtirQuantity' => 'required|numeric', 
     ]);
 
-    // Obtener el producto por su ID
     $product = Product::findOrFail($id);
 
-    // Obtener el stock actual del producto
     $oldStock = $product->stock;
 
-    // Obtener la cantidad ingresada en el formulario
     $modifyQuantity = $request->input('surtirQuantity');
 
-    // Calcular el factor de conversión basado en la unidad de medida
-    $conversionFactor = $product->measurementUnit === 'Caja' ? 25 : 60; // Caja: 25 Kgs, Carga: 60 Kgs
+    $conversionFactor = $product->measurementUnit === 'Caja' ? 25 : 60;
 
-    // Calcular la cantidad a modificar en kilogramos (permite incrementos y disminuciones)
     $convertedQuantity = $modifyQuantity * $conversionFactor;
 
-    // Calcular el nuevo stock
     $newStock = $oldStock + $convertedQuantity;
 
-    // Validar que el nuevo stock no sea negativo
     if ($newStock < 0) {
         return redirect()->back()->with('error', 'No puedes reducir el stock por debajo de 0 Kgs.');
     }
 
-    // Actualizar el stock en la base de datos
     $product->stock = $newStock;
     $product->save();
 
-    // Retornar una respuesta con un mensaje de éxito
     return redirect()->back()->with('success', 'Stock actualizado correctamente. El stock anterior era ' . $oldStock . ' Kgs, y ahora es ' . $newStock . ' Kgs.');
 }
 

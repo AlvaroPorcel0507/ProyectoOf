@@ -110,7 +110,6 @@
                     
                 </h1>
                 <div class="flex items-center space-x-4">
-                    {{ Auth::user()->name }} {{ Auth::user()->last_name }}<br> {{ Auth::user()->role }}
                     <form method="POST" action="{{ route('logout') }}" class="inline">
                             @csrf
                             <button type="submit" class="block px-4 py-2 text-sm hover:bg-gray-200 w-full text-left text-black">

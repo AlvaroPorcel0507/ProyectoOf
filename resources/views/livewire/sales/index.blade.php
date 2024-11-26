@@ -34,7 +34,7 @@
                     @if ($sale->customerId == Auth::id()) <!-- Filtra por cliente autenticado -->
                         <tr>
                             <td>{{ $cont }}</td>
-                            <td>{{ optional($sale->customer)->name }}</td> <!-- Relación para obtener nombre del cliente -->
+                            <td>{{ optional($sale->customer)->name.' '.optional($sale->customer)->lastName }}</td> <!-- Relación para obtener nombre del cliente -->
                             <td>{{ $sale->total }}</td>
                             <td>{{ $sale->created_at->format('d/m/Y H:i') }}</td> <!-- Formatear fecha -->
                             <td>

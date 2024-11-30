@@ -56,10 +56,6 @@
                     <i class="fas fa-calendar mr-2"></i> 
                     <span>Programacion de Actividades</span>
                 </a>
-                <a href="{{ route('sales.index') }}" class="flex items-center px-4 py-2 rounded-lg hover:bg-orange-600 focus:bg-orange-600 focus:ring focus:ring-orange-500">
-                    <i class="fas fa-cart-plus mr-2"></i> 
-                    <span>Ventas</span>
-                </a>
                 <a href="{{ route('reports.index') }}" class="flex items-center px-4 py-2 rounded-lg hover:bg-orange-600 focus:bg-orange-600 focus:ring focus:ring-orange-500">
                     <i class="fas fa-file-text mr-2"></i> 
                     <span>Producto Mas Vendido</span>

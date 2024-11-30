@@ -15,10 +15,30 @@ use Illuminate\Support\Facades\Auth;
 class SalesController extends Controller
 {
     // Mostrar ventas
-    public function index()
+    public function index(Request $request)
     {
-        $sales = Sale::with(['saleDetails.product'])->paginate(8);
-        return view('livewire.sales.index', compact('sales'));
+        // Obtener las fechas de inicio y fin del rango seleccionado o usar valores por defecto
+        $startDate = $request->input('start_date', now()->startOfMonth()->toDateString());
+        $endDate = $request->input('end_date', now()->toDateString());
+
+        // Ajustar la fecha de fin para incluir todo el día
+        $endDateWithTime = now()->parse($endDate)->endOfDay();
+
+        // Filtrar los detalles de venta por el rango de fechas y el productor autenticado
+        $saleDetails = SaleDetail::where('producerId', Auth::id())
+            ->whereHas('sale', function ($query) use ($startDate, $endDateWithTime) {
+                $query->whereBetween('created_at', [$startDate, $endDateWithTime]);
+            })
+            ->with(['sale.customer', 'product'])
+            ->get();
+
+        // Filtrar las ventas por el rango de fechas
+        $sales = Sale::with(['saleDetails.product'])
+            ->whereBetween('created_at', [$startDate, $endDateWithTime])
+            ->paginate(8);
+
+        // Pasar las fechas seleccionadas para mantenerlas en la vista
+        return view('livewire.sales.index', compact('sales', 'saleDetails', 'startDate', 'endDate'));
     }
 
     // Mostrar detalles de venta

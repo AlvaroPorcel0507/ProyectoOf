@@ -83,7 +83,7 @@
                 </a>
                 <a href="{{ route('sales.index') }}" class="flex items-center px-4 py-2 rounded-lg hover:bg-orange-600 focus:bg-orange-600 focus:ring focus:ring-orange-500">
                     <i class="fas fa-cart-plus mr-2"></i> 
-                    <span>Ventas</span>
+                    <span>Registro de Ventas</span>
                 </a>
             @else
                 <a href="{{ route('users.profile') }}" class="flex items-center px-4 py-2 rounded-lg hover:bg-orange-600 focus:bg-orange-600 focus:ring focus:ring-orange-500">
@@ -106,6 +106,9 @@
                     
                 </h1>
                 <div class="flex items-center space-x-4">
+                    {{ Auth::User()->name.' '.Auth::User()->lastName.' '.Auth::User()->secondLastName }}
+                    <br>
+                    {{ Auth::User()->role }}
                     <form method="POST" action="{{ route('logout') }}" class="inline">
                             @csrf
                             <button type="submit" class="block px-4 py-2 text-sm hover:bg-gray-200 w-full text-left text-black">

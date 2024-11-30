@@ -42,4 +42,8 @@ class Product extends Model
     {
         return $this->hasMany(Inventory::class, 'productId', 'id');
     }
+    public function saleDetails()
+    {
+        return $this->hasMany(SaleDetail::class, 'productsId');
+    }
 }

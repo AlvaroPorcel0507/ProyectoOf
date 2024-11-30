@@ -14,7 +14,6 @@ class UserController extends Controller
         $sortField = $request->input('sort_field', 'id');
         $sortDirection = $request->input('sort_direction', 'asc');
 
-        // Asegúrate de que el campo de ordenación sea uno de los campos permitidos
         $validSortFields = ['id', 'name', 'lastName', 'secondLastName', 'role', 'location', 'created_at'];
         if (!in_array($sortField, $validSortFields)) {
             $sortField = 'id';
@@ -128,6 +127,5 @@ class UserController extends Controller
 
         return redirect()->route('users.profile')->with('success', 'Perfil actualizado correctamente.');
     }
-    /* VISTAS DE CLIENTES */
     
 }

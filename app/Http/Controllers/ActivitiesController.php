@@ -12,13 +12,12 @@ class ActivitiesController extends Controller
         $sortField = $request->input('sort_field', 'id');
         $sortDirection = $request->input('sort_direction', 'asc');
 
-        // Asegúrate de que el campo de ordenación sea uno de los campos permitidos
         $validSortFields = ['id', 'name', 'description', 'scheduleDate', 'duration', 'priority', 'status', 'userId'];
         if (!in_array($sortField, $validSortFields)) {
             $sortField = 'id';
         }
 
-        $activities = Activity::where('status', 1)->orderBy($sortField, $sortDirection)->paginate(8);
+        $activities = Activity::where('status', '>', 0)->orderBy($sortField, $sortDirection)->paginate(8);
 
         return view('livewire/activities.index', compact('activities', 'sortField', 'sortDirection'));
     }
@@ -86,5 +85,15 @@ class ActivitiesController extends Controller
         ]);
 
         return redirect()->route('activities.index')->with('success', 'Solicitud Eliminada con exito.');
+    }
+
+    public function updateConclusion(Request $request, $id)
+    {
+        $activity = Activity::findOrFail($id);
+
+        $activity->status = 2; 
+        $activity->save();
+
+        return redirect()->route('activities.index')->with('success', 'La actividad ha sido actualizada.');
     }
 }

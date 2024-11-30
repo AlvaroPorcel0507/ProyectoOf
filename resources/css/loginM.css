@@ -1,0 +1,27 @@
+/* Material Dashboard style customizations */
+.card {
+    background: #fff;
+    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+    border-radius: 20px;
+}
+
+h2, .form-label {
+    font-family: 'Roboto', sans-serif;
+    font-weight: 500;
+}
+
+.form-control, .form-check-input {
+    border-radius: 12px;
+    padding: 15px;
+}
+
+.form-check-label {
+    font-size: 0.875rem;
+}
+
+.x-primary-button {
+    background-color: #00796b;
+    color: white;
+    border-radius: 20px;
+    font-size: 1.1rem;
+}

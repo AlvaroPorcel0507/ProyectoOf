@@ -13,6 +13,7 @@ class TotalProduct extends Model
         'userId',
         'productId',
         'stock',
+        'unitPrice'
     ];
     // Relación con la venta
     public function user()

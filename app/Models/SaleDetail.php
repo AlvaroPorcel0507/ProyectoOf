@@ -10,6 +10,8 @@ class SaleDetail extends Model
     protected $fillable = [
         'salesId',
         'productsId',
+        'producerId',
+        'description',
         'quantity',
         'unitPrice',
         'totalProduct',
@@ -24,5 +26,9 @@ class SaleDetail extends Model
     public function product()
     {
         return $this->belongsTo(Product::class, 'productsId');
+    }
+    public function producer()
+    {
+        return $this->belongsTo(User::class, 'producerId');
     }
 }

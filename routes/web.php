@@ -7,6 +7,8 @@ use App\Http\Controllers\Auth\AuthenticatedSessionController;
 use App\Http\Controllers\CustomersController;
 use App\Http\Controllers\ProductsController;
 use App\Http\Controllers\SalesController;
+use App\Http\Controllers\ReportsController;
+
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -61,7 +63,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/products/{product}/edit', [ProductsController::class, 'edit'])->name('products.edit');
     Route::put('/products/{product}', [ProductsController::class, 'update'])->name('products.update');
     Route::put('/products/{product}/softDelete', [ProductsController::class, 'delete'])->name('products.softDelete');
-    Route::put('/products/surtir/{id}', [ProductsController::class, 'surtir'])->name('products.surtir');
+    Route::get('/products/{id}/details', [ProductController::class, 'getProductDetails']);
 
 });
 
@@ -73,32 +75,52 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::post('/activities', [ActivitiesController::class, 'store'])->name('activities.store');
     Route::get('/activities/{activity}/edit', [ActivitiesController::class, 'edit'])->name('activities.edit');
     Route::put('/activities/{activity}', [ActivitiesController::class, 'update'])->name('activities.update');
+    Route::put('/activities/{id}/update-conclusion', [ActivitiesController::class, 'updateConclusion'])->name('activities.updateConclusion');
     Route::put('/activities/{activity}/softDelete', [ActivitiesController::class, 'delete'])->name('activities.softDelete');
 });
 
 Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/sales', [SalesController::class, 'index'])->name('sales.index');
     Route::get('sales/create', [SalesController::class, 'create'])->name('sales.create');
-Route::post('sales/store', [SalesController::class, 'store'])->name('sales.store');
+    Route::post('sales/store', [SalesController::class, 'store'])->name('sales.store');
+    Route::get('/sales/stock/{productId}', [SalesController::class, 'getStockByProduct']);
+    Route::get('/sales/{id}/detail', [SalesController::class, 'show'])->name('sales.show');
+    Route::get('/sales/{id}', [SalesController::class, 'test'])->name('sales.test');
+    Route::post('/cart/add', [SalesController::class, 'addToCart'])->name('cart.add');
+    Route::post('/remove-from-cart', [SalesController::class, 'removeFromCart']);
+    Route::post('/finalize-purchase', [SalesController::class, 'finalizePurchase'])->name('finalize.purchase');
 
-// Ruta para obtener los productos según el productor seleccionado
-Route::get('sales/get-products/{userId}', [SalesController::class, 'getProductsByProducer'])->name('sales.getProducts');
+    // Ruta para procesar la venta
+Route::post('/sales/process', [SalesController::class, 'processSale'])->name('sales.processSale');
+
+});
+
+Route::middleware(['auth', 'verified'])->group(function () {
+    Route::get('/reports', [ReportsController::class, 'index'])->name('reports.index');
+    Route::get('reports/products-pdf', [ReportsController::class, 'generatePDF'])->name('reports.generatePdf');
+    Route::get('/reports/sale', [ReportsController::class, 'saleIndex'])->name('reports.sale');
+    Route::get('reports/productsSale-pdf', [ReportsController::class, 'generateSalePDF'])->name('reports.generateSalePdf');
+    Route::get('/reports/saleProducer', [ReportsController::class, 'producerIndex'])->name('reports.saleProducer');
+    Route::get('/reports/saleProducer-pdf', [ReportsController::class, 'generateSaleProducerPDF'])->name('reports.generateSaleProducerPdf');
+});
 
 
 
-
-// Otras rutas...
+/* Otras rutas...
 
 Route::middleware(['auth'])->group(function () {
     // Ruta para mostrar el formulario de creación de una nueva venta
     Route::get('/sales/create', [SalesController::class, 'create'])->name('sales.create');
 
+Route::get('/products/search', [SalesController::class, 'search'])->name('products.search');
+
+
     // Ruta para almacenar una nueva venta
     Route::post('/sales', [SalesController::class, 'store'])->name('sales.store');
-    Route::get('/sales/{id}/detail', [SalesController::class, 'show'])->name('sales.show');
-});
+    
+});*/
 
-
+Route::middleware(['auth'])->group(function () {
     Route::get('/activities/create', [ActivitiesController::class, 'create'])->name('activities.create');
     Route::post('/activities', [ActivitiesController::class, 'store'])->name('activities.store');
     Route::get('/activities/{activity}/edit', [ActivitiesController::class, 'edit'])->name('activities.edit');

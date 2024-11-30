@@ -12,7 +12,6 @@ class CustomersController extends Controller
         $sortField = $request->input('sort_field', 'id');
         $sortDirection = $request->input('sort_direction', 'asc');
 
-        // Asegúrate de que el campo de ordenación sea uno de los campos permitidos
         $validSortFields = ['id', 'ciNit', 'companyName'];
         if (!in_array($sortField, $validSortFields)) {
             $sortField = 'id';

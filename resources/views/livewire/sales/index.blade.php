@@ -193,7 +193,7 @@ $(document).ready(function() {
             </tbody>
         </table>
 
-        <form action="{{ route('reports.generateSaleProducerPdf') }}" method="GET">
+        <form action="{{ route('reports.generateforProducerPdf') }}" method="GET">
             <!-- Incluyendo las fechas seleccionadas -->
             <input type="hidden" name="start_date" value="{{ request('start_date') }}">
             <input type="hidden" name="end_date" value="{{ request('end_date') }}">

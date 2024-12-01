@@ -45,6 +45,12 @@
                         @endforeach
                     </tbody>
                 </table>
+                <div class="my-4">
+                <form action="{{ route('reports.generateReceiptPdf') }}" method="GET">
+                    <input type="hidden" name="producer_id" value="{{ $sale->id }}">
+                    <button type="submit" class="btn btn-info">Generar Recibo</button>
+                </form>
+                </div>
             </div>
         </div>
     </div>

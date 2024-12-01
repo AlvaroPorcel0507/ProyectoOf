@@ -102,6 +102,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('reports/productsSale-pdf', [ReportsController::class, 'generateSalePDF'])->name('reports.generateSalePdf');
     Route::get('/reports/saleProducer', [ReportsController::class, 'producerIndex'])->name('reports.saleProducer');
     Route::get('/reports/saleProducer-pdf', [ReportsController::class, 'generateSaleProducerPDF'])->name('reports.generateSaleProducerPdf');
+    Route::get('/reports/forProducer-pdf', [ReportsController::class, 'generateforProducerPDF'])->name('reports.generateforProducerPdf');
+    Route::get('/reports/receipt-pdf', [ReportsController::class, 'generateReceiptPDF'])->name('reports.generateReceiptPdf');
 });
 
 

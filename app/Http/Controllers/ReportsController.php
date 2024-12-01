@@ -8,6 +8,7 @@ use App\Models\Sale;
 use App\Models\SaleDetail;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\View;
+use Illuminate\Support\Facades\Auth;
 use App\Models\Product;
 use Barryvdh\DomPDF\Facade\Pdf;
 
@@ -201,7 +202,83 @@ public function generateSaleProducerPDF(Request $request)
     return $pdf->download('detalle_general_productos_vendidos.pdf');
 }
 
+    public function generateforProducerPDF(Request $request)
+    {
+        // Fechas para el rango
+        $startDate = $request->input('start_date') 
+            ? Carbon::parse($request->input('start_date'))->startOfDay() 
+            : now()->startOfMonth()->startOfDay(); // Inicio del mes si no hay fecha de inicio
+        $endDate = $request->input('end_date') 
+            ? Carbon::parse($request->input('end_date'))->endOfDay() 
+            : now()->endOfDay(); // Fin del día actual si no hay fecha de fin
 
+        // ID del productor autenticado
+        $producerId = Auth::id();
 
+        // Consultar ventas detalladas por producto del productor autenticado
+        $detailedSales = DB::table('sales')
+            ->join('sale_details', 'sales.id', '=', 'sale_details.salesId')
+            ->join('products', 'sale_details.productsId', '=', 'products.id')
+            ->select(
+                'products.name as product_name',
+                'sale_details.quantity',
+                'sale_details.unitPrice',
+                DB::raw('(sale_details.quantity * sale_details.unitPrice) as total_price'),
+                'sales.created_at'
+            )
+            ->where('sale_details.producerId', $producerId) // Solo ventas del productor autenticado
+            ->whereBetween('sales.created_at', [$startDate, $endDate]) // Rango de fechas
+            ->orderBy('sales.created_at', 'desc')
+            ->get();
 
+        // Calcular el total global de las ventas
+        $totalRevenue = $detailedSales->sum('total_price');
+
+        // Generar el PDF
+        $pdf = PDF::loadView('livewire/reports.reportForProducer', compact(
+            'detailedSales', 'startDate', 'endDate', 'totalRevenue'
+        ));
+
+        // Devolver el PDF descargable
+        return $pdf->download('mis_ventas.pdf');
+    }
+
+    public function generateReceiptPDF(Request $request)
+    {
+        // ID de la venta que se pasa como parámetro
+        $saleId = $request->input('producer_id'); // Aquí recuperamos el ID de la venta
+
+        // Consultar los detalles de la venta específica
+        $saleDetails = DB::table('sale_details')
+            ->join('sales', 'sale_details.salesId', '=', 'sales.id')
+            ->join('products', 'sale_details.productsId', '=', 'products.id')
+            ->select(
+                'products.name as product_name',
+                'sale_details.quantity',
+                'sale_details.unitPrice',
+                'sale_details.totalProduct',
+                'sale_details.description',
+                'sales.created_at as sale_date',
+                'sale_details.salesId'
+            )
+            ->where('sale_details.salesId', $saleId) // Filtramos por la venta específica
+            ->where('sales.customerId', Auth::id()) // Solo detalles de la venta del cliente autenticado
+            ->get();
+
+        // Verificar si existen detalles de la venta
+        if ($saleDetails->isEmpty()) {
+            return redirect()->route('sales.index')->with('error', 'No se encontraron detalles para esta venta.');
+        }
+
+        // Calcular el total global de la venta
+        $totalSale = $saleDetails->sum('totalProduct');
+
+        // Generar el PDF con los detalles de la venta
+        $pdf = PDF::loadView('livewire/reports.reportReceipt', compact(
+            'saleDetails', 'totalSale'
+        ));
+
+        // Devolver el PDF descargable
+        return $pdf->download('recibo_compra_' . $saleId . '.pdf');
+    }
 }

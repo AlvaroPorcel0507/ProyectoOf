@@ -49,7 +49,7 @@ new #[Layout('layouts.guest')] class extends Component
     <div class="mt-6 flex items-center justify-between">
         <button 
             wire:click="sendVerification" 
-            class="px-4 py-2 bg-green-600 text-white text-sm font-medium rounded-md hover:bg-indigo-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+            class="px-4 py-2 bg-green-600 text-white text-sm font-medium rounded-md hover:bg-green-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
             {{ __('Reenviar correo electrónico de verificación') }}
         </button>
 

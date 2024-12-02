@@ -63,7 +63,7 @@ new #[Layout('layouts.guest')] class extends Component
 
         <!-- Submit Button -->
         <div class="flex items-center justify-end mt-6">
-            <x-primary-button class="px-6 py-2 bg-green-600 text-white font-semibold rounded-md shadow-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500">
+            <x-primary-button class="px-6 py-2 bg-green-600 text-white font-semibold rounded-md shadow-md hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-indigo-500">
                 {{ __('Enviar enlace de restablecimiento') }}
             </x-primary-button>
         </div>

@@ -166,7 +166,7 @@ new #[Layout('layouts.guest')] class extends Component
             <div class="mt-6">
                 <button 
                     type="submit" 
-                    class="w-full px-4 py-2 text-white bg-green-600 rounded-md hover:bg-blue-700 focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                    class="w-full px-4 py-2 text-white bg-green-600 rounded-md hover:bg-green-700 focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
                     Registrarse
                 </button>
             </div>

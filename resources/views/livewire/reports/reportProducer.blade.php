@@ -32,7 +32,7 @@
         }
     </style>
 </head>
-<body>
+<body style="background-image: url('{{ asset('storage/images/logo.png') }}');" class="background">
     <h1>Reporte General de Productos Vendidos</h1>
     <p><strong>Rango de Fechas:</strong> {{ $startDate->format('d/m/Y') }} - {{ $endDate->format('d/m/Y') }}</p>
     @if($producerName)

@@ -23,6 +23,7 @@
     <!-- Incluye jQuery y Bootstrap en tu archivo principal -->
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
 </head>
 <body class="font-sans antialiased bg-gray-200">
@@ -120,17 +121,36 @@
 
             <!-- Page Content -->
             <main class="flex-1 bg-white rounded-lg shadow p-6">
-                 @if (session('success'))
-                    <div class="alert alert-success">
-                        {{ session('success') }}
-                    </div>
-                @endif
+            @if(session('success'))
+                <script>
+                    Swal.fire({
+                        icon: 'success',
+                        title: '¡Éxito!',
+                        text: '{{ session('success') }}',
+                        confirmButtonText: 'Aceptar'
+                    });
+                </script>
+            @endif
+
                 @if($errors->any())
                     <div class="alert alert-danger">
                         <ul>
-                            @foreach($errors->all() as $error)
-                                <li>{{ $error }}</li>
-                            @endforeach
+                        @if($errors->any())
+                            <script>
+                                Swal.fire({
+                                    icon: 'error',
+                                    title: '¡Errores encontrados!',
+                                    html: `
+                                        <ul style="text-align: left;">
+                                            @foreach($errors->all() as $error)
+                                                <li>{{ $error }}</li>
+                                            @endforeach
+                                        </ul>
+                                    `,
+                                    confirmButtonText: 'Aceptar'
+                                });
+                            </script>
+                        @endif
                         </ul>
                     </div>
                 @endif
@@ -141,7 +161,6 @@
     <script src="https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.3/dist/umd/popper.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
-    <script src="{{ asset('leaflet/leaflet.js') }}"></script>
     @livewireScripts
     @stack('scripts')
 </body>

@@ -3,6 +3,7 @@
 @section('content')
 <div class="container">
     <h1 class="mb-4">Reporte General de Productos Vendidos</h1>
+    
 
     <form id="filter-form" method="GET" action="{{ route('reports.saleProducer') }}">
         <div class="row mb-3">

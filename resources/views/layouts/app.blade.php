@@ -31,7 +31,9 @@
         <!-- Sidebar -->
         <aside class="w-64 bg-green-600 text-white flex flex-col">
             <div class="flex items-center justify-center h-16 bg-green-700">
-                <span class="text-xl font-semibold"></span>
+                <span class="text-xl font-semibold">
+                <img src="{{ asset('storage/images/logo.png') }}">
+                </span>
             </div>
             <nav class="flex-1 px-4 py-2 space-y-2">
 

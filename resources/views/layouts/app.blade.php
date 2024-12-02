@@ -31,9 +31,11 @@
 
         <!-- Sidebar -->
         <aside class="w-64 bg-green-600 text-white flex flex-col">
+            <br>
             <div class="flex items-center justify-center h-16 bg-green-700">
-                <img src="{{ asset('storage/images/Logo.png') }}">
+                <img src="{{ asset('storage/images/logo.jpg') }}">
             </div>
+            <br><br>
             <nav class="flex-1 px-4 py-2 space-y-2">
 
             @if(Auth::User()->role=='Administrador')

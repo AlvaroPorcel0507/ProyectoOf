@@ -277,7 +277,12 @@
             // Si la cantidad excede el stock disponible, ajustarla automáticamente
             if (quantity > convertedStock) {
                 $('#quantity').val(convertedStock.toFixed(2)); // Ajustar cantidad si excede el stock disponible
-                alert('La cantidad no puede exceder el stock disponible para la unidad seleccionada.');
+                Swal.fire({
+                        icon: 'error',
+                        title: '¡Error!',
+                        text: 'La cantidad no puede exceder el stock disponible para la unidad seleccionada.',
+                        confirmButtonText: 'Aceptar'
+                    });
             }
 
             // Calcular el precio total
@@ -317,23 +322,51 @@
                 },
                 success: function(response) {
                     // Mostrar mensaje de éxito y actualizar el carrito en la vista
-                    alert('Producto agregado al carrito!');
+                    Swal.fire({
+                        icon: 'success',
+                        title: '¡Producto agregado!',
+                        text: 'El producto se ha añadido al carrito correctamente.',
+                        confirmButtonText: 'Aceptar'
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            // Opcional: Redirigir después de cerrar el SweetAlert
+                            window.location.href = '{{ route("sales.create") }}'; // Cambia "cart.view" por la ruta a la que quieras redirigir
+                        }
+                    });
                     // Aquí puedes actualizar la vista del carrito si lo deseas
                     console.log(response.cart);
                     // Actualizar el stock disponible en el modal (restar el stock)
                     var newStock = response.newStock;
                     $('#modal-stock').text(newStock + ' Kg');
                     $('#quantity').attr('max', newStock);
+
                 },
                 error: function(xhr, status, error) {
                     console.log("Error al agregar el producto al carrito:", error);
+
+                    Swal.fire({
+                        icon: 'error',
+                        title: '¡Error!',
+                        text: 'No se pudo agregar el producto al carrito. Por favor, inténtalo nuevamente.',
+                        confirmButtonText: 'Aceptar'
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            // Opcional: Redirigir después de cerrar el SweetAlert
+                            window.location.href = '{{ route("sales.create") }}'; // Cambia "cart.view" por la ruta a la que quieras redirigir
+                        }
+                    });
                 }
             });
 
             // Cerrar el modal
             $('#productModal').modal('hide');
         } else {
-            alert('Por favor ingrese una cantidad válida.');
+            Swal.fire({
+                icon: 'error',
+                title: '¡Error!',
+                text: 'Ingrese una cantidad valida.',
+                confirmButtonText: 'Aceptar'
+            });
         }
     });
     // Eliminar producto del carrito
@@ -349,13 +382,25 @@ $(document).on('click', '.remove-item', function() {
             index: index  // Pasar el índice del carrito
         },
         success: function(response) {
-            if (response.reload) {
-                // Recargar toda la vista
-                window.location.reload();
-            }
+            Swal.fire({
+                icon: 'error',
+                title: '¡Error!',
+                text: 'No se pudo Eliminar el Item.',
+                confirmButtonText: 'Aceptar'
+            });
         },
         error: function() {
-            alert('Hubo un error al eliminar el producto del carrito.');
+            Swal.fire({
+                icon: 'success',
+                title: '¡Producto Eliminado!',
+                text: 'El producto se ha elimina del carrito correctamente.',
+                confirmButtonText: 'Aceptar'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                            // Opcional: Redirigir después de cerrar el SweetAlert
+                    window.location.href = '{{ route("sales.create") }}'; // Cambia "cart.view" por la ruta a la que quieras redirigir
+                }
+            });
         }
     });
 });
@@ -367,18 +412,28 @@ $(document).on('click', '#finalize-purchase', function () {
             _token: $('meta[name="csrf-token"]').attr('content'), // Token CSRF
         },
         success: function (response) {
-            alert(response.message); // Mensaje de éxito
-            location.reload(); // Recargar la página
+            Swal.fire({
+                icon: 'success',
+                title: '¡Compra Finalizada!',
+                text: 'La compra se realizo correctamente.',
+                confirmButtonText: 'Aceptar'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    // Opcional: Redirigir después de cerrar el SweetAlert
+                    window.location.href = '{{ route("sales.index") }}'; // Cambia "cart.view" por la ruta a la que quieras redirigir
+                }
+            });
         },
         error: function (xhr) {
-            alert(xhr.responseJSON.error || 'Ocurrió un error al finalizar la compra.');
+            Swal.fire({
+                icon: 'error',
+                title: '¡Error!',
+                text: 'No se pudo realizar la compra.',
+                confirmButtonText: 'Aceptar'
+            });
         }
     });
 });
-
-
-
-
 </script>
 
 @endsection

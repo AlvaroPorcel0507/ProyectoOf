@@ -24,8 +24,11 @@ new #[Layout('layouts.guest')] class extends Component
     }
 }; ?>
 
-<div class="flex justify-center items-center max-h-screen bg-gray-100">
+<div class="flex justify-center items-center max-s-screen bg-gray-100">
     <div class="w-full max-w-md p-6 bg-white rounded-lg shadow-md">
+        <div class="flex justify-center items-center">
+            <img src="{{ asset('storage/images/login_logo.jpg') }}" alt="" width="50%">
+        </div>
         <h1 class="text-2xl font-bold text-center mb-6">Iniciar Sesión</h1>
 
         <!-- Session Status -->
@@ -65,11 +68,11 @@ new #[Layout('layouts.guest')] class extends Component
 
             <!-- Register and Forgot Password Links -->
             <div class="flex justify-between items-center mt-4">
-                <a class="text-sm text-blue-500 hover:underline" href="{{ route('register') }}" wire:navigate>
+                <a class="text-sm text-green-600 hover:underline" href="{{ route('register') }}" wire:navigate>
                     Registrarse
                 </a>
                 @if (Route::has('password.request'))
-                    <a class="text-sm text-blue-500 hover:underline" href="{{ route('password.request') }}" wire:navigate>
+                    <a class="text-sm text-green-600 hover:underline" href="{{ route('password.request') }}" wire:navigate>
                         ¿Olvidaste tu contraseña?
                     </a>
                 @endif
@@ -79,7 +82,7 @@ new #[Layout('layouts.guest')] class extends Component
             <div class="mt-6">
                 <button 
                     type="submit" 
-                    class="w-full px-4 py-2 text-white bg-blue-600 rounded-md hover:bg-blue-700 focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                    class="w-full px-4 py-2 text-white bg-green-600 rounded-md hover:bg-blue-700 focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
                     Iniciar Sesión
                 </button>
             </div>

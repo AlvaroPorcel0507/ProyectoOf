@@ -99,100 +99,100 @@ class SalesController extends Controller
 
     // Método para agregar un producto al carrito
     public function addToCart(Request $request)
-{
-    // Validar los datos del producto
-    $validated = $request->validate([
-        'product_name' => 'required|string',
-        'producer_name' => 'required|string',  // Nombre completo del productor
-        'quantity' => 'required|numeric|min:1',
-        'unit' => 'required|string',
-        'unitPrice' => 'required|numeric|min:0',
-    ]);
+    {
+        // Validar los datos del producto
+        $validated = $request->validate([
+            'product_name' => 'required|string',
+            'producer_name' => 'required|string',  // Nombre completo del productor
+            'quantity' => 'required|numeric|min:1',
+            'unit' => 'required|string',
+            'unitPrice' => 'required|numeric|min:0',
+        ]);
 
-    // Obtener el carrito de la sesión
-    $cart = session()->get('cart', []);
+        // Obtener el carrito de la sesión
+        $cart = session()->get('cart', []);
 
-    // Separar el nombre completo del productor en sus partes
-    $producerNameParts = explode(' ', $validated['producer_name']);
-    $producerFirstName = $producerNameParts[0];
-    $producerLastName = $producerNameParts[1] ?? ''; // El segundo apellido es opcional
+        // Separar el nombre completo del productor en sus partes
+        $producerNameParts = explode(' ', $validated['producer_name']);
+        $producerFirstName = $producerNameParts[0];
+        $producerLastName = $producerNameParts[1] ?? ''; // El segundo apellido es opcional
 
-    // Buscar el productor en la base de datos
-    $producer = User::where('name', $producerFirstName)
-                    ->where('lastName', $producerLastName)
-                    ->first();
+        // Buscar el productor en la base de datos
+        $producer = User::where('name', $producerFirstName)
+                        ->where('lastName', $producerLastName)
+                        ->first();
 
-    if (!$producer) {
-        return response()->json(['error' => 'Productor no encontrado.'], 404);
-    }
-
-    // Buscar el producto en la base de datos
-    $product = Product::where('name', $validated['product_name'])->first();
-
-    if (!$product) {
-        return response()->json(['error' => 'Producto no encontrado.'], 404);
-    }
-
-    // Buscar la entrada del producto en total_products (para obtener el stock actual)
-    $totalProduct = DB::table('total_products')
-                      ->where('productId', $product->id)
-                      ->where('userId', $producer->id) // Considerando que userId es el productor
-                      ->first();
-
-    if (!$totalProduct) {
-        return response()->json(['error' => 'Producto no encontrado en el inventario del productor.'], 404);
-    }
-
-    // Convertir la cantidad a kg según la unidad de medida
-    $convertedQuantity = $this->convertToKg($validated['quantity'], $validated['unit']);
-
-    // Verificar si hay suficiente stock
-    if ($totalProduct->stock < $convertedQuantity) {
-        return response()->json(['error' => 'No hay suficiente stock disponible.'], 400);
-    }
-
-    // Restar la cantidad convertida del stock en la tabla total_products
-    DB::table('total_products')
-        ->where('productId', $product->id)
-        ->where('userId', $producer->id)
-        ->decrement('stock', $convertedQuantity);
-
-    // Crear un nuevo ítem de carrito
-    $cartItem = [
-        'product_name' => $validated['product_name'],
-        'producer_name' => $validated['producer_name'],
-        'quantity' => $validated['quantity'],
-        'unit' => $validated['unit'],
-        'unitPrice' => $validated['unitPrice'],
-        'totalPrice' => $validated['quantity'] * $validated['unitPrice'],
-    ];
-
-    // Verificar si el producto ya existe en el carrito
-    $productExists = false;
-    foreach ($cart as &$item) {
-        if ($item['product_name'] == $validated['product_name'] && $item['unit'] == $validated['unit']) {
-            // Actualizar el producto existente
-            $item['quantity'] += $validated['quantity'];
-            $item['totalPrice'] = $item['quantity'] * $item['unitPrice'];
-            $productExists = true;
-            break;
+        if (!$producer) {
+            return response()->json(['error' => 'Productor no encontrado.'], 404);
         }
+
+        // Buscar el producto en la base de datos
+        $product = Product::where('name', $validated['product_name'])->first();
+
+        if (!$product) {
+            return response()->json(['error' => 'Producto no encontrado.'], 404);
+        }
+
+        // Buscar la entrada del producto en total_products (para obtener el stock actual)
+        $totalProduct = DB::table('total_products')
+                        ->where('productId', $product->id)
+                        ->where('userId', $producer->id) // Considerando que userId es el productor
+                        ->first();
+
+        if (!$totalProduct) {
+            return response()->json(['error' => 'Producto no encontrado en el inventario del productor.'], 404);
+        }
+
+        // Convertir la cantidad a kg según la unidad de medida
+        $convertedQuantity = $this->convertToKg($validated['quantity'], $validated['unit']);
+
+        // Verificar si hay suficiente stock
+        if ($totalProduct->stock < $convertedQuantity) {
+            return response()->json(['error' => 'No hay suficiente stock disponible.'], 400);
+        }
+
+        // Restar la cantidad convertida del stock en la tabla total_products
+        DB::table('total_products')
+            ->where('productId', $product->id)
+            ->where('userId', $producer->id)
+            ->decrement('stock', $convertedQuantity);
+
+        // Crear un nuevo ítem de carrito
+        $cartItem = [
+            'product_name' => $validated['product_name'],
+            'producer_name' => $validated['producer_name'],
+            'quantity' => $validated['quantity'],
+            'unit' => $validated['unit'],
+            'unitPrice' => $validated['unitPrice'],
+            'totalPrice' => $validated['quantity'] * $validated['unitPrice'],
+        ];
+
+        // Verificar si el producto ya existe en el carrito
+        $productExists = false;
+        foreach ($cart as &$item) {
+            if ($item['product_name'] == $validated['product_name'] && $item['unit'] == $validated['unit']) {
+                // Actualizar el producto existente
+                $item['quantity'] += $validated['quantity'];
+                $item['totalPrice'] = $item['quantity'] * $item['unitPrice'];
+                $productExists = true;
+                break;
+            }
+        }
+
+        // Si el producto no existe, agregarlo al carrito
+        if (!$productExists) {
+            $cart[] = $cartItem;
+        }
+
+        // Guardar el carrito actualizado en la sesión
+        session()->put('cart', $cart);
+
+        // Responder con el carrito actualizado y la señal de recarga de la vista
+        return response()->json([
+            'cart' => $cart,
+            'reload' => true // Indica que la vista debe recargarse
+        ]);
     }
-
-    // Si el producto no existe, agregarlo al carrito
-    if (!$productExists) {
-        $cart[] = $cartItem;
-    }
-
-    // Guardar el carrito actualizado en la sesión
-    session()->put('cart', $cart);
-
-    // Responder con el carrito actualizado y la señal de recarga de la vista
-    return response()->json([
-        'cart' => $cart,
-        'reload' => true // Indica que la vista debe recargarse
-    ]);
-}
 
 private function convertToKg($quantity, $unit)
 {
@@ -218,8 +218,6 @@ private function convertToKg($quantity, $unit)
     
     public function showCart()
     {
-
-
         // Obtener el carrito de la sesión, si no existe, devuelve un array vacío
         $cart = session()->get('cart', []);
         dd($cart);

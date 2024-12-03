@@ -31,7 +31,7 @@
                             <th scope="col">Nro.</th>
                             <th scope="col">Nombre Producto</th>
                             <th scope="col">Descripción</th>
-                            <th scope="col">Detalles</th>
+                            <th scope="col">Stock Disponible Kgs.</th>
                         </tr>
                     </thead>
                     @if(Auth::User()->role == 'Administrador')
@@ -44,19 +44,7 @@
                                 <th scope="row">{{ $cont }}</th>
                                 <td>{{ $product->name }}</td>
                                 <td>{{ $product->description }}</td>
-
-                                <td>   
-                                    <button type="button" class="btn btn-info" 
-                                        data-bs-toggle="modal" 
-                                        data-bs-target="#toggleStatusModal" 
-                                        data-product-name="{{ $product->name }}" 
-                                        data-product-stock="{{ $product->stock }}" 
-                                        data-product-unitprice="{{ optional($product->inventory->first())->unitPrice }}" 
-                                        data-product-measurementunit="{{ optional($product->inventory->first())->measurementUnit }}" 
-                                        data-product-categoryid="{{ optional($product->categories)->name }}">
-                                        <i class="fas fa-info-circle"></i>
-                                    </button>
-                                </td>
+                                <td>{{ $product->stock }}</td>
                             </tr>
                             @php $cont++; @endphp
                         @endforeach
@@ -72,18 +60,7 @@
                                     <th scope="row">{{ $cont }}</th>
                                     <td>{{ optional(Product::find($product->id))->name }}</td>
                                     <td>{{ $product->description }}</td>
-
-                                    <td>   
-                                        <button 
-                                            type="button" 
-                                            class="btn btn-info" 
-                                            data-bs-toggle="modal" 
-                                            data-bs-target="#toggleStatusModal" 
-                                            data-product-id="{{ $product->id }}"
-                                            onclick="loadProductDetails(this)">
-                                            <i class="fas fa-info-circle"></i>
-                                        </button>
-                                    </td>
+                                    <td>{{ $product->stock }}</td>
                                 </tr>
                                 @php $cont++; @endphp
                                 @endif

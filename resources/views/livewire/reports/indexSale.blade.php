@@ -42,6 +42,7 @@
                 <tr>
                     <th>Producto</th>
                     <th>Cantidad Vendida Kgs.</th>
+                    <th>Monto Total Vendido (Bs)</th>
                 </tr>
             </thead>
             <tbody>
@@ -49,6 +50,7 @@
                     <tr>
                         <td>{{ $product->name }}</td>
                         <td>{{ $product->total_sold }}</td>
+                        <td>{{ number_format($product->total_revenue, 2) }}</td>
                     </tr>
                 @endforeach
             </tbody>
@@ -64,4 +66,5 @@
     @endif
 </div>
 @endsection
+
 

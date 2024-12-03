@@ -5,37 +5,53 @@
     <title>Recibo de Compra</title>
     <style>
         body {
-            font-family: Arial, sans-serif;
+            font-family: 'Roboto', sans-serif;
             margin: 0;
             padding: 20px;
+            background-color: #f9f9f9;
+            color: #333;
         }
         h1 {
             text-align: center;
-            color: green;
+            color: #4CAF50;
+            font-weight: bold;
+            margin-bottom: 20px;
         }
         table {
             width: 100%;
             border-collapse: collapse;
             margin-top: 20px;
+            background-color: #fff;
+            box-shadow: 0px 2px 8px rgba(0, 0, 0, 0.1);
         }
         th, td {
-            padding: 10px;
+            padding: 12px;
             border: 1px solid #ddd;
             text-align: center;
         }
         th {
-            background-color: #f2f2f2;
+            background-color: #4CAF50;
+            color: #fff;
+            text-transform: uppercase;
+            font-size: 14px;
+        }
+        td {
+            font-size: 14px;
         }
         .total {
             text-align: right;
             font-size: 16px;
             font-weight: bold;
+            margin-top: 10px;
         }
         .footer {
             text-align: center;
             margin-top: 20px;
             font-size: 0.9em;
             color: #555;
+        }
+        .footer p {
+            margin: 5px 0;
         }
     </style>
 </head>

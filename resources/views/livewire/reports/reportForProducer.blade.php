@@ -8,31 +8,55 @@
         body {
             font-family: Arial, sans-serif;
             margin: 20px;
-            padding: 0;
+            background-image: url('{{ asset('storage/images/logo.png') }}');
+            background-repeat: no-repeat;
+            background-position: center;
+            background-size: 30%;
+            opacity: 0.9;
         }
         .container {
             width: 90%;
             margin: 0 auto;
+            background-color: #ffffff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
         }
         h1, h3 {
             text-align: center;
+            color: #4CAF50;
+            text-transform: uppercase;
         }
         table {
             width: 100%;
             border-collapse: collapse;
             margin-top: 20px;
+            background-color: #ffffff;
         }
-        table th, table td {
+        table, th, td {
             border: 1px solid #ddd;
-            padding: 8px;
-            text-align: left;
         }
-        table th {
-            background-color: #f2f2f2;
+        th {
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px;
+        }
+        td {
+            padding: 10px;
+            text-align: center;
+        }
+        tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+        tr:hover {
+            background-color: #f1f1f1;
         }
         .total {
+            margin-top: 20px;
             text-align: right;
+            font-size: 16px;
             font-weight: bold;
+            color: #333;
         }
         .footer {
             text-align: center;
@@ -83,3 +107,4 @@
     </div>
 </body>
 </html>
+

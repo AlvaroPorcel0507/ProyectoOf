@@ -8,31 +8,61 @@
         body {
             font-family: Arial, sans-serif;
             margin: 20px;
+            background-image: url('{{ asset('storage/images/logo.png') }}');
+            background-repeat: no-repeat;
+            background-position: center;
+            background-size: 30%;
+            opacity: 0.9;
         }
         h1 {
             text-align: center;
+            color: #4CAF50;
+            text-transform: uppercase;
+        }
+        p {
+            font-size: 14px;
+            margin-bottom: 10px;
         }
         table {
             width: 100%;
             border-collapse: collapse;
             margin-top: 20px;
+            background-color: #ffffff;
         }
         table, th, td {
-            border: 1px solid #000;
+            border: 1px solid #ddd;
         }
-        th, td {
-            padding: 8px;
+        th {
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px;
+        }
+        td {
+            padding: 10px;
             text-align: center;
+        }
+        tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+        tr:hover {
+            background-color: #f1f1f1;
         }
         .total {
             margin-top: 20px;
             text-align: right;
             font-size: 16px;
             font-weight: bold;
+            color: #333;
+        }
+        .footer {
+            text-align: center;
+            margin-top: 20px;
+            font-size: 0.9em;
+            color: #555;
         }
     </style>
 </head>
-<body style="background-image: url('{{ asset('storage/images/logo.png') }}');" class="background">
+<body>
     <h1>Reporte General de Productos Vendidos</h1>
     <p><strong>Rango de Fechas:</strong> {{ $startDate->format('d/m/Y') }} - {{ $endDate->format('d/m/Y') }}</p>
     @if($producerName)
@@ -67,5 +97,11 @@
     @if($productSales->isNotEmpty())
         <p class="total">Monto Total Vendido: {{ number_format($totalRevenue, 2, '.', ',') }} Bs</p>
     @endif
+
+    <div class="footer">
+        <p>Reporte generado automáticamente por el sistema Agro-Amigo.</p>
+        <p>Fecha de generación: {{ now()->format('d/m/Y H:i') }}</p>
+    </div>
 </body>
 </html>
+

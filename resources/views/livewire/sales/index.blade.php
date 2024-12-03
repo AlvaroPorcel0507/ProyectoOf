@@ -175,7 +175,7 @@ $(document).ready(function() {
                     <th>Producto</th>
                     <th>Cantidad</th>
                     <th>Costo Bs.</th>
-                    <th>Fecha</th>
+                    <th>Fecha de Compra</th>
                 </tr>
             </thead>
             <tbody>

@@ -7,11 +7,11 @@
  use App\Models\SaleDetail;
 @endphp
 
-
+@if(Auth::User()->role=='Cliente')
 <div class="container">
     <div class="d-flex justify-content-between align-items-center my-4">
-        <h1 class="h3">Lista de Ventas</h1>
-        <a href="{{ route('sales.create') }}" class="btn btn-success">Registrar Nueva Venta</a>
+        <h1 class="h3">Registro de Compras</h1>
+        <a href="{{ route('sales.create') }}" class="btn btn-success">Registrar Nueva Compra</a>
     </div>
 
     @if ($sales->isEmpty())
@@ -28,24 +28,25 @@
                 </tr>
             </thead>
             <tbody>
-                @php
-                    $cont = 1;
-                @endphp
+                @php $cont = 1; @endphp
+
                 @foreach ($sales as $sale)
-                <tr>
-                    <td>{{ $cont }}</td>
-                    <td>{{ optional(User::find($sale->customerId))->name }}</td>
-                    <td>{{ $sale->total }}</td>
-                    <td>{{ $sale->created_at }}</td>
-                    <td>
-                        <form action="{{ route('sales.show', $sale->id) }}">
-                            <button type="submit" class="btn btn-info">
-                                <i class="fa fa-info-circle"></i>
-                            </button>
-                        </form>
-                    </td>
-                </tr>
-                @php $cont++; @endphp
+                    @if ($sale->customerId == Auth::id()) <!-- Filtra por cliente autenticado -->
+                        <tr>
+                            <td>{{ $cont }}</td>
+                            <td>{{ optional($sale->customer)->name.' '.optional($sale->customer)->lastName }}</td> <!-- Relación para obtener nombre del cliente -->
+                            <td>{{ $sale->total }}</td>
+                            <td>{{ $sale->created_at->format('d/m/Y H:i') }}</td> <!-- Formatear fecha -->
+                            <td>
+                                <form action="{{ route('sales.show', $sale->id) }}" method="GET">
+                                    <button type="submit" class="btn btn-info">
+                                        <i class="fa fa-info-circle"></i>
+                                    </button>
+                                </form>
+                            </td>
+                        </tr>
+                        @php $cont++; @endphp
+                    @endif
                 @endforeach
             </tbody>
         </table>
@@ -138,5 +139,70 @@ $(document).ready(function() {
 
 </script>
 @endpush
+@else
+<div class="container">
+    <div class="d-flex justify-content-between align-items-center my-4">
+        <h1 class="h3">Registro de Ventas</h1>
+    </div>
+
+    <!-- Formulario para seleccionar rango de fechas -->
+    <form method="GET" action="{{ route('sales.index') }}">
+    <div class="row mb-4">
+        <div class="col-md-4">
+            <label for="start_date" class="form-label">Fecha Inicio</label>
+            <input type="date" id="start_date" name="start_date" class="form-control" 
+                   value="{{ request('start_date', $startDate) }}" required>
+        </div>
+        <div class="col-md-4">
+            <label for="end_date" class="form-label">Fecha Fin</label>
+            <input type="date" id="end_date" name="end_date" class="form-control" 
+                   value="{{ request('end_date', $endDate) }}" required>
+        </div>
+        <div class="col-md-4 d-flex align-items-end">
+            <button type="submit" class="btn btn-primary">Filtrar</button>
+        </div>
+    </div>
+</form>
+
+
+    @if ($saleDetails->isEmpty())
+        <div class="alert alert-warning">No hay compras realizadas en el rango seleccionado.</div>
+    @else
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>Nro.</th>
+                    <th>Producto</th>
+                    <th>Cantidad</th>
+                    <th>Costo Bs.</th>
+                    <th>Fecha de Compra</th>
+                </tr>
+            </thead>
+            <tbody>
+                @php $cont = 1; @endphp
+                @foreach ($saleDetails as $detail)
+                    <tr>
+                        <td>{{ $cont }}</td>
+                        <td>{{ optional($detail->product)->name }}</td> 
+                        <td>{{ $detail->quantity.' '.$detail->description }}</td>
+                        <td>{{ $detail->totalProduct }}</td>
+                        <td>{{ optional($detail->sale)->created_at->format('d/m/Y H:i') }}</td>
+                    </tr>
+                    @php $cont++; @endphp
+                @endforeach
+            </tbody>
+        </table>
+
+        <form action="{{ route('reports.generateforProducerPdf') }}" method="GET">
+            <!-- Incluyendo las fechas seleccionadas -->
+            <input type="hidden" name="start_date" value="{{ request('start_date') }}">
+            <input type="hidden" name="end_date" value="{{ request('end_date') }}">
+            <input type="hidden" name="producer_id" value="{{ Auth::id() }}">
+            <button type="submit" class="btn btn-info">Generar PDF</button>
+        </form>
+    @endif
+</div>
+
+@endif
 
 @endsection

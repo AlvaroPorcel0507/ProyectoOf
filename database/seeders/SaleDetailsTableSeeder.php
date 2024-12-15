@@ -20,6 +20,7 @@ class SaleDetailsTableSeeder extends Seeder
                 'unitPrice' => 250.38,
                 'totalProduct' => 500.76,
                 'salesId' => 1,
+                'producerId' => 1, // ID de un productor existente
                 'productsId' => 1,
                 'created_at' => now(),
                 'updated_at' => now(),
@@ -29,6 +30,7 @@ class SaleDetailsTableSeeder extends Seeder
                 'unitPrice' => 255.12,
                 'totalProduct' => 1020.48,
                 'salesId' => 2,
+                'producerId' => 1, // ID de un productor existente
                 'productsId' => 2,
                 'created_at' => now(),
                 'updated_at' => now(),
@@ -38,6 +40,7 @@ class SaleDetailsTableSeeder extends Seeder
                 'unitPrice' => 255.12,
                 'totalProduct' => 1020.48,
                 'salesId' => 3,
+                'producerId' => 1, // ID de un productor existente
                 'productsId' => 2,
                 'created_at' => now(),
                 'updated_at' => now(),
@@ -47,6 +50,7 @@ class SaleDetailsTableSeeder extends Seeder
                 'unitPrice' => 250.99,
                 'totalProduct' => 250.99,
                 'salesId' => 3,
+                'producerId' => 1, // ID de un productor existente
                 'productsId' => 3,
                 'created_at' => now(),
                 'updated_at' => now(),

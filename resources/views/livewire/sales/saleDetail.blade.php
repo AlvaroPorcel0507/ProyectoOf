@@ -5,17 +5,16 @@
  use App\Models\Product;
  use App\Models\Category;
 @endphp
-<!-----------------------------VISTA ADMINSITRADOR --------------------------------- -->
 
 <div class="container">
     <div class="d-flex justify-content-between align-items-center my-4">
-        <h1 class="h3 text-green-800">Ventas</h1>
+        <h1 class="h3 text-green-800">Registro de Compras</h1>
         <a href="{{ route('sales.index') }}" class="btn btn-secondary">Volver</a>
     </div>
 
     <div class="card border-success">
         <div class="card-header bg-success text-white">
-            <i class="fas fa-cart-plus"></i> Ventas
+            <i class="fas fa-cart-plus"></i> Detalle de Compra
         </div>
         <div class="card-body bg-light">
             <div class="table-responsive">
@@ -30,16 +29,28 @@
                         </tr>
                     </thead>
                     <tbody>
-                        @php $cont=1; @endphp
-                            <tr>
-                                <th scope="row">{{ $cont }}</th>
-                                <td>{{ optional(SaleDetail::find($sale->id))->product->name }}</td>
-                                <td>{{ optional(SaleDetail::find($sale->id))->quantity }}</td>
-                                <td>{{ optional(SaleDetail::find($sale->id))->unitPrice }}</td>
-                                <td>{{ optional(SaleDetail::find($sale->id))->totalProduct }}</td>
-                            </tr>
+                        @php $cont = 1; @endphp
+
+                        @foreach ($saleDetail as $detail)
+                            @if ($sale->customerId == Auth::id()) <!-- Validar cliente autenticado -->
+                                <tr>
+                                    <th scope="row">{{ $cont }}</th>
+                                    <td>{{ $detail->product->name ?? 'Producto no encontrado' }}</td>
+                                    <td>{{ $detail->quantity }} {{ $detail->description }}</td>
+                                    <td>{{ number_format($detail->unitPrice, 2) }} Bs</td>
+                                    <td>{{ number_format($detail->totalProduct, 2) }} Bs</td>
+                                </tr>
+                                @php $cont++; @endphp
+                            @endif
+                        @endforeach
                     </tbody>
                 </table>
+                <div class="my-4">
+                <form action="{{ route('reports.generateReceiptPdf') }}" method="GET">
+                    <input type="hidden" name="producer_id" value="{{ $sale->id }}">
+                    <button type="submit" class="btn btn-info">Generar Recibo</button>
+                </form>
+                </div>
             </div>
         </div>
     </div>

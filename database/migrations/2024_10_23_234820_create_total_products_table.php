@@ -14,6 +14,7 @@ return new class extends Migration
         Schema::create('total_products', function (Blueprint $table) {
             $table->id();
             $table->decimal('stock', 10,2);
+            $table->decimal('unitPrice', 10,2);
             $table->unsignedBigInteger('userId');
             $table->unsignedBigInteger('productId');
             $table->foreign('userId')->references('id')->on('users');

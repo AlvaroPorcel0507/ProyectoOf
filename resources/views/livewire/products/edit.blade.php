@@ -3,6 +3,7 @@
 @section('content')
 @php
   use App\Models\Category;
+  use App\Models\Inventory;
 @endphp
 <div class="container">
     
@@ -32,29 +33,33 @@
 
                 <div class="form-group">
                     <label for="name">Nombre de Producto</label>
-                    <input type="text" name="name" id="name" value="{{ old('name', $product->name) }}" class="form-control" required>
-                </div>
-                
-                <div class="form-group">
-                    <label for="image">Imagen del Producto</label>
-                    <input type="file" name="image" id="image" class="form-control-file" accept="image/*">
-                    @if ($product->image)
-                        <img src="{{ asset('storage/' . $product->image) }}" alt="Imagen del producto" class="img-fluid mt-2" style="max-width: 150px;">
-                    @endif
+                    <input type="text" name="name" id="name" value="{{ old('name', $product->name) }}" class="form-control" disabled required>
                 </div>
 
                 <div class="form-group">
                     <label for="description">Descripcion</label>
-                    <input type="text" name="description" id="description" value="{{ old('description', $product->description) }}" class="form-control" required>
+                    <input type="text" name="description" id="description" value="{{ old('description', $product->description) }}" class="form-control" disabled required>
                 </div>
 
                 <div class="form-group">
-                    <input type="hidden" name="stock" id="stock" value="{{ old('stock', $product->stock) }}" class="form-control">
+                    <label for="measurementUnit">Medida</label>
+                    <select name="measurementUnit" id="measurementUnit" class="form-control" readonly>
+                        <option value="{{ optional(Inventory::find($product->id))->measurementUnit }}" selected>{{ optional(Inventory::find($product->id))->measurementUnit }}</option>
+                    </select>
                 </div>
 
                 <div class="form-group">
-                    <label for="unitPrice">Precio Unitario</label>
-                    <input type="number" name="unitPrice" id="unitPrice" value="{{ old('unitPrice', $product->unitPrice) }}" class="form-control" required>
+                    <h2>Stock Actual en {{ optional(Inventory::find($product->id))->measurementUnit }} es {{ optional(Inventory::find($product->id))->quantity }}</h2>
+                </div>
+
+                <div class="form-group">
+                    <label for="quantity">Cantidad</label>
+                    <input type="number" name="quantity" id="quantity" class="form-control" required>
+                </div> 
+
+                <div class="form-group">
+                    <label for="unitPrice">Precio Unitario Bs.</label>
+                    <input type="number" step="0.01" name="unitPrice" id="unitPrice" value="{{ number_format(optional(Inventory::find($product->id))->unitPrice, 2, '.', '') }}" class="form-control" required>
                 </div>
 
                 <div class="form-group">

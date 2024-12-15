@@ -2,10 +2,13 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Inventory;
-use App\Models\Product;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\DB;
+use App\Models\Product;
+use App\Models\SaleDetail;
+use App\Models\Inventory;
+use App\Models\TotalProduct;
+use Illuminate\Support\Facades\Auth;
 
 
 class ProductsController extends Controller
@@ -26,44 +29,138 @@ class ProductsController extends Controller
         return view('livewire/products.index', compact('products', 'sortField', 'sortDirection'));
     }
 
+    public function getProductDetails($id)
+    {
+        $product = Product::with(['inventory' => function ($query) {
+            $query->where('userId', auth()->id());
+        }])->find($id);
+
+        if (!$product) {
+            return response()->json(['error' => 'Producto no encontrado'], 404);
+        }
+
+        return response()->json([
+            'product' => [
+                'name' => $product->name,
+            ],
+            'inventory' => $product->inventory->map(function ($item) {
+                return [
+                    'quantity' => $item->quantity,
+                    'measurementUnit' => $item->measurementUnit,
+                    'unitPrice' => $item->unitPrice,
+                ];
+            }),
+        ]);
+    }
+
     public function create()
     {
-        return view('livewire/products.create');
+        // Obtener el último registro de inventario del usuario autenticado
+        $lastInventory = Inventory::where('userId', auth()->id())->orderBy('created_at', 'desc')->first();
+
+        return view('livewire/products.create', [
+            'lastInventory' => $lastInventory,
+        ]);
     }
+
 
     public function store(Request $request)
     {
+        // Validar el request
         $request->validate([
-            'name' => 'required|max:100|regex:/^[a-zA-Z\s]+$/',
-            'description' => 'required|max:500|regex:/^[a-zA-Z\s]+$/',
-            'quantity' => 'required|numeric|min:0',
-            'measurementUnit' => 'required',
-            'unitPrice' => 'required|max:50|regex:/^\d{1,5}(\.\d{0,2})?$/',
-            'categoryId' => 'required|numeric|min:1|max:20',
-            'image' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048', // Validación de imagen
+            'productSelect' => 'nullable|exists:products,id',
+            'newProductName' => 'nullable|string|regex:/^[a-zA-Z]+$/|max:255',
+            'measurementUnit' => 'required|string',
+            'quantity' => 'required|numeric',
+            'unitPrice' => 'required|numeric',
+            'categoryId' => 'required|exists:categories,id',
         ]);
 
-        // Calcular el stock basado en la unidad de medida
-        $conversionFactor = $request->measurementUnit === 'Caja' ? 25 : 60; // Caja: 25, Carga: 60
-        $stock = $request->quantity * $conversionFactor;
+        DB::beginTransaction(); // Iniciar la transacción
 
-        // Manejar la imagen
-        $image = $request->file('image')->store('image', 'public'); // Guardar imagen en public/storage/images
+        try {
+            // Obtener la cantidad según la unidad seleccionada
+            $quantityInKg = $request->quantity; // Cantidad ingresada
 
-        Product::create([
-            'name' => $request->name,
-            'description' => $request->description,
-            'measurementUnit' => $request->measurementUnit,
-            'unitPrice' => $request->unitPrice,
-            'stock' => $stock,
-            'image' => $image, // Almacenar la ruta de la imagen
-            'categoryId' => $request->categoryId,
-            'userId' => auth()->id(), // Asumiendo que estás guardando el ID del usuario autenticado
-        ]);
+            // Realizar la conversión de acuerdo a la unidad
+            if ($request->measurementUnit === 'Caja') {
+                $quantityInKg *= 25; // Convertir a kilogramos
+            } elseif ($request->measurementUnit === 'Carga') {
+                $quantityInKg *= 60; // Convertir a kilogramos
+            }
 
-        return redirect()->route('products.index')->with('success', 'Producto creado exitosamente.');
+            // Verificar si se ha seleccionado un producto existente o si se va a crear uno nuevo
+            if ($request->filled('productSelect')) {
+                // Producto existente
+                $product = Product::findOrFail($request->productSelect);
+
+                // Registrar el nuevo inventario
+                Inventory::create([
+                    'quantity' => $quantityInKg,
+                    'measurementUnit' => $request->measurementUnit,
+                    'unitPrice' => $request->unitPrice,
+                    'userId' => auth()->id(),
+                    'productId' => $product->id,
+                ]);
+
+                // Actualizar el stock en la tabla de productos globalmente
+                $product->stock += $quantityInKg;
+                $product->save();
+
+                // Actualizar el stock y el unitPrice en total_products para el usuario autenticado y el producto
+                $totalProduct = TotalProduct::where('productId', $product->id)
+                    ->where('userId', auth()->id())
+                    ->first();
+
+                if ($totalProduct) {
+                    // Solo actualizar el stock y el unitPrice
+                    $totalProduct->stock = $quantityInKg;
+                    $totalProduct->unitPrice = $request->unitPrice; // Actualizar el unitPrice
+                    $totalProduct->save();
+                } else {
+                    // Crear un nuevo registro si no existe en total_products
+                    TotalProduct::create([
+                        'stock' => $quantityInKg,
+                        'unitPrice' => $request->unitPrice,
+                        'userId' => auth()->id(),
+                        'productId' => $product->id,
+                    ]);
+                }
+            } else {
+                // Crear un nuevo producto si no existe
+                $newProduct = Product::create([
+                    'name' => $request->newProductName,
+                    'description' => $request->description,
+                    'stock' => $quantityInKg,
+                    'userId' => auth()->id(),
+                    'categoryId' => $request->categoryId,
+                ]);
+
+                // Registrar el nuevo inventario para el nuevo producto
+                Inventory::create([
+                    'quantity' => $quantityInKg,
+                    'measurementUnit' => $request->measurementUnit,
+                    'unitPrice' => $request->unitPrice,
+                    'userId' => auth()->id(),
+                    'productId' => $newProduct->id,
+                ]);
+
+                // Crear el registro en total_products para el nuevo producto y usuario
+                TotalProduct::create([
+                    'stock' => $quantityInKg,
+                    'unitPrice' => $request->unitPrice,
+                    'userId' => auth()->id(),
+                    'productId' => $newProduct->id,
+                ]);
+            }
+
+            DB::commit(); // Confirmar la transacción
+            return redirect()->route('products.index')->with('success', 'Producto registrado correctamente.');
+        } catch (\Exception $e) {
+            DB::rollBack(); // Revertir la transacción en caso de error
+            return redirect()->back()->withErrors(['error' => 'Ocurrió un error al registrar el producto.']);
+        }
     }
-
 
     public function edit(Product $product)
     {
@@ -71,48 +168,74 @@ class ProductsController extends Controller
     }
 
     public function update(Request $request, $id)
-    {
-        // Validar los datos de entrada
-        $validatedData = $request->validate([
-            'name' => 'required|string|max:255',
-            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048', // Asegúrate de ajustar el tamaño máximo según tus necesidades
-            'description' => 'required|string|max:1000',
-            'stock' => 'required|integer|min:0',
-            'unitPrice' => 'required|numeric|min:0',
-            'categoryId' => 'required|exists:categories,id',
-        ]);
+{
+    // Validar los datos del formulario
+    $request->validate([
+        'quantity' => 'required|numeric',
+        'measurementUnit' => 'required|in:Caja,Carga',
+        'unitPrice' => 'required|numeric',
+        'categoryId' => 'required|exists:categories,id',
+    ]);
 
-        // Encontrar el producto por ID
-        $product = Product::findOrFail($id);
-
-        // Actualizar el nombre y la descripción
-        $product->name = $validatedData['name'];
-        $product->description = $validatedData['description'];
-        $product->stock = $validatedData['stock'];
-        $product->unitPrice = $validatedData['unitPrice'];
-        $product->categoryId = $validatedData['categoryId'];
-
-        // Manejar la imagen si se proporciona
-        if ($request->hasFile('image')) {
-            // Eliminar la imagen anterior si existe
-            if ($product->image) {
-                Storage::disk('public')->delete($product->image);
-            }
-
-            // Guardar la nueva imagen y obtener su ruta
-            $path = $request->file('image')->store('products', 'public');
-            $product->image = $path; // Actualizar el campo de imagen en el producto
+    // Obtener el producto por su ID
+    $product = Product::findOrFail($id);
+    $measurementUnit = $request->input('measurementUnit');
+    
+    // Convertir la cantidad de acuerdo a la unidad de medida seleccionada
+    $quantity = $request->input('quantity');
+    $convertedQuantity = ($measurementUnit === 'Caja') ? ($quantity * 25) : ($quantity * 60);
+    
+    // Verificar si la cantidad es negativa para decrementar el stock
+    if ($quantity < 0) {
+        // Validar que la reducción no baje el stock por debajo del mínimo permitido
+        if (($product->stock + $convertedQuantity) < (($measurementUnit === 'Caja') ? 25 : 60)) {
+            return redirect()->back()->withErrors(['error' => 'El stock no puede reducirse por debajo de la cantidad mínima de una ' . $measurementUnit . '.']);
         }
-
-        // Guardar los cambios en la base de datos
-        $product->save();
-
-        // Redireccionar a la lista de productos con un mensaje de éxito
-        return redirect()->route('products.index')->with('success', 'Producto actualizado correctamente.');
     }
 
+    // Iniciar transacción
+    DB::beginTransaction();
+    try {
+        // Actualizar el stock del producto
+        $product->stock += $convertedQuantity;
+        $product->save();
 
+        // Buscar el inventario existente
+        $inventory = Inventory::where('productId', $product->id)->firstOrFail();
+        
+        // Actualizar el registro existente en la tabla 'inventories'
+        $inventory->quantity += $quantity; // Aumentar o disminuir según la cantidad ingresada
+        $inventory->measurementUnit = $measurementUnit; // Mantener la unidad de medida
+        $inventory->unitPrice = $request->input('unitPrice'); // Actualizar el precio unitario
+        $inventory->userId = auth()->id(); // Actualizar el ID del usuario
+        $inventory->save();
 
+        // Actualizar la tabla 'total_products'
+        $totalProduct = TotalProduct::where('userId', auth()->id())
+            ->where('productId', $product->id)
+            ->first();
+
+        if ($totalProduct) {
+            $totalProduct->stock += $convertedQuantity;
+            $totalProduct->save();
+        } else {
+            TotalProduct::create([
+                'stock' => $convertedQuantity,
+                'userId' => auth()->id(),
+                'productId' => $product->id,
+            ]);
+        }
+
+        // Confirmar la transacción
+        DB::commit();
+        return redirect()->route('products.index')->with('success', 'Producto actualizado exitosamente.');
+
+    } catch (\Exception $e) {
+        // Revertir la transacción en caso de error
+        DB::rollBack();
+        return redirect()->back()->withErrors(['error' => 'Ocurrió un error durante la actualización: ' . $e->getMessage()]);
+    }
+}
 
     public function delete(Product $product)
     {

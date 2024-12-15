@@ -23,6 +23,7 @@
     <!-- Incluye jQuery y Bootstrap en tu archivo principal -->
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
 </head>
 <body class="font-sans antialiased bg-gray-200">
@@ -30,9 +31,11 @@
 
         <!-- Sidebar -->
         <aside class="w-64 bg-green-600 text-white flex flex-col">
+            <br>
             <div class="flex items-center justify-center h-16 bg-green-700">
-                <span class="text-xl font-semibold">Material Dashboard 2</span>
+                <img src="{{ asset('storage/images/logo.jpg') }}">
             </div>
+            <br><br>
             <nav class="flex-1 px-4 py-2 space-y-2">
 
             @if(Auth::User()->role=='Administrador')
@@ -52,17 +55,21 @@
                     <i class="fas fa-shopping-basket mr-2"></i> 
                     <span>Productos</span>
                 </a>
-                <a href="{{ route('customers.index') }}" class="flex items-center px-4 py-2 rounded-lg hover:bg-orange-600 focus:bg-orange-600 focus:ring focus:ring-orange-500">
-                    <i class="fas fa-users mr-2"></i> 
-                    <span>Clientes</span>
-                </a>
                 <a href="{{ route('activities.index') }}" class="flex items-center px-4 py-2 rounded-lg hover:bg-orange-600 focus:bg-orange-600 focus:ring focus:ring-orange-500">
                     <i class="fas fa-calendar mr-2"></i> 
                     <span>Programacion de Actividades</span>
                 </a>
-                <a href="{{ route('sales.index') }}" class="flex items-center px-4 py-2 rounded-lg hover:bg-orange-600 focus:bg-orange-600 focus:ring focus:ring-orange-500">
-                    <i class="fas fa-cart-plus mr-2"></i> 
-                    <span>Ventas</span>
+                <a href="{{ route('reports.index') }}" class="flex items-center px-4 py-2 rounded-lg hover:bg-orange-600 focus:bg-orange-600 focus:ring focus:ring-orange-500">
+                    <i class="fas fa-file-text mr-2"></i> 
+                    <span>Producto Mas Vendido</span>
+                </a>
+                <a href="{{ route('reports.sale') }}" class="flex items-center px-4 py-2 rounded-lg hover:bg-orange-600 focus:bg-orange-600 focus:ring focus:ring-orange-500">
+                    <i class="fas fa-file-text mr-2"></i> 
+                    <span>Detalle de Ventas</span>
+                </a>
+                <a href="{{ route('reports.saleProducer') }}" class="flex items-center px-4 py-2 rounded-lg hover:bg-orange-600 focus:bg-orange-600 focus:ring focus:ring-orange-500">
+                    <i class="fas fa-file-text mr-2"></i> 
+                    <span>Detalle de Ventas por Productor</span>
                 </a>
             @elseif(Auth::User()->role=='Productor')
                 <a href="{{ route('users.profile') }}" class="flex items-center px-4 py-2 rounded-lg hover:bg-orange-600 focus:bg-orange-600 focus:ring focus:ring-orange-500">
@@ -73,9 +80,13 @@
                     <i class="fas fa-shopping-basket mr-2"></i> 
                     <span>Mis Productos</span>
                 </a>
+                <a href="{{ route('activities.index') }}" class="flex items-center px-4 py-2 rounded-lg hover:bg-orange-600 focus:bg-orange-600 focus:ring focus:ring-orange-500">
+                    <i class="fas fa-calendar mr-2"></i> 
+                    <span>Mis Actividades</span>
+                </a>
                 <a href="{{ route('sales.index') }}" class="flex items-center px-4 py-2 rounded-lg hover:bg-orange-600 focus:bg-orange-600 focus:ring focus:ring-orange-500">
                     <i class="fas fa-cart-plus mr-2"></i> 
-                    <span>Ventas</span>
+                    <span>Registro de Ventas</span>
                 </a>
             @else
                 <a href="{{ route('users.profile') }}" class="flex items-center px-4 py-2 rounded-lg hover:bg-orange-600 focus:bg-orange-600 focus:ring focus:ring-orange-500">
@@ -98,6 +109,9 @@
                     
                 </h1>
                 <div class="flex items-center space-x-4">
+                    {{ Auth::User()->name.' '.Auth::User()->lastName.' '.Auth::User()->secondLastName }}
+                    <br>
+                    {{ Auth::User()->role }}
                     <form method="POST" action="{{ route('logout') }}" class="inline">
                             @csrf
                             <button type="submit" class="block px-4 py-2 text-sm hover:bg-gray-200 w-full text-left text-black">
@@ -109,17 +123,36 @@
 
             <!-- Page Content -->
             <main class="flex-1 bg-white rounded-lg shadow p-6">
-                 @if (session('success'))
-                    <div class="alert alert-success">
-                        {{ session('success') }}
-                    </div>
-                @endif
+            @if(session('success'))
+                <script>
+                    Swal.fire({
+                        icon: 'success',
+                        title: '¡Éxito!',
+                        text: '{{ session('success') }}',
+                        confirmButtonText: 'Aceptar'
+                    });
+                </script>
+            @endif
+
                 @if($errors->any())
                     <div class="alert alert-danger">
                         <ul>
-                            @foreach($errors->all() as $error)
-                                <li>{{ $error }}</li>
-                            @endforeach
+                        @if($errors->any())
+                            <script>
+                                Swal.fire({
+                                    icon: 'error',
+                                    title: '¡Errores encontrados!',
+                                    html: `
+                                        <ul style="text-align: left;">
+                                            @foreach($errors->all() as $error)
+                                                <li>{{ $error }}</li>
+                                            @endforeach
+                                        </ul>
+                                    `,
+                                    confirmButtonText: 'Aceptar'
+                                });
+                            </script>
+                        @endif
                         </ul>
                     </div>
                 @endif
@@ -130,7 +163,6 @@
     <script src="https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.3/dist/umd/popper.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
-    <script src="{{ asset('leaflet/leaflet.js') }}"></script>
     @livewireScripts
     @stack('scripts')
 </body>

@@ -22,15 +22,16 @@ class Sale extends Model
         return $this->hasMany(SaleDetail::class, 'salesId');
     }
 
-    // Definición de la relación con el cliente
-    public function customer()
-    {
-        return $this->belongsTo(User::class, 'customerId', 'id');
-    }
+    
 
     // Definición de la relación con el vendedor
     public function producer()
     {
         return $this->belongsTo(User::class, 'producerId', 'id');
     }
+    public function customer()
+    {
+        return $this->belongsTo(User::class, 'customerId');
+    }
+
 }

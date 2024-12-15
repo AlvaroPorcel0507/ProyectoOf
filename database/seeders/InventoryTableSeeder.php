@@ -4,6 +4,7 @@ namespace Database\Seeders;
 
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Facades\DB;
 
 class InventoryTableSeeder extends Seeder
 {
@@ -60,6 +61,6 @@ class InventoryTableSeeder extends Seeder
             ],
         ];
 
-        DB::table('your_table')->insert($entries);
+        DB::table('inventories')->insert($entries);
     }
 }
